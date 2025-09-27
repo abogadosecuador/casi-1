@@ -1,15 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Card from '../components/Card';
-import { Page, PublicRoute } from '../types';
 import { blogPosts } from '../data/blogData';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale/es';
 
-interface BlogPageProps {
-  onNavigate: (page: Page | PublicRoute | string) => void;
-}
-
-const BlogPage: React.FC<BlogPageProps> = ({ onNavigate }) => {
+const BlogPage: React.FC = () => {
     return (
         <div className="space-y-8 p-8 max-w-7xl mx-auto">
             <header>
@@ -19,7 +15,8 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigate }) => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {blogPosts.map(post => (
-                    <Card key={post.id} className="!p-0 flex flex-col cursor-pointer group" onClick={() => onNavigate(`blog-post/${post.slug}`)}>
+                    <Link key={post.id} to={`/blog/${post.slug}`}>
+                        <Card className="!p-0 flex flex-col cursor-pointer group hover:shadow-xl transition-shadow">
                         <img src={post.imageUrl} alt={post.title} className="w-full h-48 object-cover rounded-t-xl" />
                         <div className="p-6 flex flex-col flex-grow">
                              <p className="text-sm font-semibold text-[var(--accent-color)]">{post.category}</p>
@@ -31,10 +28,11 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigate }) => {
                             </div>
                         </div>
                     </Card>
+                    </Link>
                 ))}
             </div>
         </div>
     );
 };
 
-export default BlogPage;
+export default BlogPage;

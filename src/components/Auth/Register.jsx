@@ -67,94 +67,80 @@ const Register = () => {
     setLoading(true);
     setError(null);
     
+    // Validaciones de formulario
+    if (!formData.name.trim()) {
+      setError('Por favor, ingrese su nombre completo.');
+      setLoading(false);
+      return;
+    }
+    
+    if (formData.name.trim().length < 2) {
+      setError('Su nombre debe tener al menos 2 caracteres.');
+      setLoading(false);
+      return;
+    }
+    
+    if (!formData.email.trim()) {
+      setError('Por favor, ingrese su correo electrónico.');
+      setLoading(false);
+      return;
+    }
+    
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setError('Por favor, ingrese un correo electrónico válido.');
+      setLoading(false);
+      return;
+    }
+    
+    if (!formData.password) {
+      setError('Por favor, ingrese una contraseña.');
+      setLoading(false);
+      return;
+    }
+    
+    if (formData.password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres.');
+      setLoading(false);
+      return;
+    }
+    
+    if (!formData.confirmPassword) {
+      setError('Por favor, confirme su contraseña.');
+      setLoading(false);
+      return;
+    }
+    
+    if (formData.password !== formData.confirmPassword) {
+      setError('Las contraseñas no coinciden.');
+      setLoading(false);
+      return;
+    }
+    
+    // Validación adicional para el código de referido si se proporciona
+    if (formData.referralCode && formData.referralCode.length < 3) {
+      setError('El código de referido debe tener al menos 3 caracteres.');
+      setLoading(false);
+      return;
+    }
+    
     try {
-      // Validaciones básicas
-      if (!formData.name.trim()) {
-        throw new Error('El nombre es obligatorio');
+      const result = await register({
+        name: formData.name.trim(),
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password,
+        referralCode: formData.referralCode.trim()
+      });
+      
+      if (result.success) {
+        toast.success('¡Registro exitoso! Bienvenido al sistema.');
+        navigate('/dashboard');
+      } else {
+        throw new Error(result.error?.message || 'Error al registrarse. Intente nuevamente.');
       }
-      
-      if (!formData.email.trim()) {
-        throw new Error('El correo electrónico es obligatorio');
-      }
-      
-      if (!formData.password) {
-        throw new Error('La contraseña es obligatoria');
-      }
-      
-      if (formData.password.length < 6) {
-        throw new Error('La contraseña debe tener al menos 6 caracteres');
-      }
-      
-      if (formData.password !== formData.confirmPassword) {
-        throw new Error('Las contraseñas no coinciden');
-      }
-      
-      console.log('Intentando registrar usuario:', formData.email);
-      
-      // Registrar usuario con manejo de reintentos
-      const registerWithRetry = async (retries = 2) => {
-        try {
-          const result = await register({
-            name: formData.name,
-            email: formData.email,
-            password: formData.password,
-            referralCode: formData.referralCode
-          });
-          
-          return result;
-        } catch (error) {
-          if (retries > 0 && (error.message?.includes('network') || !error.response)) {
-            // Esperar antes de reintentar (backoff exponencial)
-            const delay = 1000 * (3 - retries);
-            console.log(`Reintentando registro en ${delay}ms...`);
-            await new Promise(resolve => setTimeout(resolve, delay));
-            return registerWithRetry(retries - 1);
-          }
-          
-          throw error;
-        }
-      };
-      
-      const result = await registerWithRetry();
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Error al registrar usuario');
-      }
-      
-      console.log('Registro exitoso');
-      toast.success('Registro exitoso. ¡Bienvenido!');
-      
-      // Redirigir al usuario al dashboard
-      navigate('/dashboard');
     } catch (err) {
       console.error('Error en registro:', err);
-      
-      // Mensajes de error mejorados
-      let errorMessage;
-      
-      if (err.response) {
-        // Error del servidor
-        const status = err.response.status;
-        if (status === 409) {
-          errorMessage = 'Este correo electrónico ya está registrado.';
-        } else if (status === 422) {
-          errorMessage = 'Datos de registro inválidos. Por favor revisa la información.';
-        } else if (status >= 500) {
-          errorMessage = 'Error en el servidor. Por favor, intenta más tarde.';
-        } else {
-          errorMessage = err.response.data?.message || 'Error en el registro.';
-        }
-      } else if (err.request || !navigator.onLine || err.message.includes('network')) {
-        // Error de red
-        errorMessage = 'Error de conexión. Por favor, verifica tu conexión a internet e intenta nuevamente.';
-        setApiConnected(false);
-      } else {
-        // Otros errores
-        errorMessage = err.message;
-      }
-      
-      setError(errorMessage);
-      toast.error(errorMessage);
+      setError(err.message || 'Error al registrarse. Por favor, intente nuevamente.');
+      toast.error('Error al registrarse. Por favor, intente nuevamente.');
     } finally {
       setLoading(false);
     }

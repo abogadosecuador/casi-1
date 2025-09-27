@@ -11,10 +11,11 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import confetti from 'canvas-confetti';
+import PayPalButton from '../Payment/PayPalButton';
 
 const CheckoutSystem = () => {
   const navigate = useNavigate();
-  const { cartItems, clearCart, getCartTotal } = useCart();
+  const { cartItems, getCartTotal, checkout } = useCart();
   const { user } = useAuth();
   
   const [currentStep, setCurrentStep] = useState(1);
@@ -36,42 +37,28 @@ const CheckoutSystem = () => {
   });
   
   const [paymentMethod, setPaymentMethod] = useState('card');
-  const [cardInfo, setCardInfo] = useState({
-    number: '',
-    name: '',
-    expiry: '',
-    cvv: ''
-  });
 
   const steps = [
     { id: 1, name: 'Carrito', icon: FaShoppingCart },
     { id: 2, name: 'Información', icon: FaUser },
     { id: 3, name: 'Pago', icon: FaCreditCard },
-    { id: 4, name: 'Confirmación', icon: FaCheckCircle }
+    { id: 4, name: 'Confirmación', icon: FaCheckCircle },
   ];
 
   const paymentMethods = [
     { id: 'card', name: 'Tarjeta de Crédito/Débito', icon: FaCreditCard, color: 'blue' },
-    { id: 'paypal', name: 'PayPal', icon: FaPaypal, color: 'indigo' },
-    { id: 'crypto', name: 'Bitcoin/Crypto', icon: FaBitcoin, color: 'orange' },
-    { id: 'bank', name: 'Transferencia Bancaria', icon: FaUniversity, color: 'green' },
+    { id: 'paypal', name: 'PayPal', icon: FaPaypal, color: 'blue' },
+    { id: 'bank', name: 'Transferencia', icon: FaUniversity, color: 'green' },
+    { id: 'whatsapp', name: 'WhatsApp', icon: FaWhatsapp, color: 'green' },
+    { id: 'crypto', name: 'Criptomonedas', icon: FaBitcoin, color: 'yellow' },
     { id: 'mobile', name: 'Pago Móvil', icon: FaMobileAlt, color: 'purple' },
-    { id: 'qr', name: 'Código QR', icon: FaQrcode, color: 'pink' }
   ];
 
-  const promoCodes = {
-    'WELCOME10': 10,
-    'LEGAL20': 20,
-    'VIP30': 30,
-    'FIRST50': 50
-  };
-
-  const calculateSubtotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
+  const calculateSubtotal = () => getCartTotal();
 
   const calculateTax = () => {
-    return calculateSubtotal() * 0.12; // 12% IVA
+    const subtotal = calculateSubtotal();
+    return subtotal * 0.12; // 12% IVA
   };
 
   const calculateTotal = () => {
@@ -82,72 +69,28 @@ const CheckoutSystem = () => {
   };
 
   const applyPromoCode = () => {
-    const code = promoCode.toUpperCase();
-    if (promoCodes[code]) {
-      setDiscount(promoCodes[code]);
-      toast.success(`¡Código aplicado! ${promoCodes[code]}% de descuento`);
+    if (promoCode.toUpperCase() === 'DESCUENTO10') {
+      setDiscount(10);
+      toast.success('¡Descuento del 10% aplicado!');
     } else {
-      toast.error('Código inválido');
+      setDiscount(0);
+      toast.error('Código promocional no válido.');
     }
   };
 
   const validateBillingInfo = () => {
-    const required = ['fullName', 'email', 'phone', 'identification', 'address', 'city'];
-    for (let field of required) {
-      if (!billingInfo[field]) {
-        toast.error(`Por favor complete: ${field}`);
+    const requiredFields = ['fullName', 'email', 'phone', 'identification', 'address', 'city'];
+    for (const field of requiredFields) {
+      if (!billingInfo[field] || billingInfo[field].trim() === '') {
+        toast.error(`El campo "${field}" es obligatorio.`);
         return false;
       }
     }
-    if (!/\S+@\S+\.\S+/.test(billingInfo.email)) {
-      toast.error('Email inválido');
+    if (!/^\S+@\S+\.\S+$/.test(billingInfo.email)) {
+      toast.error('Por favor, introduce un email válido.');
       return false;
     }
     return true;
-  };
-
-  const validateCardInfo = () => {
-    if (paymentMethod !== 'card') return true;
-    
-    if (!cardInfo.number || cardInfo.number.length < 16) {
-      toast.error('Número de tarjeta inválido');
-      return false;
-    }
-    if (!cardInfo.name) {
-      toast.error('Ingrese el nombre del titular');
-      return false;
-    }
-    if (!cardInfo.expiry || !cardInfo.expiry.match(/^\d{2}\/\d{2}$/)) {
-      toast.error('Fecha de expiración inválida (MM/YY)');
-      return false;
-    }
-    if (!cardInfo.cvv || cardInfo.cvv.length < 3) {
-      toast.error('CVV inválido');
-      return false;
-    }
-    return true;
-  };
-
-  const processPayment = async () => {
-    setIsProcessing(true);
-    
-    // Simular procesamiento
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    // Éxito
-    setOrderComplete(true);
-    setCurrentStep(4);
-    clearCart();
-    
-    // Celebración
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
-    
-    toast.success('¡Pago procesado exitosamente!');
-    setIsProcessing(false);
   };
 
   const handleNextStep = async () => {
@@ -161,8 +104,7 @@ const CheckoutSystem = () => {
       if (!validateBillingInfo()) return;
       setCurrentStep(3);
     } else if (currentStep === 3) {
-      if (!validateCardInfo()) return;
-      await processPayment();
+      // Payment is handled by the PayPalButton component
     }
   };
 
@@ -384,55 +326,25 @@ const CheckoutSystem = () => {
         ))}
       </div>
 
-      {/* Formulario de Tarjeta */}
+
+
+      {/* Formulario de Tarjeta de Crédito */}
       {paymentMethod === 'card' && (
-        <div className="bg-gray-50 p-6 rounded-lg space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Número de Tarjeta</label>
-            <input
-              type="text"
-              value={cardInfo.number}
-              onChange={(e) => setCardInfo({...cardInfo, number: e.target.value.replace(/\s/g, '')})}
-              placeholder="1234 5678 9012 3456"
-              maxLength="16"
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium mb-1">Nombre del Titular</label>
-            <input
-              type="text"
-              value={cardInfo.name}
-              onChange={(e) => setCardInfo({...cardInfo, name: e.target.value})}
-              placeholder="JUAN PEREZ"
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
+        <div className="bg-gray-50 p-6 rounded-lg">
+          <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Fecha Exp.</label>
-              <input
-                type="text"
-                value={cardInfo.expiry}
-                onChange={(e) => setCardInfo({...cardInfo, expiry: e.target.value})}
-                placeholder="MM/YY"
-                maxLength="5"
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
+              <label className="block text-sm font-medium mb-1">Número de Tarjeta</label>
+              <input type="text" placeholder="**** **** **** ****" className="w-full px-4 py-2 border rounded-lg" />
             </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-1">CVV</label>
-              <input
-                type="text"
-                value={cardInfo.cvv}
-                onChange={(e) => setCardInfo({...cardInfo, cvv: e.target.value})}
-                placeholder="123"
-                maxLength="4"
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Fecha de Expiración</label>
+                <input type="text" placeholder="MM/AA" className="w-full px-4 py-2 border rounded-lg" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">CVC</label>
+                <input type="text" placeholder="123" className="w-full px-4 py-2 border rounded-lg" />
+              </div>
             </div>
           </div>
         </div>
@@ -441,15 +353,46 @@ const CheckoutSystem = () => {
       {/* Otros métodos de pago */}
       {paymentMethod === 'paypal' && (
         <div className="bg-blue-50 p-6 rounded-lg text-center">
-          <FaPaypal className="text-6xl text-blue-600 mx-auto mb-4" />
-          <p>Serás redirigido a PayPal para completar el pago</p>
+          <PayPalButton
+            amount={calculateTotal().toFixed(2)}
+            onSuccess={async (details) => {
+              console.log('PayPal payment successful:', details);
+              setIsProcessing(true);
+              
+              const result = await checkout('paypal', details);
+
+              setIsProcessing(false);
+
+              if (result.success) {
+                setOrderComplete(true);
+                setCurrentStep(4);
+                confetti({
+                  particleCount: 100,
+                  spread: 70,
+                  origin: { y: 0.6 }
+                });
+              }
+            }}
+            onError={(err) => {
+              console.error('PayPal payment error:', err);
+              toast.error('Ocurrió un error durante el pago con PayPal.');
+            }}
+          />
         </div>
       )}
 
-      {paymentMethod === 'crypto' && (
-        <div className="bg-orange-50 p-6 rounded-lg text-center">
-          <FaBitcoin className="text-6xl text-orange-600 mx-auto mb-4" />
-          <p>Se generará una dirección de Bitcoin para el pago</p>
+      {paymentMethod === 'whatsapp' && (
+        <div className="bg-green-50 p-6 rounded-lg text-center">
+          <FaQrcode className="text-6xl text-green-600 mx-auto mb-4" />
+          <p>Conecte con nosotros por WhatsApp para completar el pago</p>
+          <a 
+            href="https://wa.me/593988835269" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="mt-4 inline-block px-6 py-3 bg-green-600 text-white rounded-lg"
+          >
+            Contactar por WhatsApp
+          </a>
         </div>
       )}
 

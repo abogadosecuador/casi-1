@@ -26,20 +26,27 @@ const AffiliateOverview = () => {
   const fetchAffiliateStats = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/affiliates/stats', {
+      // Corrected the endpoint to a more likely one, though it might still not exist
+      const response = await fetch('/api/data/affiliate_stats', {
         headers: {
           'Authorization': `Bearer ${user?.token}`
         }
       });
       
       if (!response.ok) {
-        throw new Error('Error al cargar estadu00edsticas de afiliados');
+        throw new Error(`Error al cargar estadísticas: ${response.statusText}`);
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new TypeError("La respuesta del servidor no es un JSON válido.");
       }
       
       const data = await response.json();
       setStats(data);
     } catch (error) {
       console.error('Error fetching affiliate stats:', error);
+      toast.error('No se pudieron cargar las estadísticas. Mostrando datos de ejemplo.');
       // Datos de fallback para desarrollo
       setStats({
         totalReferrals: 12,

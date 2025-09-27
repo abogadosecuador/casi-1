@@ -256,11 +256,21 @@ const CoursePlayerPage = () => {
     if (!currentLesson) return;
     
     try {
-      // En una aplicación real, actualizaríamos en Supabase
-      // const { error } = await dataService.trackLessonProgress(
-      //   user.id, courseId, currentLesson.id, 'completed', 100
-      // );
-      // if (error) throw error;
+      // Actualizar en backend
+      if (user) {
+        const progressData = {
+          user_id: user.id,
+          course_id: courseId,
+          lesson_id: currentLesson.id,
+          completed: true,
+          progress: 100,
+          completed_at: new Date().toISOString()
+        };
+        
+        // En una aplicación real, guardaríamos en Supabase
+        // const { error } = await dataService.create('course_progress', progressData);
+        // if (error) throw error;
+      }
       
       // Actualizar estado local
       const updatedCourse = { ...course };
@@ -305,7 +315,7 @@ const CoursePlayerPage = () => {
       }
     } catch (error) {
       console.error('Error al marcar lección como completada:', error);
-      toast.error('Error al actualizar el progreso');
+      toast.error('Error al actualizar el progreso. Por favor, inténtelo de nuevo.');
     }
   };
   

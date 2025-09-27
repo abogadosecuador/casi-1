@@ -39,6 +39,16 @@ const CommentForm = ({ postId }) => {
         throw new Error('Debe iniciar sesión para comentar');
       }
       
+      // Verificar si el comentario no está vacío
+      if (!comment.trim()) {
+        throw new Error('Por favor, escriba un comentario antes de enviar');
+      }
+      
+      // Verificar longitud mínima del comentario
+      if (comment.trim().length < 3) {
+        throw new Error('El comentario debe tener al menos 3 caracteres');
+      }
+      
       // Verificar si el usuario tiene tokens disponibles
       if (tokensRemaining <= 0) {
         throw new Error('No tiene tokens disponibles. Por favor recargue.');
@@ -57,7 +67,7 @@ const CommentForm = ({ postId }) => {
           { 
             post_id: postId, 
             user_id: user.id, 
-            content: comment, 
+            content: comment.trim(), 
             attachments: attachments.length > 0 ? attachments : null,
             created_at: new Date().toISOString() 
           }

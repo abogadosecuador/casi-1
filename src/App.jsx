@@ -5,7 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { ModuleProvider } from './context/ModuleContext';
 import { Toaster } from 'react-hot-toast';
-import HelmetWrapper from './components/HelmetWrapper';
+import HelmetWrapper from './components/Common/HelmetWrapper';
 
 // Middleware de autenticación
 import { 
@@ -24,6 +24,7 @@ import LoadingSpinner from './components/Common/LoadingSpinner';
 import HomePage from './components/Home/HomePage';
 import Contact from './components/Contact/Contact';
 import Blog from './components/Blog/Blog';
+import ForumHome from './components/Forum/ForumHome';
 import BlogArticle from './components/Blog/BlogArticle';
 import Services from './components/Services/ServicesPage';
 import AboutPage from './components/About/AboutPage';
@@ -78,11 +79,13 @@ import ServicioCivilPage from './pages/ServicioCivilPage';
 import ServicioTransitoPage from './pages/ServicioTransitoPage';
 import ServicioComercialPage from './pages/ServicioComercialPage';
 import ServicioAduaneroPage from './pages/ServicioAduaneroPage';
+import ServicioLaboralPage from './pages/ServicioLaboralPage';
 
 // Páginas de error
 import NotFoundPage from './components/Common/NotFoundPage';
 import UnauthorizedPage from './components/Common/UnauthorizedPage';
 import ServerErrorPage from './components/Common/ServerErrorPage';
+import PlaceholderPage from './components/Common/PlaceholderPage';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -105,18 +108,22 @@ function App() {
       <CartProvider>
         <ModuleProvider>
     <ThemeProvider>
+      <HelmetWrapper>
             <div className="App min-h-screen bg-background-primary text-text-primary">
         <Navbar />
         <main className="flex-1">
           <Routes>
                   {/* Rutas públicas (visitantes) */}
             <Route path="/" element={<HomePage />} />
-                  <Route path="/servicios" element={<Services />} />
+            <Route path="/servicios" element={<Services />} />
+
+
                   <Route path="/servicios/penal" element={<ServicioPenalPage />} />
                   <Route path="/servicios/civil" element={<ServicioCivilPage />} />
                   <Route path="/servicios/comercial" element={<ServicioComercialPage />} />
                   <Route path="/servicios/transito" element={<ServicioTransitoPage />} />
-                  <Route path="/servicios/aduanero" element={<ServicioAduaneroPage />} />
+                  <Route path="/servicios/aduanero" element={<ServicioAduaneroPage />} />\n
+                  <Route path="/servicios/laboral" element={<ServicioLaboralPage />} />\n
                   <Route path="/sobre-nosotros" element={<AboutPage />} />
                   <Route path="/contacto" element={<Contact />} />
                   <Route path="/blog" element={<Blog />} />
@@ -130,6 +137,9 @@ function App() {
                   <Route path="/politicas-privacidad" element={<PrivacyPolicy />} />
                   <Route path="/terminos-condiciones" element={<TerminosCondiciones />} />
                   <Route path="/seguridad" element={<Seguridad />} />
+                  <Route path="/newsletter" element={<Blog />} />
+                  <Route path="/forum" element={<ForumHome />} />
+                  <Route path="/catalog" element={<UnifiedStore />} />
                   
                   {/* Rutas de autenticación (solo visitantes) */}
                   <Route path="/login" element={
@@ -187,7 +197,22 @@ function App() {
                   } />
                   <Route path="/dashboard/referidos" element={
                     <ClientRoute>
-                      <DashboardHome />
+                      <AffiliateOverview />
+                    </ClientRoute>
+                  } />
+                  <Route path="/dashboard/referrals/settings" element={
+                    <ClientRoute>
+                      <PlaceholderPage title="Configuración de Afiliados" />
+                    </ClientRoute>
+                  } />
+                  <Route path="/dashboard/referrals/withdrawals" element={
+                    <ClientRoute>
+                      <PlaceholderPage title="Solicitar Retiro" />
+                    </ClientRoute>
+                  } />
+                  <Route path="/dashboard/referrals/history" element={
+                    <ClientRoute>
+                      <PlaceholderPage title="Historial de Referidos" />
                     </ClientRoute>
                   } />
                   
@@ -295,15 +320,15 @@ function App() {
                   },
                 }}
               />
-      </div>
-      
-      {/* Chat AI Global */}
-      <AIChatSystem />
-    </ThemeProvider>
-        </ModuleProvider>
-      </CartProvider>
-    </AuthProvider>
+            </div>
+            
+
+          </HelmetWrapper>
+        </ThemeProvider>
+      </ModuleProvider>
+    </CartProvider>
+  </AuthProvider>
   );
-}
+};
 
 export default App;

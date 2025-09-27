@@ -71,7 +71,7 @@ const DashboardLayout = () => {
     { name: 'Mis Citas', path: '/dashboard/appointments', icon: <FaCalendarAlt /> },
     { name: 'Mis E-Books', path: '/dashboard/ebooks', icon: <FaBook /> },
     { name: 'Mis Tokens', path: '/dashboard/tokens', icon: <FaCoins /> },
-    { name: 'Mis Referidos', path: '/dashboard/referrals', icon: <FaUsers /> },
+    { name: 'Mis Referidos', path: '/dashboard/referidos', icon: <FaUsers /> },
     { name: 'Historial de Pagos', path: '/dashboard/payments', icon: <FaCreditCard /> },
   ];
   

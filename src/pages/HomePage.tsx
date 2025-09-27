@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale/es';
 import { testimonials } from '../data/testimonialsData';
 import TestimonialsCarousel from '../components/TestimonialsCarousel';
+import NewsletterSignup from '../components/Newsletter/NewsletterSignup';
 import { Page, PublicRoute, CatalogItem } from '../types';
 import { ShieldCheckIcon, CrmIcon, UsersIcon, FinancialsIcon } from '../components/icons/InterfaceIcons';
 
@@ -143,8 +144,21 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </div>
       </section>
 
-      {/* Pricing CTA */}
+      {/* Newsletter Section */}
       <section className="py-20 bg-[var(--background)]">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-4xl font-bold font-serif">Manténgase Informado</h2>
+            <p className="mt-4 text-xl text-[var(--muted-foreground)]">
+              Reciba las últimas actualizaciones legales y consejos profesionales directamente en su correo.
+            </p>
+          </div>
+          <NewsletterSignup className="max-w-md mx-auto" />
+        </div>
+      </section>
+
+      {/* Pricing CTA */}
+      <section className="py-20 bg-[var(--card)]">
         <div className="max-w-4xl mx-auto text-center px-4">
           <h2 className="text-4xl font-bold font-serif">Planes de Suscripción</h2>
           <p className="mt-4 text-xl text-[var(--muted-foreground)]">
@@ -161,4 +175,4 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   );
 };
 
-export default HomePage;
+export default HomePage;

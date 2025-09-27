@@ -25,10 +25,15 @@ const ForumHome = () => {
   const fetchTopics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/forum/topics');
+      const response = await fetch('/api/data/forum_topics');
       
       if (!response.ok) {
-        throw new Error('Error al cargar los temas del foro');
+        throw new Error(`Error al cargar los temas: ${response.statusText}`);
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new TypeError("La respuesta del servidor no es un JSON válido para los temas.");
       }
       
       const data = await response.json();
@@ -36,6 +41,7 @@ const ForumHome = () => {
       setFilteredTopics(data);
     } catch (error) {
       console.error('Error fetching forum topics:', error);
+      toast.error('No se pudieron cargar los temas del foro. Mostrando datos de ejemplo.');
       
       // Datos de fallback para desarrollo
       const fallbackData = [
@@ -159,16 +165,22 @@ const ForumHome = () => {
   
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/forum/categories');
+      const response = await fetch('/api/data/forum_categories');
       
       if (!response.ok) {
-        throw new Error('Error al cargar categorías del foro');
+        throw new Error(`Error al cargar categorías: ${response.statusText}`);
+      }
+      
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new TypeError("La respuesta del servidor no es un JSON válido para las categorías.");
       }
       
       const data = await response.json();
       setCategories(data);
     } catch (error) {
       console.error('Error fetching forum categories:', error);
+      toast.error('No se pudieron cargar las categorías del foro. Mostrando datos de ejemplo.');
       
       // Datos de fallback para desarrollo
       setCategories([

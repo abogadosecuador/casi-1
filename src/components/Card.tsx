@@ -3,14 +3,14 @@ import React from 'react';
 interface CardProps {
   children: React.ReactNode;
   className?: string;
-  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  onClick?: () => void;
 }
 
 const Card: React.FC<CardProps> = ({ children, className = '', onClick }) => {
   return (
-    <div
+    <div 
+      className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 ${className}`}
       onClick={onClick}
-      className={`bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-lg p-6 h-full transition-all duration-300 ${onClick ? 'hover:shadow-xl hover:-translate-y-1' : ''} ${className}`}
     >
       {children}
     </div>

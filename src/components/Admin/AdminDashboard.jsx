@@ -4,7 +4,7 @@ import {
   FaUsers, FaChartLine, FaFileAlt, FaCalendarAlt, FaShoppingCart, 
   FaBook, FaNewspaper, FaCog, FaSignOutAlt, FaPlus, FaEdit, FaTrash,
   FaEye, FaDownload, FaUpload, FaBell, FaEnvelope, FaWhatsapp,
-  FaCreditCard, FaPaypal, FaBitcoin, FaDollarSign, FaGamepad,
+  FaCreditCard, FaPaypal, FaDollarSign, FaGamepad,
   FaGift, FaPercent, FaRocket, FaPalette, FaLayerGroup, FaMagic,
   FaChartPie, FaDatabase, FaShieldAlt, FaUserGraduate, FaTrophy,
   FaComments, FaBullhorn, FaTags, FaClock, FaCheckCircle

@@ -188,9 +188,12 @@ const ServicioTransitoPage = () => {
   };
 
   const handlePayment = (service) => {
+    // Create a serializable version of the service object, excluding the icon
+    const { icon, ...serializableService } = service;
+
     navigate('/checkout', { 
       state: { 
-        service: service,
+        service: serializableService,
         type: 'servicio-transito' 
       } 
     });

@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FaWhatsapp, FaCalendarAlt, FaArrowRight, FaClock, FaCheck, FaStar, FaQuoteLeft } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const ServiceLayout = ({
   title,
@@ -12,6 +13,20 @@ const ServiceLayout = ({
   whatsappText,
   specialties
 }) => {
+  const navigate = useNavigate();
+
+  const handlePayment = (service) => {
+    // The service objects in Laboral.jsx do not have an icon prop, 
+    // but we add the destructuring for consistency and safety.
+    const { icon, ...serializableService } = service;
+    navigate('/checkout', {
+      state: {
+        service: serializableService,
+        type: `servicio-${title.toLowerCase()}`
+      }
+    });
+  };
+
   // Animaciones
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -190,8 +205,8 @@ const ServiceLayout = ({
                   )}
                   
                   <div className="mt-auto space-y-3">
-                    <Link 
-                      to={`/contacto?servicio=${encodeURIComponent(servicio.nombre)}`}
+                    <button 
+                      onClick={() => handlePayment(servicio)}
                       className={`w-full flex items-center justify-center py-2 md:py-3 px-4 rounded-lg font-bold transition-colors ${
                         servicio.destacado
                           ? 'bg-primary-600 hover:bg-primary-700 text-white'
@@ -199,7 +214,7 @@ const ServiceLayout = ({
                       }`}
                     >
                       Contratar
-                    </Link>
+                    </button>
                     <a 
                       href={whatsappLink}
                       target="_blank"

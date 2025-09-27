@@ -1,48 +1,12 @@
 import React from 'react';
 import { SunIcon, MoonIcon, ComputerDesktopIcon } from '@heroicons/react/24/outline';
+import { useTheme } from '../context/ThemeContext';
 
 type Theme = 'light' | 'dark' | 'system';
 
 const ThemeSwitcher: React.FC = () => {
-  const [theme, setTheme] = React.useState<Theme>(() => {
-    const savedTheme = localStorage.getItem('theme') as Theme;
-    return savedTheme || 'system';
-  });
-
+  const { theme, toggleTheme } = useTheme();
   const [isOpen, setIsOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    const root = window.document.documentElement;
-    
-    const applyTheme = (newTheme: Theme) => {
-      if (newTheme === 'system') {
-        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        root.classList.remove('light', 'dark');
-        root.classList.add(systemTheme);
-      } else {
-        root.classList.remove('light', 'dark');
-        root.classList.add(newTheme);
-      }
-    };
-
-    applyTheme(theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  React.useEffect(() => {
-    if (theme === 'system') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const handleChange = () => {
-        const root = window.document.documentElement;
-        const systemTheme = mediaQuery.matches ? 'dark' : 'light';
-        root.classList.remove('light', 'dark');
-        root.classList.add(systemTheme);
-      };
-
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
-    }
-  }, [theme]);
 
   const getIcon = () => {
     switch (theme) {
@@ -50,7 +14,7 @@ const ThemeSwitcher: React.FC = () => {
         return <SunIcon className="h-5 w-5" />;
       case 'dark':
         return <MoonIcon className="h-5 w-5" />;
-      case 'system':
+      default:
         return <ComputerDesktopIcon className="h-5 w-5" />;
     }
   };
@@ -82,7 +46,7 @@ const ThemeSwitcher: React.FC = () => {
               <button
                 key={option.value}
                 onClick={() => {
-                  setTheme(option.value);
+                  toggleTheme();
                   setIsOpen(false);
                 }}
                 className={`flex w-full items-center gap-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 ${

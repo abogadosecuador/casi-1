@@ -106,6 +106,47 @@ const AppointmentScheduler = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Validación de formulario
+    if (!appointmentDetails.name.trim()) {
+      toast.error('Por favor, ingrese su nombre completo.');
+      return;
+    }
+    
+    if (appointmentDetails.name.trim().length < 2) {
+      toast.error('Su nombre debe tener al menos 2 caracteres.');
+      return;
+    }
+    
+    if (!appointmentDetails.email.trim()) {
+      toast.error('Por favor, ingrese su correo electrónico.');
+      return;
+    }
+    
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(appointmentDetails.email)) {
+      toast.error('Por favor, ingrese un correo electrónico válido.');
+      return;
+    }
+    
+    if (!appointmentDetails.phone.trim()) {
+      toast.error('Por favor, ingrese su número de teléfono.');
+      return;
+    }
+    
+    if (!/^\+?[0-9\s\-()]{7,20}$/.test(appointmentDetails.phone)) {
+      toast.error('Por favor, ingrese un número de teléfono válido.');
+      return;
+    }
+    
+    if (!appointmentDetails.reason.trim()) {
+      toast.error('Por favor, describa brevemente la razón de su consulta.');
+      return;
+    }
+    
+    if (appointmentDetails.reason.trim().length < 10) {
+      toast.error('La descripción de su consulta debe tener al menos 10 caracteres.');
+      return;
+    }
+    
     // Verificar que Turnstile estu00e9 completo
     if (!turnstileVerified) {
       toast.error('Por favor, complete la verificaciu00f3n de seguridad');

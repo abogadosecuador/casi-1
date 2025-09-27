@@ -44,7 +44,7 @@ const AILegalChatbot = () => {
       'ubicación': 'Estamos ubicados en Av. Principal 123, Quito, Ecuador. También ofrecemos consultas virtuales.',
       'servicio': 'Ofrecemos servicios en diversas áreas del derecho: penal, civil, tránsito, laboral, administrativo, entre otros.',
       'documento': 'Para revisar un documento, por favor agenda una consulta. Durante la consulta podremos analizar tu caso específico.',
-      'pago': 'Aceptamos pagos por transferencia bancaria, tarjeta de crédito/débito, PayPal y ahora también Binance Pay.'
+      'pago': 'Aceptamos pagos por transferencia bancaria, tarjeta de crédito/débito y PayPal.'
     };
 
     // Simular tiempo de respuesta

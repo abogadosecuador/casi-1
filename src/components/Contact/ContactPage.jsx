@@ -28,6 +28,53 @@ const ContactPage = () => {
     setIsSubmitting(true);
     setSubmitStatus({ type: '', message: '' });
 
+    // Validación básica de formulario
+    if (!formData.name.trim()) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Por favor, ingrese su nombre completo.'
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Por favor, ingrese un correo electrónico válido.'
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.subject.trim()) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Por favor, seleccione un asunto para su consulta.'
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.message.trim()) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Por favor, escriba un mensaje detallando su consulta.'
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Validación adicional para teléfono si se proporciona
+    if (formData.phone && !/^\+?[0-9\s\-()]{7,20}$/.test(formData.phone)) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Por favor, ingrese un número de teléfono válido.'
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     // Simular envío (se implementará con Supabase)
     setTimeout(() => {
       setIsSubmitting(false);

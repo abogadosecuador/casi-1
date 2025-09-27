@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   UsersIcon, 
   CurrencyDollarIcon, 
@@ -11,15 +11,80 @@ import {
   BookOpenIcon
 } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
+import { dataService } from '../../services/apiService';
+import { toast } from 'react-hot-toast';
 
 const AdminDashboard = () => {
   const [selectedTab, setSelectedTab] = useState('overview');
+  const [stats, setStats] = useState({
+    activeClients: { value: 0, change: '+0%' },
+    monthlyRevenue: { value: 0, change: '+0%' },
+    activeCases: { value: 0, change: '+0%' },
+    scheduledAppointments: { value: 0, change: '+0%' }
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch dashboard statistics from backend
+        // In a real implementation, these would be actual API calls
+        // const clients = await dataService.getAll('users');
+        // const payments = await dataService.getAll('payments');
+        // const consultations = await dataService.getAll('consultations');
+        // const appointments = await dataService.getAll('citas');
+        
+        // For now, we'll use mock data to simulate API responses
+        setTimeout(() => {
+          setStats({
+            activeClients: { value: 1234, change: '+12%' },
+            monthlyRevenue: { value: 45678, change: '+8.2%' },
+            activeCases: { value: 89, change: '+5%' },
+            scheduledAppointments: { value: 23, change: '+15%' }
+          });
+          setLoading(false);
+        }, 1000);
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
+        toast.error('Error al cargar los datos del dashboard');
+        setLoading(false);
+      }
+    };
+
+    loadDashboardData();
+  }, []);
 
   const stats = [
-    { name: 'Clientes Activos', value: '1,234', icon: UsersIcon, color: 'bg-blue-500', change: '+12%' },
-    { name: 'Ingresos del Mes', value: '$45,678', icon: CurrencyDollarIcon, color: 'bg-green-500', change: '+8.2%' },
-    { name: 'Casos Activos', value: '89', icon: DocumentTextIcon, color: 'bg-purple-500', change: '+5%' },
-    { name: 'Citas Programadas', value: '23', icon: CalendarIcon, color: 'bg-orange-500', change: '+15%' }
+    { 
+      name: 'Clientes Activos', 
+      value: stats.activeClients.value.toLocaleString(), 
+      icon: UsersIcon, 
+      color: 'bg-blue-500', 
+      change: stats.activeClients.change 
+    },
+    { 
+      name: 'Ingresos del Mes', 
+      value: `${stats.monthlyRevenue.value.toLocaleString()}`, 
+      icon: CurrencyDollarIcon, 
+      color: 'bg-green-500', 
+      change: stats.monthlyRevenue.change 
+    },
+    { 
+      name: 'Casos Activos', 
+      value: stats.activeCases.value.toString(), 
+      icon: DocumentTextIcon, 
+      color: 'bg-purple-500', 
+      change: stats.activeCases.change 
+    },
+    { 
+      name: 'Citas Programadas', 
+      value: stats.scheduledAppointments.value.toString(), 
+      icon: CalendarIcon, 
+      color: 'bg-orange-500', 
+      change: stats.scheduledAppointments.change 
+    }
   ];
 
   const quickActions = [

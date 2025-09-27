@@ -178,7 +178,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate, navigationPaylo
                 <Card>
                     <h2 className="text-xl font-bold mb-4">Seleccionar Método de Pago</h2>
                     <div className="space-y-4">
-                        <p className="text-sm text-[var(--muted-foreground)]">Este es un proceso de pago simulado.</p>
+                        <p className="text-sm text-[var(--muted-foreground)]">Seleccione su método de pago preferido. Los pagos con Bitcoin están temporalmente desactivados.</p>
                         <button onClick={() => handlePayment('Card')} className="w-full flex items-center justify-center gap-2 p-4 text-lg rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">
                             <CreditCardIcon className="h-6 w-6"/> Pagar con Tarjeta
                         </button>
@@ -188,6 +188,11 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate, navigationPaylo
                          <button onClick={() => handlePayment('Transfer')} className="w-full flex items-center justify-center gap-2 p-4 text-lg rounded-lg bg-green-500 text-white font-semibold hover:bg-green-600 transition">
                             <WhatsAppIcon className="h-6 w-6"/> Depósito/Transferencia
                         </button>
+                        <div className="p-4 bg-gray-100 rounded-lg border border-gray-300 opacity-60">
+                            <p className="text-sm text-gray-500 text-center">
+                                ⚠️ Los pagos con Bitcoin/criptomonedas están temporalmente desactivados
+                            </p>
+                        </div>
                     </div>
                 </Card>
             </div>

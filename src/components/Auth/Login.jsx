@@ -15,7 +15,7 @@ const Login = () => {
   const [networkRetry, setNetworkRetry] = useState(false);
   
   const navigate = useNavigate();
-  const { user, setUser } = useAuth();
+  const { user, login } = useAuth();
   
   // Si el usuario ya está autenticado, redirigir al dashboard
   useEffect(() => {
@@ -49,80 +49,51 @@ const Login = () => {
     throw lastError;
   };
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
+    
+    // Validaciones de formulario
+    if (!email.trim()) {
+      setError('Por favor, ingrese su correo electrónico.');
+      setLoading(false);
+      return;
+    }
+    
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('Por favor, ingrese un correo electrónico válido.');
+      setLoading(false);
+      return;
+    }
+    
+    if (!password) {
+      setError('Por favor, ingrese su contraseña.');
+      setLoading(false);
+      return;
+    }
+    
+    if (password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres.');
+      setLoading(false);
+      return;
+    }
+    
     try {
-      // Validación básica
-      if (!email) throw new Error('El correo electrónico es obligatorio');
-      if (!password) throw new Error('La contraseña es obligatoria');
+      const { success, error: authError } = await login(email, password);
 
-      // Iniciar sesión con reintento en caso de error de red
-      console.log('Intentando iniciar sesión con:', email);
-      
-      const response = await executeWithRetry(() => 
-        axios.post('/api/auth/login', {
-          email,
-          password
-        }, {
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        })
-      );
-      
-      if (!response.data.success) {
-        throw new Error(response.data.message || 'Error al iniciar sesión');
-      }
-      
-      const { token, user: userData } = response.data.data;
-      
-      // Guardar token en localStorage
-      localStorage.setItem('authToken', token);
-      
-      // Actualizar contexto de autenticación
-      setUser(userData);
-      
-      if (rememberMe) {
-        localStorage.setItem('rememberMe', 'true');
-      } else {
-        localStorage.removeItem('rememberMe');
-      }
-
-      console.log('Login exitoso, redirigiendo...');
-      toast.success('Inicio de sesión exitoso');
-      
-      // Pequeña espera para asegurar que los datos de sesión se guarden correctamente
-      setTimeout(() => {
+      if (success) {
+        toast.success('¡Inicio de sesión exitoso!');
         navigate('/dashboard');
-      }, 500);
-    } catch (err) {
-      console.error('Error de inicio de sesión:', err);
-      
-      // Mensajes de error mejorados y específicos
-      let errorMessage;
-      
-      if (err.response) {
-        // Error del servidor con respuesta
-        errorMessage = err.response.data.message || 'Error en el servidor. Por favor, intenta más tarde.';
-      } else if (err.request) {
-        // Error de conexión (no se recibió respuesta)
-        errorMessage = 'Error de conexión. Por favor, verifica tu conexión a internet e intenta nuevamente.';
-      } else if (err.message.includes('invalid')) {
-        errorMessage = 'Credenciales inválidas. Por favor, verifica tu correo y contraseña.';
-      } else if (err.message.includes('fetch') || err.message.includes('network') || err.name === 'TypeError') {
-        errorMessage = 'Error de conexión. Por favor, verifica tu conexión a internet e intenta nuevamente.';
       } else {
-        errorMessage = `Error: ${err.message}`;
+        throw new Error(authError || 'Credenciales inválidas.');
       }
-      
-      setError(errorMessage);
-      toast.error(errorMessage);
+    } catch (err) {
+      console.error('Error en login:', err);
+      setError(err.message);
+      toast.error(err.message || 'Error al iniciar sesión.');
     } finally {
       setLoading(false);
-      setNetworkRetry(false);
     }
   };
   
@@ -208,7 +179,7 @@ const Login = () => {
             </div>
 
             <div className="text-sm">
-              <Link to="/recuperar-contrasena" className="font-medium text-blue-600 hover:text-blue-500">
+              <Link to="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">
                 ¿Olvidaste tu contraseña?
               </Link>
             </div>

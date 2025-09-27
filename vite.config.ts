@@ -30,10 +30,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
-          ui: ['@headlessui/react', '@heroicons/react', 'lucide-react'],
-          charts: ['recharts'],
-          forms: ['react-hook-form', 'zod'],
-          utils: ['lodash', 'date-fns', 'uuid'],
+          ui: ['@headlessui/react', '@heroicons/react']
         },
       },
     },
@@ -45,16 +42,9 @@ export default defineConfig({
       'react-router-dom',
       '@headlessui/react',
       '@heroicons/react',
-      'lucide-react',
       'framer-motion',
-      'recharts',
-      'date-fns',
-      'react-hook-form',
-      'zod',
       'axios',
-      'react-hot-toast',
-      'uuid',
-      'lodash',
+      'react-hot-toast'
     ],
   },
 })

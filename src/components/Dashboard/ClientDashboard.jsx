@@ -1,41 +1,136 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaCalendarAlt, FaFileAlt, FaCreditCard, FaUser, FaBell, FaSignOutAlt, FaArrowRight } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaCreditCard, FaUser, FaBell, FaSignOutAlt, FaArrowRight, FaChartBar, FaShoppingCart, FaGraduationCap } from 'react-icons/fa';
+import { dataService } from '../../services/apiService';
+import { toast } from 'react-hot-toast';
 
 const ClientDashboard = () => {
   const [activeTab, setActiveTab] = useState('inicio');
   const [userData, setUserData] = useState({
     nombre: 'Usuario',
     apellido: 'Ejemplo',
-    creditos: 3,
-    consultas: [
-      { id: 1, fecha: '2025-03-05', tipo: 'Derecho Penal', estado: 'Completada' },
-      { id: 2, fecha: '2025-03-10', tipo: 'Derecho Civil', estado: 'Pendiente' }
-    ],
-    citas: [
-      { id: 1, fecha: '2025-03-15T14:00:00', tipo: 'Consulta Inicial', abogado: 'Wilson Ipiales' }
-    ]
+    creditos: 0,
+    consultas: [],
+    citas: [],
+    compras: [],
+    cursos: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalConsultas: 0,
+    totalCursos: 0,
+    totalCompras: 0,
+    totalCitas: 0
   });
 
-  // En una implementación real, esto se conectaría con Supabase
   useEffect(() => {
-    // Simulación de carga de datos del usuario
-    // En implementación real: 
-    // const fetchUserData = async () => {
-    //   const { data, error } = await supabase
-    //     .from('users')
-    //     .select('*')
-    //     .eq('id', userId)
-    //     .single();
-    //   if (data) setUserData(data);
-    // };
-    // fetchUserData();
+    const fetchUserData = async () => {
+      try {
+        setLoading(true);
+        
+        // Simulación de carga de datos del usuario
+        // En implementación real: 
+        // const userResponse = await dataService.getById('users', userId);
+        // const consultasResponse = await dataService.getAll('consultas');
+        // const citasResponse = await dataService.getAll('citas');
+        // const comprasResponse = await dataService.getAll('compras');
+        // const cursosResponse = await dataService.getAll('cursos');
+        
+        // For demo purposes, we'll use sample data with timeout
+        setTimeout(() => {
+          const sampleUserData = {
+            nombre: 'Juan',
+            apellido: 'Pérez',
+            creditos: 3,
+            consultas: [
+              { id: 1, fecha: '2025-03-05', tipo: 'Derecho Penal', estado: 'Completada' },
+              { id: 2, fecha: '2025-03-10', tipo: 'Derecho Civil', estado: 'Pendiente' }
+            ],
+            citas: [
+              { id: 1, fecha: '2025-03-15T14:00:00', tipo: 'Consulta Inicial', abogado: 'Wilson Ipiales' }
+            ],
+            compras: [
+              { id: 1, producto: 'Curso Derecho Penal', fecha: '2025-02-20', estado: 'Completado' }
+            ],
+            cursos: [
+              { id: 1, titulo: 'Derecho Penal Básico', progreso: 75, completado: false }
+            ]
+          };
+          
+          setUserData(sampleUserData);
+          setStats({
+            totalConsultas: sampleUserData.consultas.length,
+            totalCursos: sampleUserData.cursos.length,
+            totalCompras: sampleUserData.compras.length,
+            totalCitas: sampleUserData.citas.length
+          });
+          setLoading(false);
+        }, 1000);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        toast.error('Error al cargar la información del usuario');
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   // Componente para la sección de inicio
   const InicioTab = () => (
     <div>
       <h2 className="text-2xl font-bold mb-6">Bienvenido, {userData.nombre}</h2>
+      
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Consultas Realizadas</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.totalConsultas}</p>
+            </div>
+            <div className="p-3 bg-blue-100 rounded-full">
+              <FaFileAlt className="text-blue-600 text-xl" />
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Cursos Inscritos</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.totalCursos}</p>
+            </div>
+            <div className="p-3 bg-green-100 rounded-full">
+              <FaGraduationCap className="text-green-600 text-xl" />
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-purple-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Compras Realizadas</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.totalCompras}</p>
+            </div>
+            <div className="p-3 bg-purple-100 rounded-full">
+              <FaShoppingCart className="text-purple-600 text-xl" />
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-orange-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Citas Programadas</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.totalCitas}</p>
+            </div>
+            <div className="p-3 bg-orange-100 rounded-full">
+              <FaCalendarAlt className="text-orange-600 text-xl" />
+            </div>
+          </div>
+        </div>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white rounded-xl shadow-md p-6">
@@ -365,6 +460,16 @@ const ClientDashboard = () => {
       </div>
     </div>
   );
+
+  if (loading) {
+    return (
+      <div className="bg-gray-100 min-h-screen py-12">
+        <div className="container mx-auto px-4 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-100 py-12">

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import { useTheme } from './context/ThemeContext';
 import { useCredits } from './context/CreditContext';
 import { useTokens } from './context/TokenContext';
+import { initializeCatalogData } from './data/catalogData';
 
 // Layouts
 import PublicLayout from './layouts/PublicLayout';
@@ -19,12 +20,16 @@ import ContactPage from './pages/ContactPage';
 import ServicesPage from './pages/ServicesPage';
 import PlansPage from './pages/PlansPage';
 import AboutPage from './pages/AboutPage';
-const ServicesLegalPage = lazy(() => import('./pages/ServicesLegalPage'));
-const ForumPage = lazy(() => import('./pages/ForumPage'));
 import BlogPage from './pages/BlogPage';
 import BlogPostPage from './pages/BlogPostPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
+import ProductsPage from './pages/ProductsPage';
+
+// Lazy loaded pages
+const ServicesLegalPage = lazy(() => import('./pages/ServicesLegalPage'));
+const ForumPage = lazy(() => import('./pages/ForumPage'));
+const NewsletterPage = lazy(() => import('./pages/NewsletterPage'));
 
 // Consultation Pages
 const PenalConsultationPage = lazy(() => import('./pages/ConsultationTypes/PenalConsultationPage'));
@@ -75,6 +80,9 @@ function App() {
     } else {
       document.documentElement.classList.remove('dark');
     }
+    
+    // Inicializar datos del catálogo
+    initializeCatalogData();
   }, [theme]);
 
   // Función para determinar el tipo de usuario
@@ -88,7 +96,8 @@ function App() {
 
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
-      <Routes>
+      <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>}>
+        <Routes>
         {/* Rutas públicas */}
         <Route path="/" element={<PublicLayout />}>
           <Route index element={<HomePage />} />
@@ -113,6 +122,9 @@ function App() {
           <Route path="catalog" element={<CatalogPage />} />
           <Route path="courses" element={<CoursesPage />} />
           <Route path="courses/:id" element={<CourseDetailPage />} />
+          <Route path="ebooks" element={<EbooksPage />} />
+          <Route path="newsletter" element={<NewsletterPage />} />
+          <Route path="forum" element={<ForumPage />} />
         </Route>
 
         {/* Rutas del dashboard */}
@@ -180,7 +192,8 @@ function App() {
 
         {/* Ruta por defecto */}
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+        </Routes>
+      </Suspense>
     </div>
   );
 }

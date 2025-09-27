@@ -3,46 +3,46 @@ import { Link, useLocation } from 'react-router-dom';
 import { Disclosure, Menu, Transition, Popover } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon, ChevronDownIcon, UserIcon } from '@heroicons/react/24/outline';
 import { FaUsers, FaHandshake, FaComments, FaGavel, FaBook, FaShieldAlt, FaFileContract, FaFileAlt, FaUserTie, FaWhatsapp, FaPhone, FaEnvelope, FaUserPlus, FaSignInAlt, FaLock } from 'react-icons/fa';
-import { authService, dataService } from '../../services/apiService';
+import { useAuth } from '../../context/AuthContext';
+import ThemeSwitcher from '../ThemeSwitcher';
 
 const mainNavigation = [
   { name: 'Inicio', href: '/', current: false },
   { name: 'Servicios', href: '#', current: false, hasSubmenu: true, icon: <FaGavel className="text-blue-600" /> },
   { name: 'Consultas', href: '#', current: false, hasSubmenu: true, icon: <FaFileAlt className="text-blue-600" /> },
   { name: 'Blog', href: '/blog', current: false, icon: <FaBook className="text-blue-600" /> },
-  { name: 'Foro', href: '/foro', current: false, icon: <FaComments className="text-blue-600" /> },
+  { name: 'Foro', href: '/forum', current: false, icon: <FaComments className="text-blue-600" /> },
   { name: 'Comunidad', href: '#', current: false, hasSubmenu: true, icon: <FaUsers className="text-blue-600" /> },
   { name: 'Contacto', href: '/contacto', current: false, icon: <FaEnvelope className="text-blue-600" /> },
 ];
 
 const serviceSubmenu = [
+  { name: 'Todos los Servicios', href: '/servicios', current: false, icon: <FaGavel className="text-blue-500" /> },
   { name: 'Derecho Penal', href: '/servicios/penal', current: false, icon: <FaGavel className="text-red-500" /> },
   { name: 'Derecho Civil', href: '/servicios/civil', current: false, icon: <FaFileContract className="text-blue-500" /> },
   { name: 'Derecho Comercial', href: '/servicios/comercial', current: false, icon: <FaFileAlt className="text-green-500" /> },
   { name: 'Derecho de Tránsito', href: '/servicios/transito', current: false, icon: <FaFileAlt className="text-yellow-500" /> },
-  { name: 'Derecho Aduanero', href: '/servicios/aduanas', current: false, icon: <FaFileAlt className="text-purple-500" /> },
+  { name: 'Derecho Aduanero', href: '/servicios/aduanero', current: false, icon: <FaFileAlt className="text-indigo-500" /> },
 ];
 
 const consultasSubmenu = [
-  { name: 'Consulta General', href: '/consultas', current: false, icon: <FaFileAlt className="text-blue-500" /> },
-  { name: 'Consultas Civiles', href: '/consultas/civiles', current: false, icon: <FaFileContract className="text-green-500" /> },
-  { name: 'Consultas Penales', href: '/consultas/penales', current: false, icon: <FaGavel className="text-red-500" /> },
-  { name: 'Consultas de Tránsito', href: '/consultas/transito', current: false, icon: <FaFileAlt className="text-yellow-500" /> },
-  { name: 'Consulta con IA', href: '/consulta-ia', current: false, icon: <FaUserTie className="text-purple-500" /> },
+  { name: 'Consulta General', href: '/agendar-cita', current: false, icon: <FaFileContract className="text-blue-500" /> },
+  { name: 'Consulta Penal', href: '/agendar-cita', current: false, icon: <FaGavel className="text-red-500" /> },
+  { name: 'Consulta Civil', href: '/agendar-cita', current: false, icon: <FaFileContract className="text-blue-500" /> },
+  { name: 'Consulta Empresarial', href: '/agendar-cita', current: false, icon: <FaFileAlt className="text-green-500" /> },
+  { name: 'Consulta Digital', href: '/consulta-ia', current: false, icon: <FaUserTie className="text-purple-500" /> },
 ];
 
 const comunidadSubmenu = [
-  { name: 'Programa de Afiliados', href: '/afiliados', current: false, icon: <FaUsers className="text-blue-500" /> },
-  { name: 'Programa de Referidos', href: '/referidos', current: false, icon: <FaHandshake className="text-green-500" /> },
-  { name: 'Testimonios', href: '/testimonios', current: false, icon: <FaComments className="text-yellow-500" /> },
-  { name: 'Noticias', href: '/noticias', current: false, icon: <FaBook className="text-purple-500" /> },
-  { name: 'E-Books', href: '/ebooks', current: false, icon: <FaBook className="text-indigo-500" /> },
+  { name: 'Cursos', href: '/cursos', current: false, icon: <FaUsers className="text-blue-500" /> },
+  { name: 'E-Books', href: '/ebooks', current: false, icon: <FaBook className="text-green-500" /> },
+  { name: 'Newsletter', href: '/blog', current: false, icon: <FaComments className="text-yellow-500" /> },
 ];
 
 // Nuevo submenú para Políticas y Seguridad
 const policySubmenu = [
-  { name: 'Política de Privacidad', href: '/privacidad', current: false, icon: <FaShieldAlt className="text-gray-500" /> },
-  { name: 'Términos y Condiciones', href: '/terminos', current: false, icon: <FaFileContract className="text-gray-500" /> },
+  { name: 'Política de Privacidad', href: '/politicas-privacidad', current: false, icon: <FaShieldAlt className="text-gray-500" /> },
+  { name: 'Términos y Condiciones', href: '/terminos-condiciones', current: false, icon: <FaFileContract className="text-gray-500" /> },
   { name: 'Seguridad', href: '/seguridad', current: false, icon: <FaLock className="text-gray-500" /> },
 ];
 
@@ -51,46 +51,12 @@ function classNames(...classes) {
 }
 
 function Navbar() {
-  const [session, setSession] = useState(null);
+  const { user, isAuthenticated, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
-    // Establecer la sesión inicial
-    const setInitialSession = async () => {
-      try {
-        // Verificar si hay un token en localStorage
-        const token = localStorage.getItem('authToken');
-        if (token) {
-          const { user } = await authService.getCurrentUser();
-          setSession({ user });
-        } else {
-          setSession(null);
-        }
-      } catch (error) {
-        console.error('Error al obtener la sesión inicial:', error);
-        setSession(null);
-      }
-    };
-    setInitialSession();
-
-    // Simplificamos la lógica de escucha de cambios de autenticación
-    const handleAuthChange = () => {
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        authService.getCurrentUser().then(({ user }) => {
-          if (user) setSession({ user });
-        });
-      } else {
-        setSession(null);
-      }
-    };
-
-    // Comprobamos cada 5 segundos si el token cambió
-    const interval = setInterval(handleAuthChange, 5000);
-    
-    // Limpiar el intervalo al desmontar
-    return () => clearInterval(interval);
+    // We no longer need to manually check for auth state since we use the context
   }, []);
 
   const updatedNavigation = mainNavigation.map(item => ({
@@ -208,8 +174,13 @@ function Navbar() {
 
               {/* Right side buttons */}
               <div className="absolute inset-y-0 right-0 flex items-center space-x-1 sm:static sm:space-x-2">
+                {/* Theme Switcher */}
+                <div className="hidden sm:block">
+                  <ThemeSwitcher />
+                </div>
+                
                 {/* Auth buttons */}
-                {session ? (
+                {isAuthenticated ? (
                   <Menu as="div" className="relative ml-3">
                     <div>
                       <Menu.Button className="relative flex rounded-full bg-blue-100 p-1 text-blue-600 hover:bg-blue-200 focus:outline-none">
@@ -244,9 +215,7 @@ function Navbar() {
                         <Menu.Item>
                           {({ active }) => (
                             <button
-                              onClick={async () => {
-                                await authService.signOut();
-                              }}
+                              onClick={logout}
                               className={classNames(
                                 active ? 'bg-blue-50' : '',
                                 'block w-full text-left px-4 py-2 text-sm text-gray-700'
@@ -389,7 +358,7 @@ function Navbar() {
               </div>
               
               {/* Mobile Authentication Buttons */}
-              {!session && (
+              {!isAuthenticated && (
                 <div className="mt-4 pt-4 border-t border-gray-200">
                   <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Mi Cuenta</h3>
                   <div className="grid grid-cols-2 gap-2">
@@ -400,7 +369,7 @@ function Navbar() {
                       <FaSignInAlt className="mr-1" /> Iniciar Sesión
                     </Link>
                     <Link
-                      to="/registro"
+                      to="/register"
                       className="flex items-center justify-center p-2 text-xs font-medium rounded-md text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100"
                     >
                       <FaUserPlus className="mr-1" /> Registrarse
@@ -408,6 +377,14 @@ function Navbar() {
                   </div>
                 </div>
               )}
+              
+              {/* Theme Switcher for mobile */}
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Tema</h3>
+                <div className="flex justify-center">
+                  <ThemeSwitcher />
+                </div>
+              </div>
             </div>
           </Disclosure.Panel>
         </>

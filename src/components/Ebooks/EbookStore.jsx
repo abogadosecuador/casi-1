@@ -37,7 +37,12 @@ const EbookStore = () => {
       const response = await fetch('/api/ebooks');
       
       if (!response.ok) {
-        throw new Error('Error al cargar los e-books');
+        throw new Error(`Error al cargar los e-books: ${response.statusText}`);
+      }
+      
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new TypeError("La respuesta del servidor no es un JSON válido.");
       }
       
       const data = await response.json();
@@ -45,6 +50,7 @@ const EbookStore = () => {
       setFilteredEbooks(data);
     } catch (error) {
       console.error('Error fetching ebooks:', error);
+      toast.error('No se pudieron cargar los e-books. Mostrando datos de ejemplo.');
       // Datos de fallback para desarrollo
       const fallbackData = [
         {
@@ -126,13 +132,19 @@ const EbookStore = () => {
       const response = await fetch('/api/ebooks/categories');
       
       if (!response.ok) {
-        throw new Error('Error al cargar categorías');
+        throw new Error(`Error al cargar categorías: ${response.statusText}`);
+      }
+      
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new TypeError("La respuesta del servidor no es un JSON válido.");
       }
       
       const data = await response.json();
       setCategories(data);
     } catch (error) {
       console.error('Error fetching categories:', error);
+      toast.error('No se pudieron cargar las categorías. Mostrando datos de ejemplo.');
       // Datos de fallback para desarrollo
       setCategories([
         { id: 'all', name: 'Todas las categorías' },
@@ -236,64 +248,58 @@ const EbookStore = () => {
       toast.error('Debes iniciar sesión para comprar e-books');
       return;
     }
-    
+
     if (paymentMethod === 'tokens' && tokens < ebook.tokenPrice) {
       toast.error(`No tienes suficientes tokens. Necesitas ${ebook.tokenPrice} tokens.`);
       return;
     }
-    
+
     try {
-      const response = await fetch('/api/ebooks/purchase', {
+      const response = await fetch('/api/purchase', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${user?.token}`
         },
         body: JSON.stringify({
-          ebookId: ebook.id,
+          item: ebook,
+          itemType: 'ebook',
           paymentMethod
         })
       });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error en la compra del e-book');
-      }
-      
+
       const data = await response.json();
-      
-      // Actualizar lista de e-books del usuario
-      fetchUserEbooks();
-      
-      // Si pagó con tokens, actualizar el saldo
-      if (paymentMethod === 'tokens') {
-        fetchUserTokens();
-      }
-      
-      // Mostrar mensaje de éxito
-      toast.success(`¡E-book "${ebook.title}" adquirido con éxito!`);
-      
-      // Para fines de demo/desarrollo, simular la compra
-      setUserEbooks(prev => {
-        // Verificar si ya existe
-        if (prev.some(book => book.id === ebook.id)) {
-          return prev;
+
+      if (response.ok && data.success) {
+        toast.success(data.message || `¡E-book "${ebook.title}" adquirido con éxito!`);
+
+        // Simular la actualización de la UI como antes
+        fetchUserEbooks();
+        if (paymentMethod === 'tokens') {
+          fetchUserTokens();
         }
         
-        // Agregarlo a la lista
-        return [...prev, {
-          id: ebook.id,
-          title: ebook.title,
-          coverImage: ebook.coverImage,
-          progress: 0,
-          downloadedAt: new Date().toISOString()
-        }];
-      });
-      
-      if (paymentMethod === 'tokens') {
-        setTokens(prev => prev - ebook.tokenPrice);
+        // Para fines de demo/desarrollo, simular la compra
+        setUserEbooks(prev => {
+          if (prev.some(book => book.id === ebook.id)) {
+            return prev;
+          }
+          return [...prev, {
+            id: ebook.id,
+            title: ebook.title,
+            coverImage: ebook.coverImage,
+            progress: 0,
+            downloadedAt: new Date().toISOString()
+          }];
+        });
+
+        if (paymentMethod === 'tokens') {
+          setTokens(prev => prev - ebook.tokenPrice);
+        }
+
+      } else {
+        throw new Error(data.message || 'Error en la compra del e-book');
       }
-      
     } catch (error) {
       console.error('Error purchasing ebook:', error);
       toast.error(error.message || 'Error al procesar la compra. Inténtalo de nuevo.');

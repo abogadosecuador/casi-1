@@ -1,13 +1,12 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { authService } from '../services/apiService';
+import purchasesService from '../services/purchasesService';
 
 // Crear el contexto
 const AuthContext = createContext();
 
-// Hook personalizado para usar el contexto
 export const useAuth = () => useContext(AuthContext);
 
-// Proveedor del contexto
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -36,8 +35,13 @@ export const AuthProvider = ({ children }) => {
           localStorage.removeItem('authToken');
           setUser(null);
         } else if (data && data.user) {
-          console.log('Usuario autenticado:', data.user);
-          setUser(data.user);
+          const { purchases, error: purchasesError } = await purchasesService.getUserPurchases(data.user.id);
+          if (purchasesError) {
+            console.error('Error al obtener las compras del usuario:', purchasesError);
+          }
+          const userWithPurchases = { ...data.user, purchases };
+          console.log('Usuario autenticado:', userWithPurchases);
+          setUser(userWithPurchases);
         }
       } catch (err) {
         console.error('Error al verificar autenticación:', err);
@@ -145,6 +149,27 @@ export const AuthProvider = ({ children }) => {
     // Derivados útiles para UI y permisos
     isAuthenticated: Boolean(user),
     isAdmin: Array.isArray(user?.roles) ? user.roles.includes('admin') : false,
+    hasRole: (role) => {
+      if (!user) return false;
+      // Check if user has roles array or a roles property
+      if (user.roles && Array.isArray(user.roles)) {
+        return user.roles.includes(role);
+      }
+      // Fallback to check if the user object has a specific role property
+      return user.role === role || user.roles === role;
+    },
+    hasPermission: (permission) => {
+      if (!user) return false;
+      // Check if user has permissions array or a permissions property
+      if (user.permissions && Array.isArray(user.permissions)) {
+        return user.permissions.includes(permission);
+      }
+      // For admin role, allow all permissions
+      if (user.roles && Array.isArray(user.roles) && user.roles.includes('admin')) {
+        return true;
+      }
+      return false;
+    },
     hasUserPurchasedCourse: (courseId) => {
       if (!user) return false;
       const purchases = user.purchases || [];

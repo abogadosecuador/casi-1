@@ -206,76 +206,31 @@ const createFallbackClient = () => {
  * Solución definitiva para el problema de "Multiple GoTrueClient instances"
  */
 export const getSupabaseClient = () => {
-  // Usar la configuración global importada al inicio del archivo
-  
-  // Prevenir completamente múltiples instancias si la configuración global lo indica
   if (typeof window !== 'undefined' && window.GLOBAL_SUPABASE_CLIENT) {
     return window.GLOBAL_SUPABASE_CLIENT;
   }
-  
-  // Si ya tenemos una instancia local, devolverla inmediatamente
+
   if (supabaseClientInstance) {
     return supabaseClientInstance;
   }
-  
-  // Generar un identificador único para esta instancia
-  const instanceId = envConfig.VITE_SUPABASE_CLIENT_INSTANCE_ID || 
-                    Date.now().toString(36) + Math.random().toString(36).substring(2);
-  
-  // Si ya hay un proceso de inicialización en curso, devolver cliente temporal para evitar bloqueo
-  if (isInitializing) {
-    console.warn(`Acceso paralelo a Supabase cliente detectado. Devolviendo cliente temporal.`);
-    return createFallbackClient(true); // Cliente temporal
-  }
-  
+
   try {
-    // Establecer flag para evitar inicializaciones simultáneas
-    isInitializing = true;
-    
-    // Configurar opciones de autenticación optimizadas para Cloudflare Workers
     const options = getSupabaseOptions();
-    
-    // SOLUCIÓN CLAVE: Configuración anti-duplicación de GoTrueClient
     options.auth = options.auth || {};
-    options.auth.detectSessionInUrl = false; // Desactivar detección automática en URL
+    options.auth.detectSessionInUrl = false;
     options.auth.persistSession = true;
-    
-    // Utilizar clave de almacenamiento única para esta instancia
-    // Esto evita conflictos con múltiples instancias de GoTrueClient
-    options.auth.storageKey = envConfig.VITE_AUTH_STORAGE_KEY || 
-                             `sb-auth-token-${instanceId}`;
-    
-    console.log(`Inicializando Supabase client único [ID: ${instanceId.substring(0,8)}]`);
-    
-    // Crear cliente una sola vez
+    options.auth.storageKey = envConfig.VITE_AUTH_STORAGE_KEY || `sb-auth-token-${Date.now()}`;
+
     supabaseClientInstance = createClient(supabaseUrl, supabaseKey, options);
-    
-    // Almacenar globalmente para acceso compartido seguro
+
     if (typeof window !== 'undefined') {
       window.GLOBAL_SUPABASE_CLIENT = supabaseClientInstance;
-      window.SUPABASE_CLIENT_INITIALIZED = true;
-      window.SUPABASE_CLIENT_INSTANCE_ID = instanceId;
     }
-    
-    // Monitorear el ciclo de vida de la aplicación para prevenir problemas
-    if (typeof window !== 'undefined') {
-      window.addEventListener('beforeunload', () => {
-        // Limpiar referencias antes de descargar la página
-        window.GLOBAL_SUPABASE_CLIENT = null;
-        window.SUPABASE_CLIENT_INITIALIZED = false;
-      });
-    }
-    
-    // Liberar flag de inicialización
-    isInitializing = false;
-    
+
     return supabaseClientInstance;
   } catch (error) {
     console.error('Error crítico al crear cliente Supabase:', error);
-    isInitializing = false;
-    
-    // En caso de error, crear un cliente simulado que no cause errores
-    return createFallbackClient();
+    return null;
   }
 };
 

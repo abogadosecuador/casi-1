@@ -261,12 +261,21 @@ const CourseSystem = () => {
     }));
   };
 
-  const markLessonAsCompleted = (lessonId) => {
-    setUserProgress(prev => ({
-      ...prev,
-      [lessonId]: 100
-    }));
-    toast.success('¡Lección completada!');
+  const markLessonAsCompleted = async (lessonId) => {
+    try {
+      setUserProgress(prev => ({
+        ...prev,
+        [lessonId]: 100
+      }));
+      
+      // In a real application, we would save the progress to the backend
+      // await dataService.update('user_progress', { lesson_id: lessonId, completed: true });
+      
+      toast.success('¡Lección completada!');
+    } catch (error) {
+      console.error('Error al marcar la lección como completada:', error);
+      toast.error('Error al guardar el progreso');
+    }
   };
 
   const getCourseProgress = (course) => {
@@ -313,7 +322,7 @@ const CourseSystem = () => {
             </div>
             <div className="flex items-center">
               <FaUser className="mr-1" />
-              {course.lessons} lecciones
+              {course.totalLessons} lecciones
             </div>
             <div className="flex items-center">
               <FaStar className="mr-1 text-yellow-400" />

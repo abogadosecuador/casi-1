@@ -118,8 +118,8 @@ const Footer = () => {
           <div className="flex flex-wrap justify-center md:justify-start space-x-4 mb-4 md:mb-0">
             <Link to="/privacidad" className="text-secondary-400 hover:text-primary-500 transition-colors text-sm">Política de Privacidad</Link>
             <Link to="/terminos" className="text-secondary-400 hover:text-primary-500 transition-colors text-sm">Términos y Condiciones</Link>
-            <Link to="/afiliados" className="text-secondary-400 hover:text-primary-500 transition-colors text-sm">Programa de Afiliados</Link>
-            <Link to="/referidos" className="text-secondary-400 hover:text-primary-500 transition-colors text-sm">Referidos</Link>
+            <Link to="/afiliados/registro" className="text-secondary-400 hover:text-primary-500 transition-colors text-sm">Programa de Afiliados</Link>
+            <Link to="/afiliados/registro" className="text-secondary-400 hover:text-primary-500 transition-colors text-sm">Referidos</Link>
           </div>
           <p className="text-secondary-400 text-sm text-center">
             {currentYear} Abg. Wilson Alexander Ipiales Guerron. Todos los derechos reservados.

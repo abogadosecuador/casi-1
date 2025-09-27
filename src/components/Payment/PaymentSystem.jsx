@@ -31,21 +31,23 @@ const PaymentSystem = ({ amount, onPaymentComplete, productName = 'Servicio Lega
       description: 'Visa, Mastercard, American Express'
     },
     {
-      id: 'crypto',
-      name: 'Criptomonedas',
-      icon: FaBitcoin,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50',
-      description: 'Bitcoin, Ethereum, USDT'
-    },
-    {
       id: 'transfer',
       name: 'Transferencia Bancaria',
       icon: FaDollarSign,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
       description: 'Transferencia directa a cuenta bancaria'
-    }
+    },
+    // Criptomonedas completamente desactivadas (sin opción en la UI)
+    // {
+    //   id: 'crypto',
+    //   name: 'Criptomonedas (Desactivado)',
+    //   icon: FaBitcoin,
+    //   color: 'text-gray-400',
+    //   bgColor: 'bg-gray-50',
+    //   description: 'Temporalmente no disponible',
+    //   disabled: true
+    // }
   ];
 
   const handlePayment = async () => {
@@ -62,9 +64,6 @@ const PaymentSystem = ({ amount, onPaymentComplete, productName = 'Servicio Lega
           break;
         case 'card':
           await processCardPayment();
-          break;
-        case 'crypto':
-          await processCryptoPayment();
           break;
         case 'transfer':
           await processBankTransfer();
@@ -105,14 +104,15 @@ const PaymentSystem = ({ amount, onPaymentComplete, productName = 'Servicio Lega
     // Aquí iría la integración real con Stripe u otro procesador
   };
 
-  const processCryptoPayment = async () => {
-    console.log('Procesando pago con criptomonedas...');
-    // Aquí iría la integración real con procesadores de crypto
-  };
-
   const processBankTransfer = async () => {
     if (!uploadedFile) {
       throw new Error('Por favor suba el comprobante de transferencia');
+    }
+    
+    // Validar tipo de archivo
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+    if (!allowedTypes.includes(uploadedFile.type)) {
+      throw new Error('Por favor suba un archivo de imagen (JPG, PNG) o PDF');
     }
     
     console.log('Procesando transferencia bancaria...');
@@ -250,34 +250,7 @@ const PaymentSystem = ({ amount, onPaymentComplete, productName = 'Servicio Lega
           </div>
         );
 
-      case 'crypto':
-        return (
-          <div className="space-y-4">
-            <div className="bg-orange-50 p-4 rounded-lg">
-              <h4 className="font-medium text-orange-900 mb-2">Direcciones de Pago</h4>
-              <div className="space-y-2 text-sm text-orange-800">
-                <div>
-                  <p><strong>Bitcoin (BTC):</strong></p>
-                  <p className="font-mono text-xs break-all">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</p>
-                </div>
-                <div>
-                  <p><strong>Ethereum (ETH):</strong></p>
-                  <p className="font-mono text-xs break-all">0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6</p>
-                </div>
-                <div>
-                  <p><strong>USDT (TRC20):</strong></p>
-                  <p className="font-mono text-xs break-all">TQn9Y2khDD95J42FQtQTdwVVRZqjqXqKqK</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-yellow-50 p-4 rounded-lg">
-              <p className="text-sm text-yellow-800">
-                <strong>Importante:</strong> Envíe exactamente ${amount} USD. 
-                El pago será confirmado automáticamente una vez recibido.
-              </p>
-            </div>
-          </div>
-        );
+      // Crypto payment is completely disabled and not available in the UI
 
       default:
         return (
@@ -306,9 +279,12 @@ const PaymentSystem = ({ amount, onPaymentComplete, productName = 'Servicio Lega
           {paymentMethods.map((method) => (
             <button
               key={method.id}
-              onClick={() => setPaymentMethod(method.id)}
+              onClick={() => !method.disabled && setPaymentMethod(method.id)}
+              disabled={method.disabled}
               className={`p-4 rounded-lg border-2 transition-all ${
-                paymentMethod === method.id
+                method.disabled
+                  ? 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed'
+                  : paymentMethod === method.id
                   ? 'border-blue-500 bg-blue-50'
                   : 'border-gray-200 hover:border-gray-300'
               }`}

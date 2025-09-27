@@ -100,9 +100,14 @@ class BinancePayService {
 
   /**
    * Procesa un pago directamente en la página usando Binance Pay
+   * NOTA: Pagos con Bitcoin/criptomonedas están DESACTIVADOS por el momento
    */
   async processPayment(orderDetails) {
     try {
+      // BITCOIN/CRYPTO PAYMENTS DISABLED - Show error message
+      toast.error('Los pagos con Bitcoin/criptomonedas están temporalmente desactivados. Por favor use otro método de pago.');
+      return { success: false, error: 'Método de pago no disponible' };
+      
       // En desarrollo simulamos un pago exitoso
       if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
         console.log('Simulando pago exitoso en entorno de desarrollo:', orderDetails);

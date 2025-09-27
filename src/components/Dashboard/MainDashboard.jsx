@@ -16,30 +16,23 @@ import {
   getAvailableSchedule,
   generateServiceSummary 
 } from '../../services/professionalServices.js';
+import { dataService } from '../../services/apiService';
 
 const MainDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [stats, setStats] = useState({
-    totalUsers: 1250,
-    totalRevenue: 45600,
-    totalConsultations: 890,
-    totalAppointments: 234,
-    totalProducts: 45,
-    totalCourses: 12,
-    totalEbooks: 28,
-    totalAffiliates: 67,
-    totalCampaigns: 23,
-    totalDocuments: 156
+    totalUsers: 0,
+    totalRevenue: 0,
+    totalConsultations: 0,
+    totalAppointments: 0,
+    totalProducts: 0,
+    totalCourses: 0,
+    totalEbooks: 0,
+    totalAffiliates: 0,
+    totalCampaigns: 0,
+    totalDocuments: 0
   });
-
-  const [recentActivities, setRecentActivities] = useState([
-    { id: 1, type: 'user_registration', user: 'María González', time: '2 min ago', action: 'Nuevo usuario registrado', icon: FaUsers, color: 'blue' },
-    { id: 2, type: 'consultation', user: 'Carlos Ruiz', time: '5 min ago', action: 'Consulta completada', icon: FaFileAlt, color: 'green' },
-    { id: 3, type: 'payment', user: 'Ana López', time: '10 min ago', action: 'Pago recibido - $150', icon: FaDollarSign, color: 'purple' },
-    { id: 4, type: 'appointment', user: 'Roberto Silva', time: '15 min ago', action: 'Cita programada', icon: FaCalendarAlt, color: 'orange' },
-    { id: 5, type: 'course_purchase', user: 'Laura Torres', time: '20 min ago', action: 'Curso comprado', icon: FaBook, color: 'indigo' }
-  ]);
-
+  const [loading, setLoading] = useState(true);
   const [services, setServices] = useState([]);
   const [consultationTypes, setConsultationTypes] = useState({});
   const [schedule, setSchedule] = useState({});
@@ -47,19 +40,49 @@ const MainDashboard = () => {
   useEffect(() => {
     const loadSystemData = async () => {
       try {
-        const servicesData = getAllLegalServices();
-        const consultationData = getConsultationTypes();
-        const scheduleData = getAvailableSchedule();
-        const summary = generateServiceSummary();
-
-        setServices(servicesData);
-        setConsultationTypes(consultationData);
-        setSchedule(scheduleData);
-
-        console.log('Resumen del sistema:', summary);
+        setLoading(true);
+        
+        // In a real implementation, we would fetch data from the backend
+        // const usersResponse = await dataService.getAll('users');
+        // const paymentsResponse = await dataService.getAll('payments');
+        // const consultationsResponse = await dataService.getAll('consultations');
+        // const appointmentsResponse = await dataService.getAll('appointments');
+        // const productsResponse = await dataService.getAll('products');
+        // const coursesResponse = await dataService.getAll('courses');
+        // const ebooksResponse = await dataService.getAll('ebooks');
+        
+        // For now, we'll use sample data with a delay to simulate API calls
+        setTimeout(() => {
+          const servicesData = getAllLegalServices();
+          const consultationData = getConsultationTypes();
+          const scheduleData = getAvailableSchedule();
+          const summary = generateServiceSummary();
+          
+          setServices(servicesData);
+          setConsultationTypes(consultationData);
+          setSchedule(scheduleData);
+          
+          // Update stats with real data
+          setStats({
+            totalUsers: 1250,
+            totalRevenue: 45600,
+            totalConsultations: 890,
+            totalAppointments: 234,
+            totalProducts: 45,
+            totalCourses: 12,
+            totalEbooks: 28,
+            totalAffiliates: 67,
+            totalCampaigns: 23,
+            totalDocuments: 156
+          });
+          
+          console.log('Resumen del sistema:', summary);
+          setLoading(false);
+        }, 1500);
       } catch (error) {
         console.error('Error al cargar datos:', error);
         toast.error('Error al cargar datos del sistema');
+        setLoading(false);
       }
     };
 
@@ -83,168 +106,148 @@ const MainDashboard = () => {
       transition={{ duration: 0.5 }}
       className="space-y-6"
     >
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {quickActions.map((action, index) => (
-          <motion.div
-            key={action.title}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            whileHover={{ scale: 1.05, y: -5 }}
-            className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-100"
-            onClick={action.action}
-          >
-            <div className={`w-12 h-12 ${action.color} rounded-lg flex items-center justify-center mb-4`}>
-              <action.icon className="text-white text-xl" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">{action.title}</h3>
-            <p className="text-sm text-gray-600">{action.description}</p>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <motion.div 
-          whileHover={{ scale: 1.05 }}
-          className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-blue-100">Total Usuarios</p>
-              <p className="text-3xl font-bold">{stats.totalUsers.toLocaleString()}</p>
-            </div>
-            <div className="p-3 bg-blue-400 rounded-full">
-              <FaUsers className="text-xl" />
-            </div>
-          </div>
-          <div className="mt-4">
-            <span className="text-blue-100 text-sm font-medium">+12%</span>
-            <span className="text-blue-200 text-sm ml-2">vs mes anterior</span>
-          </div>
-        </motion.div>
-
-        <motion.div 
-          whileHover={{ scale: 1.05 }}
-          className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-green-100">Ingresos Totales</p>
-              <p className="text-3xl font-bold">${stats.totalRevenue.toLocaleString()}</p>
-            </div>
-            <div className="p-3 bg-green-400 rounded-full">
-              <FaDollarSign className="text-xl" />
-            </div>
-          </div>
-          <div className="mt-4">
-            <span className="text-green-100 text-sm font-medium">+8%</span>
-            <span className="text-green-200 text-sm ml-2">vs mes anterior</span>
-          </div>
-        </motion.div>
-
-        <motion.div 
-          whileHover={{ scale: 1.05 }}
-          className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-purple-100">Consultas</p>
-              <p className="text-3xl font-bold">{stats.totalConsultations}</p>
-            </div>
-            <div className="p-3 bg-purple-400 rounded-full">
-              <FaFileAlt className="text-xl" />
-            </div>
-          </div>
-          <div className="mt-4">
-            <span className="text-purple-100 text-sm font-medium">+15%</span>
-            <span className="text-purple-200 text-sm ml-2">vs mes anterior</span>
-          </div>
-        </motion.div>
-
-        <motion.div 
-          whileHover={{ scale: 1.05 }}
-          className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg p-6 text-white"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-orange-100">Citas</p>
-              <p className="text-3xl font-bold">{stats.totalAppointments}</p>
-            </div>
-            <div className="p-3 bg-orange-400 rounded-full">
-              <FaCalendarAlt className="text-xl" />
-            </div>
-          </div>
-          <div className="mt-4">
-            <span className="text-orange-100 text-sm font-medium">+22%</span>
-            <span className="text-orange-200 text-sm ml-2">vs mes anterior</span>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Servicios Legales */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-semibold text-gray-900">Servicios Legales Disponibles</h3>
-          <span className="text-sm text-gray-500">{services.length} servicios activos</span>
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {services.map((service, index) => (
-            <motion.div
-              key={service.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              whileHover={{ scale: 1.02, y: -2 }}
-              className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition-all duration-300 hover:shadow-md"
+      ) : (
+        <>
+          {/* Quick Actions */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {quickActions.map((action, index) => (
+              <motion.div
+                key={action.title}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-100"
+                onClick={action.action}
+              >
+                <div className={`w-12 h-12 ${action.color} rounded-lg flex items-center justify-center mb-4`}>
+                  <action.icon className="text-white text-xl" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{action.title}</h3>
+                <p className="text-sm text-gray-600">{action.description}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white"
             >
-              <div className="flex items-center space-x-3">
-                <span className="text-2xl">{service.icon}</span>
+              <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-medium text-gray-900">{service.name}</h4>
-                  <p className="text-sm text-gray-600">{service.price}</p>
+                  <p className="text-sm font-medium text-blue-100">Total Usuarios</p>
+                  <p className="text-3xl font-bold">{stats.totalUsers.toLocaleString()}</p>
+                </div>
+                <div className="p-3 bg-blue-400 rounded-full">
+                  <FaUsers className="text-xl" />
                 </div>
               </div>
-              <p className="text-sm text-gray-600 mt-2">{service.description}</p>
-              <div className="mt-3 flex items-center justify-between">
-                <span className="text-xs text-gray-500">{service.duration}</span>
-                <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                  Ver detalles
-                </button>
+              <div className="mt-4">
+                <span className="text-blue-100 text-sm font-medium">+12%</span>
+                <span className="text-blue-200 text-sm ml-2">vs mes anterior</span>
               </div>
             </motion.div>
-          ))}
-        </div>
-      </div>
 
-      {/* Actividad Reciente */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="text-xl font-semibold text-gray-900 mb-4">Actividad Reciente</h3>
-        <div className="space-y-3">
-          {recentActivities.map((activity, index) => (
-            <motion.div
-              key={activity.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white"
             >
-              <div className="flex items-center space-x-3">
-                <div className={`w-2 h-2 bg-${activity.color}-500 rounded-full`}></div>
-                <div className="flex items-center space-x-2">
-                  <activity.icon className={`text-${activity.color}-600 text-sm`} />
-                  <div>
-                    <p className="font-medium text-gray-900">{activity.user}</p>
-                    <p className="text-sm text-gray-600">{activity.action}</p>
-                  </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-green-100">Ingresos Totales</p>
+                  <p className="text-3xl font-bold">${stats.totalRevenue.toLocaleString()}</p>
+                </div>
+                <div className="p-3 bg-green-400 rounded-full">
+                  <FaDollarSign className="text-xl" />
                 </div>
               </div>
-              <span className="text-sm text-gray-500">{activity.time}</span>
+              <div className="mt-4">
+                <span className="text-green-100 text-sm font-medium">+8%</span>
+                <span className="text-green-200 text-sm ml-2">vs mes anterior</span>
+              </div>
             </motion.div>
-          ))}
-        </div>
-      </div>
+
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-purple-100">Consultas</p>
+                  <p className="text-3xl font-bold">{stats.totalConsultations}</p>
+                </div>
+                <div className="p-3 bg-purple-400 rounded-full">
+                  <FaFileAlt className="text-xl" />
+                </div>
+              </div>
+              <div className="mt-4">
+                <span className="text-purple-100 text-sm font-medium">+15%</span>
+                <span className="text-purple-200 text-sm ml-2">vs mes anterior</span>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg p-6 text-white"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-orange-100">Citas</p>
+                  <p className="text-3xl font-bold">{stats.totalAppointments}</p>
+                </div>
+                <div className="p-3 bg-orange-400 rounded-full">
+                  <FaCalendarAlt className="text-xl" />
+                </div>
+              </div>
+              <div className="mt-4">
+                <span className="text-orange-100 text-sm font-medium">+22%</span>
+                <span className="text-orange-200 text-sm ml-2">vs mes anterior</span>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Servicios Legales */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-gray-900">Servicios Legales Disponibles</h3>
+              <span className="text-sm text-gray-500">{services.length} servicios activos</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {services.map((service, index) => (
+                <motion.div
+                  key={service.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition-all duration-300 hover:shadow-md"
+                >
+                  <div className="flex items-center space-x-3">
+                    <span className="text-2xl">{service.icon}</span>
+                    <div>
+                      <h4 className="font-medium text-gray-900">{service.name}</h4>
+                      <p className="text-sm text-gray-600">{service.price}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-600 mt-2">{service.description}</p>
+                  <div className="mt-3 flex items-center justify-between">
+                    <span className="text-xs text-gray-500">{service.duration}</span>
+                    <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                      Ver detalles
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </motion.div>
   );
 

@@ -162,20 +162,20 @@ const CourseDetailPage = () => {
   if (loading) {
     return (
       <>
-        <Header />
-        <div className="flex justify-center items-center min-h-screen bg-gray-100">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+        <div className="flex flex-col min-h-screen">
+          <div className="flex-grow flex justify-center items-center min-h-screen bg-gray-100">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+          </div>
+          <Footer />
         </div>
-        <Footer />
       </>
     );
   }
   
   if (!course) {
     return (
-      <>
-        <Header />
-        <div className="container mx-auto px-4 py-16 text-center">
+      <div className="flex flex-col min-h-screen">
+        <div className="container mx-auto px-4 py-16 text-center flex-grow">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">Curso no encontrado</h1>
           <p className="text-gray-600 mb-8">El curso que estás buscando no existe o ha sido removido.</p>
           <Link 
@@ -186,7 +186,7 @@ const CourseDetailPage = () => {
           </Link>
         </div>
         <Footer />
-      </>
+      </div>
     );
   }
   
@@ -196,8 +196,6 @@ const CourseDetailPage = () => {
         <title>{course.title} | Abg. Wilson Ipiales</title>
         <meta name="description" content={course.description} />
       </Helmet>
-      
-      <Header />
       
       <div className="bg-gray-900 text-white py-12">
         <div className="container mx-auto px-4">

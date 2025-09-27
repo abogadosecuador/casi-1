@@ -274,7 +274,7 @@ export const CartProvider = ({ children }) => {
   };
   
   // Función para procesar el pago
-  const checkout = async (paymentMethod) => {
+  const checkout = async (paymentMethod, paymentDetails = {}) => {
     if (!user) {
       toast.error('Debes iniciar sesión para realizar el pago');
       return { success: false };
@@ -286,45 +286,32 @@ export const CartProvider = ({ children }) => {
     }
     
     try {
-      // Aquí implementarías la lógica para procesar el pago según el método seleccionado
-      // (PayPal, transferencia bancaria, etc.)
-      
-      // Simulación de procesamiento de pago exitoso
-      const transactionDetails = {
-        method: paymentMethod,
-        amount: state.total,
-        timestamp: new Date().toISOString(),
-        invoiceUrl: `/dashboard/compras`
-      };
-      
-      // Procesar cada item según su tipo
-      for (const item of state.items) {
-        if (item.type === 'course') {
-          const { success, error, purchaseId } = await coursesService.purchaseCourse(
-            item.id, 
-            user.id, 
-            transactionDetails
-          );
-          
-          if (!success) {
-            console.error(`Error al procesar la compra del curso ${item.id}:`, error);
-            // Seguir intentando con los demás items en lugar de abortar todo el proceso
-          }
-        }
-        // Implementar lógica para otros tipos de productos (ebooks, tokens, etc.)
+      const response = await fetch('/api/purchase', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user?.token}` // Assuming token is needed
+        },
+        body: JSON.stringify({
+          items: state.items,
+          total: state.total,
+          paymentMethod,
+          paymentDetails // e.g., PayPal transaction ID
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        toast.success(data.message || '¡Compra realizada con éxito!');
+        clearCart(); // Clear cart on successful purchase
+        return { success: true, transactionId: data.transactionId };
+      } else {
+        throw new Error(data.message || 'Error al procesar la compra.');
       }
-      
-      // Limpiar el carrito después de un pago exitoso
-      clearCart();
-      
-      return { 
-        success: true, 
-        message: 'Pago procesado correctamente', 
-        transactionId: `tr-${Date.now()}`
-      };
     } catch (error) {
-      console.error('Error al procesar el pago:', error);
-      toast.error('Error al procesar el pago. Inténtalo de nuevo más tarde.');
+      console.error('Error en el checkout:', error);
+      toast.error(error.message || 'Error al procesar la compra. Inténtalo de nuevo.');
       return { success: false, error };
     }
   };

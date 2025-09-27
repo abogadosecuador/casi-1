@@ -1,41 +1,54 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface CreditContextType {
-    credits: number;
-    addCredits: (amount: number) => void;
-    deductCredits: (amount: number) => boolean; // Returns true if successful
+  credits: number;
+  addCredits: (amount: number) => void;
+  deductCredits: (amount: number) => void;
+  loading: boolean;
 }
 
 const CreditContext = createContext<CreditContextType | undefined>(undefined);
 
-export const CreditProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [credits, setCredits] = useState(1000); // Initial credits
-
-    const addCredits = (amount: number) => {
-        setCredits(prev => prev + amount);
-    };
-
-    const deductCredits = (amount: number): boolean => {
-        if (credits >= amount) {
-            setCredits(prev => prev - amount);
-            return true;
-        }
-        return false;
-    };
-
-    const value = { credits, addCredits, deductCredits };
-
-    return (
-        <CreditContext.Provider value={value}>
-            {children}
-        </CreditContext.Provider>
-    );
+export const useCredits = () => {
+  const context = useContext(CreditContext);
+  if (!context) {
+    throw new Error('useCredits must be used within a CreditProvider');
+  }
+  return context;
 };
 
-export const useCredits = (): CreditContextType => {
-    const context = useContext(CreditContext);
-    if (context === undefined) {
-        throw new Error('useCredits must be used within a CreditProvider');
+export const CreditProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [credits, setCredits] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Load credits from localStorage
+    const savedCredits = localStorage.getItem('userCredits');
+    if (savedCredits) {
+      setCredits(parseInt(savedCredits, 10));
+    } else {
+      // Default credits for new users
+      setCredits(1000);
     }
-    return context;
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    // Save credits to localStorage whenever they change
+    localStorage.setItem('userCredits', credits.toString());
+  }, [credits]);
+
+  const addCredits = (amount: number) => {
+    setCredits(prev => prev + amount);
+  };
+
+  const deductCredits = (amount: number) => {
+    setCredits(prev => Math.max(0, prev - amount));
+  };
+
+  return (
+    <CreditContext.Provider value={{ credits, addCredits, deductCredits, loading }}>
+      {children}
+    </CreditContext.Provider>
+  );
 };

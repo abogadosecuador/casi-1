@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import App from './App.jsx';
-import HelmetWrapper from './components/Common/HelmetWrapper';
+import { HelmetProvider } from 'react-helmet-async';
 import './index.css';
 
 // Configuración global
@@ -25,21 +25,21 @@ function initializeApp() {
     
     root.render(
       <React.StrictMode>
-        <BrowserRouter>
-          <HelmetWrapper>
+        <HelmetProvider>
+          <BrowserRouter>
             <App />
-          </HelmetWrapper>
-          <Toaster 
-            position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: '#363636',
-                color: '#fff',
-              },
-            }}
-          />
-        </BrowserRouter>
+            <Toaster 
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: '#363636',
+                  color: '#fff',
+                },
+              }}
+            />
+          </BrowserRouter>
+        </HelmetProvider>
       </React.StrictMode>
     );
     
