@@ -1,0 +1,79 @@
+========================================
+  COMO EJECUTAR EL SERVIDOR
+========================================
+
+PROBLEMA:
+npm no se reconoce en tu terminal actual.
+
+SOLUCION 1 (MAS FACIL):
+------------------------
+1. Haz doble click en el archivo:
+   EJECUTAR_SERVIDOR.bat
+
+2. Espera que aparezca:
+   "SERVIDOR CORRIENDO EN: http://localhost:5174"
+
+3. Abre tu navegador en:
+   http://localhost:5174
+
+
+SOLUCION 2 (DESDE POWERSHELL):
+--------------------------------
+1. CIERRA Y ABRE PowerShell NUEVA VENTANA
+
+2. Ejecuta estos comandos UNO POR UNO:
+
+   cd c:\Users\Usuario\casi
+   npm run dev
+
+3. Abre navegador en:
+   http://localhost:5174
+
+
+SOLUCION 3 (SI SIGUE SIN FUNCIONAR):
+--------------------------------------
+1. Busca "Variables de entorno" en Windows
+
+2. Variables del sistema -> Path -> Editar
+
+3. Agrega estas rutas (si no estan):
+   C:\Program Files\nodejs\
+   C:\Users\Usuario\AppData\Roaming\npm
+
+4. Reinicia PowerShell
+
+5. Ejecuta:
+   cd c:\Users\Usuario\casi
+   npm run dev
+
+
+VERIFICAR QUE FUNCIONA:
+-----------------------
+1. El servidor debe mostrar:
+   VITE vX.X.X  ready in XXX ms
+   Local:   http://localhost:5174/
+
+2. Abre navegador en esa URL
+
+3. Debes ver la pagina de inicio
+
+
+SI VES ERRORES:
+---------------
+1. Error de modulos:
+   npm install
+
+2. Error de puerto ocupado:
+   El servidor usara otro puerto automaticamente
+
+3. Pagina en blanco:
+   F12 -> Console -> revisar errores
+
+
+CONTACTO:
+---------
+Si tienes problemas, revisa:
+- VERIFICACION_COMPLETA_FINAL.md
+- TODO_FUNCIONAL_LOCALHOST.md
+
+========================================

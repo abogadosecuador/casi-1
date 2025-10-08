@@ -1,14 +1,42 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-hot-toast';
 import { NexusProIcon, GoogleIcon, AppleIcon, FacebookIcon, XIcon } from '../components/icons/InterfaceIcons';
 
-interface LoginPageProps {
-    onLogin: (email?: string) => void;
-    onNavigate: (page: string) => void;
-}
+const LoginPage: React.FC = () => {
+    const navigate = useNavigate();
+    const { login } = useAuth();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
-const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onNavigate }) => {
-    const [email, setEmail] = useState('demo@cliente.com');
-    const [password, setPassword] = useState('password');
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        if (!email || !password) {
+            toast.error('Por favor completa todos los campos');
+            return;
+        }
+        
+        setLoading(true);
+        
+        try {
+            const result = await login(email, password);
+            
+            if (result.success) {
+                toast.success('¡Inicio de sesión exitoso!');
+                navigate('/dashboard');
+            } else {
+                toast.error(result.error || 'Error al iniciar sesión');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            toast.error('Error al iniciar sesión. Verifica tus credenciales.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -21,7 +49,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onNavigate }) => {
                     <p className="text-[var(--muted-foreground)]">Acceda a su portal legal seguro.</p>
                      <p className="text-xs text-[var(--muted-foreground)] mt-2">Prueba con <code className="bg-[var(--background)] p-1 rounded">admin@demo.com</code> para el rol de Admin.</p>
                 </div>
-                <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); onLogin(email); }}>
+                <form className="space-y-6" onSubmit={handleSubmit}>
                     <div>
                         <label htmlFor="email" className="text-sm font-medium text-[var(--foreground)]">
                             Email
@@ -60,9 +88,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onNavigate }) => {
                     <div>
                         <button
                             type="submit"
-                            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium bg-[var(--primary)] text-[var(--primary-foreground)] transition-transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 focus:ring-[var(--primary)]"
+                            disabled={loading}
+                            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium bg-[var(--primary)] text-[var(--primary-foreground)] transition-transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 focus:ring-[var(--primary)] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Iniciar Sesión
+                            {loading ? 'Iniciando...' : 'Iniciar Sesión'}
                         </button>
                     </div>
                 </form>
@@ -76,32 +105,36 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onNavigate }) => {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                      <button
-                        onClick={() => onLogin()}
+                        type="button"
+                        onClick={() => toast.info('OAuth próximamente')}
                         className="w-full flex items-center justify-center py-3 px-4 border border-[var(--border)] rounded-md shadow-sm text-sm font-medium bg-[var(--background)] hover:bg-opacity-80 transition"
                     >
                        <GoogleIcon className="h-5 w-5 mr-2" /> Google
                     </button>
                      <button
-                        onClick={() => onLogin()}
+                        type="button"
+                        onClick={() => toast.info('OAuth próximamente')}
                         className="w-full flex items-center justify-center py-3 px-4 border border-[var(--border)] rounded-md shadow-sm text-sm font-medium bg-[var(--background)] hover:bg-opacity-80 transition"
                     >
                        <AppleIcon className="h-5 w-5 mr-2" /> Apple
                     </button>
                      <button
-                        onClick={() => onLogin()}
+                        type="button"
+                        onClick={() => toast.info('OAuth próximamente')}
                         className="w-full flex items-center justify-center py-3 px-4 border border-[var(--border)] rounded-md shadow-sm text-sm font-medium bg-[var(--background)] hover:bg-opacity-80 transition"
                     >
                        <FacebookIcon className="h-5 w-5 mr-2 text-blue-600" /> Facebook
                     </button>
                      <button
-                        onClick={() => onLogin()}
+                        type="button"
+                        onClick={() => toast.info('OAuth próximamente')}
                         className="w-full flex items-center justify-center py-3 px-4 border border-[var(--border)] rounded-md shadow-sm text-sm font-medium bg-[var(--background)] hover:bg-opacity-80 transition"
                     >
                        <XIcon className="h-5 w-5 mr-2" /> X (Twitter)
                     </button>
                 </div>
                  <p className="text-center text-sm text-[var(--muted-foreground)]">
-                    ¿No tienes cuenta? <a href="#register" onClick={(e) => { e.preventDefault(); onNavigate('register');}} className="font-medium text-[var(--accent-color)] hover:opacity-80">Regístrate ahora</a>
+                    ¿No tienes cuenta? <button type="button" onClick={() => navigate('/register')} className="font-medium text-[var(--accent-color)] hover:opacity-80">Regístrate ahora</button>
                 </p>
             </div>
         </div>

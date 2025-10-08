@@ -5,6 +5,7 @@ import { useTheme } from './context/ThemeContext';
 import { useCredits } from './context/CreditContext';
 import { useTokens } from './context/TokenContext';
 import { initializeCatalogData } from './data/catalogData';
+import CursorGlow from './components/Effects/CursorGlow';
 
 // Layouts
 import PublicLayout from './layouts/PublicLayout';
@@ -18,6 +19,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ContactPage from './pages/ContactPage';
 import ServicesPage from './pages/ServicesPage';
+import ServicesLandingPage from './pages/ServicesLandingPage';
+import TransitoDetailPage from './pages/TransitoDetailPage';
 import PlansPage from './pages/PlansPage';
 import AboutPage from './pages/AboutPage';
 import BlogPage from './pages/BlogPage';
@@ -96,6 +99,9 @@ function App() {
 
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
+      {/* Cursor Glow Effect */}
+      <CursorGlow />
+      
       <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>}>
         <Routes>
         {/* Rutas públicas */}
@@ -104,8 +110,9 @@ function App() {
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
           <Route path="contact" element={<ContactPage />} />
-          <Route path="services" element={<ServicesPage />} />
+          <Route path="services" element={<ServicesLandingPage />} />
           <Route path="services/legal" element={<ServicesLegalPage />} />
+          <Route path="services/derecho-transito" element={<TransitoDetailPage />} />
           <Route path="services/:id" element={<ServiceDetailPage />} />
           <Route path="consultations/penal" element={<PenalConsultationPage />} />
           <Route path="consultations/civil" element={<CivilConsultationPage />} />

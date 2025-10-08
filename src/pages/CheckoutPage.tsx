@@ -5,6 +5,9 @@ import { Purchase, Plan, Product, Service, Course, CatalogItem } from '../types'
 import { CreditCardIcon, PayPalIcon, CheckCircleIcon, WhatsAppIcon, ShoppingCartIcon, UploadCloudIcon } from '../components/icons/InterfaceIcons';
 import { useCart } from '../context/CartContext';
 import { useCredits } from '../context/CreditContext';
+import { useAuth } from '../context/AuthContext';
+import ordersService from '../services/ordersService';
+import { toast } from 'react-toastify';
 
 const USER_PURCHASES_KEY = 'user_purchases';
 
@@ -39,6 +42,7 @@ interface CheckoutPageProps {
 const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate, navigationPayload, clearNavigationPayload }) => {
     const { cart, cartTotal, addToCart, clearCart } = useCart();
     const { credits, deductCredits } = useCredits();
+    const { user } = useAuth();
 
     const [step, setStep] = useState(1);
     const [paymentMethod, setPaymentMethod] = useState<'Card' | 'PayPal' | 'Transfer' | null>(null);
@@ -69,45 +73,62 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate, navigationPaylo
         processOrder(method);
     };
     
-    const processOrder = (method: 'Card' | 'PayPal' | 'Transfer') => {
-        setPaymentMethod(method);
-        
-        // 1. Deduct credits if used
-        if (creditsToUse > 0) {
-            deductCredits(creditsToUse);
+    const processOrder = async (method: 'Card' | 'PayPal' | 'Transfer') => {
+        if (!user?.id) {
+            toast.error('Debes iniciar sesión para completar la compra');
+            onNavigate('login');
+            return;
         }
 
-        // 2. Create Purchase Records
-        const newPurchases: Purchase[] = cart.map(cartItem => ({
-            id: `purchase_${cartItem.id}_${Date.now()}`,
-            itemId: cartItem.id,
-            itemType: cartItem.type,
-            itemName: cartItem.name,
-            amount: cartItem.price * cartItem.quantity,
-            purchaseDate: new Date().toISOString(),
-            paymentMethod: method,
-        }));
+        setPaymentMethod(method);
         
-        // 3. Save to localStorage
-        const allPurchases: Purchase[] = JSON.parse(localStorage.getItem(USER_PURCHASES_KEY) || '[]');
-        localStorage.setItem(USER_PURCHASES_KEY, JSON.stringify([...newPurchases, ...allPurchases]));
+        try {
+            // 1. Crear orden en Supabase
+            const { data: order, error: orderError } = await ordersService.createOrderFromCart(
+                user.id,
+                method,
+                `${method}_${Date.now()}`
+            );
 
-        const purchasedItems = [...cart];
-        
-        // 4. Clear cart and move to confirmation
-        clearCart();
-        setStep(2);
-
-        // 5. Redirect after a delay
-        setTimeout(() => {
-            const hasService = purchasedItems.some(item => item.type === 'service' || item.type === 'consulta');
-            if (hasService) {
-                const serviceItem = purchasedItems.find(item => item.type === 'service' || item.type === 'consulta');
-                onNavigate('calendar', { preselectedService: serviceItem?.id, fromCheckout: true });
-            } else {
-                onNavigate('dashboard');
+            if (orderError || !order) {
+                throw orderError || new Error('Error al crear orden');
             }
-        }, 3000);
+
+            // 2. Procesar pago según el método
+            let paymentResult;
+            if (method === 'Card') {
+                paymentResult = await ordersService.processStripePayment(order.id, 'pm_test');
+            } else if (method === 'PayPal') {
+                paymentResult = await ordersService.processPayPalPayment(order.id, `PP_${Date.now()}`);
+            } else {
+                // Transfer - marcar como pendiente
+                await ordersService.updateOrderStatus(order.id, 'pending');
+                paymentResult = { success: true };
+            }
+
+            if (!paymentResult.success) {
+                throw new Error('Error al procesar el pago');
+            }
+
+            // 3. Deduct credits if used
+            if (creditsToUse > 0) {
+                deductCredits(creditsToUse);
+            }
+
+            // 4. Clear local cart
+            clearCart();
+            setStep(2);
+
+            // 5. Redirect after delay
+            setTimeout(() => {
+                onNavigate('dashboard/my-purchases');
+            }, 3000);
+
+            toast.success('¡Compra realizada exitosamente!');
+        } catch (error) {
+            console.error('Error al procesar orden:', error);
+            toast.error('Error al procesar la compra. Por favor intenta nuevamente.');
+        }
     }
     
     if (cart.length === 0 && step === 1) {

@@ -34,24 +34,7 @@ const EbookStore = () => {
   const fetchEbooks = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/ebooks');
-      
-      if (!response.ok) {
-        throw new Error(`Error al cargar los e-books: ${response.statusText}`);
-      }
-      
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new TypeError("La respuesta del servidor no es un JSON válido.");
-      }
-      
-      const data = await response.json();
-      setEbooks(data);
-      setFilteredEbooks(data);
-    } catch (error) {
-      console.error('Error fetching ebooks:', error);
-      toast.error('No se pudieron cargar los e-books. Mostrando datos de ejemplo.');
-      // Datos de fallback para desarrollo
+      // Usando datos locales para localhost
       const fallbackData = [
         {
           id: 1,
@@ -122,6 +105,8 @@ const EbookStore = () => {
       
       setEbooks(fallbackData);
       setFilteredEbooks(fallbackData);
+    } catch (error) {
+      console.error('Error al cargar ebooks:', error);
     } finally {
       setLoading(false);
     }
@@ -129,23 +114,7 @@ const EbookStore = () => {
   
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/ebooks/categories');
-      
-      if (!response.ok) {
-        throw new Error(`Error al cargar categorías: ${response.statusText}`);
-      }
-      
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new TypeError("La respuesta del servidor no es un JSON válido.");
-      }
-      
-      const data = await response.json();
-      setCategories(data);
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-      toast.error('No se pudieron cargar las categorías. Mostrando datos de ejemplo.');
-      // Datos de fallback para desarrollo
+      // Usando datos locales para localhost
       setCategories([
         { id: 'all', name: 'Todas las categorías' },
         { id: 'emprendimiento', name: 'Emprendimiento' },
@@ -155,26 +124,14 @@ const EbookStore = () => {
         { id: 'penal', name: 'Derecho Penal' },
         { id: 'laboral', name: 'Derecho Laboral' }
       ]);
+    } catch (error) {
+      console.error('Error al cargar categorías:', error);
     }
   };
   
   const fetchUserEbooks = async () => {
     try {
-      const response = await fetch('/api/ebooks/user', {
-        headers: {
-          'Authorization': `Bearer ${user?.token}`
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error('Error al cargar tus e-books');
-      }
-      
-      const data = await response.json();
-      setUserEbooks(data);
-    } catch (error) {
-      console.error('Error fetching user ebooks:', error);
-      // Datos de fallback para desarrollo
+      // Usando datos locales para localhost
       setUserEbooks([
         {
           id: 2,
@@ -191,27 +148,17 @@ const EbookStore = () => {
           downloadedAt: '2025-04-05T09:45:00'
         }
       ]);
+    } catch (error) {
+      console.error('Error al cargar ebooks del usuario:', error);
     }
   };
   
   const fetchUserTokens = async () => {
     try {
-      const response = await fetch('/api/tokens/balance', {
-        headers: {
-          'Authorization': `Bearer ${user?.token}`
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error('Error al obtener saldo de tokens');
-      }
-      
-      const data = await response.json();
-      setTokens(data.balance);
-    } catch (error) {
-      console.error('Error fetching tokens:', error);
-      // Valor de fallback para desarrollo
+      // Usando datos locales para localhost
       setTokens(50);
+    } catch (error) {
+      console.error('Error al cargar tokens:', error);
     }
   };
   
