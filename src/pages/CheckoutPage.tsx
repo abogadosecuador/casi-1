@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Card from '../components/Card';
-import { Page, PublicRoute } from '../types';
-import { Purchase, Plan, Product, Service, Course, CatalogItem } from '../types';
 import { CreditCardIcon, PayPalIcon, CheckCircleIcon, WhatsAppIcon, ShoppingCartIcon, UploadCloudIcon } from '../components/icons/InterfaceIcons';
 import { useCart } from '../context/CartContext';
 import { useCredits } from '../context/CreditContext';
 import { useAuth } from '../context/AuthContext';
 import ordersService from '../services/ordersService';
 import { toast } from 'react-toastify';
-
-const USER_PURCHASES_KEY = 'user_purchases';
 
 const TransferModal = ({onClose, onConfirm}) => (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -32,14 +29,8 @@ const TransferModal = ({onClose, onConfirm}) => (
     </div>
 );
 
-
-interface CheckoutPageProps {
-  onNavigate: (page: Page | PublicRoute | string, payload?: any) => void;
-  navigationPayload?: { item: CatalogItem, itemType: 'service' | 'product' | 'course' | 'plan' | 'consulta' | 'ebook' };
-  clearNavigationPayload: () => void;
-}
-
-const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate, navigationPayload, clearNavigationPayload }) => {
+const CheckoutPage: React.FC = () => {
+    const navigate = useNavigate();
     const { cart, cartTotal, addToCart, clearCart } = useCart();
     const { credits, deductCredits } = useCredits();
     const { user } = useAuth();
@@ -48,14 +39,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate, navigationPaylo
     const [paymentMethod, setPaymentMethod] = useState<'Card' | 'PayPal' | 'Transfer' | null>(null);
     const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
     const [creditsToUse, setCreditsToUse] = useState(0);
-    
-    // Effect to add item from navigation payload to cart
-    useEffect(() => {
-        if (navigationPayload?.item) {
-            addToCart(navigationPayload.item, navigationPayload.itemType);
-            clearNavigationPayload();
-        }
-    }, [navigationPayload, addToCart, clearNavigationPayload]);
     
     const creditValue = 0.01; // 1 credit = $0.01
     const maxCreditsForOrder = Math.min(credits, Math.floor(cartTotal / creditValue));

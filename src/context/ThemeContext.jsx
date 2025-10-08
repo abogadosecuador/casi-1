@@ -11,27 +11,31 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState('light');
-  const [primaryColor, setPrimaryColor] = useState('blue');
+  const [theme, setTheme] = useState(() => {
+    // Inicializar desde localStorage o usar 'light' por defecto
+    return localStorage.getItem('theme') || 'light';
+  });
+  const [primaryColor, setPrimaryColor] = useState(() => {
+    return localStorage.getItem('primaryColor') || 'blue';
+  });
 
-  // Cargar tema desde localStorage al inicializar
+  // Aplicar tema al documento cuando cambia
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    const savedColor = localStorage.getItem('primaryColor') || 'blue';
+    document.documentElement.setAttribute('data-theme', theme);
     
-    setTheme(savedTheme);
-    setPrimaryColor(savedColor);
-    
-    // Aplicar tema al documento
-    document.documentElement.setAttribute('data-theme', savedTheme);
-  }, []);
+    // También agregar/remover la clase 'dark' para Tailwind CSS
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
 
   // Función para cambiar tema
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
   };
 
   // Función para cambiar color primario

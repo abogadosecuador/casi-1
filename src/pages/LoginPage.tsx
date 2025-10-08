@@ -106,28 +106,28 @@ const LoginPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                      <button
                         type="button"
-                        onClick={() => toast.info('OAuth próximamente')}
+                        onClick={() => toast('OAuth próximamente')}
                         className="w-full flex items-center justify-center py-3 px-4 border border-[var(--border)] rounded-md shadow-sm text-sm font-medium bg-[var(--background)] hover:bg-opacity-80 transition"
                     >
                        <GoogleIcon className="h-5 w-5 mr-2" /> Google
                     </button>
                      <button
                         type="button"
-                        onClick={() => toast.info('OAuth próximamente')}
+                        onClick={() => toast('OAuth próximamente')}
                         className="w-full flex items-center justify-center py-3 px-4 border border-[var(--border)] rounded-md shadow-sm text-sm font-medium bg-[var(--background)] hover:bg-opacity-80 transition"
                     >
                        <AppleIcon className="h-5 w-5 mr-2" /> Apple
                     </button>
                      <button
                         type="button"
-                        onClick={() => toast.info('OAuth próximamente')}
+                        onClick={() => toast('OAuth próximamente')}
                         className="w-full flex items-center justify-center py-3 px-4 border border-[var(--border)] rounded-md shadow-sm text-sm font-medium bg-[var(--background)] hover:bg-opacity-80 transition"
                     >
                        <FacebookIcon className="h-5 w-5 mr-2 text-blue-600" /> Facebook
                     </button>
                      <button
                         type="button"
-                        onClick={() => toast.info('OAuth próximamente')}
+                        onClick={() => toast('OAuth próximamente')}
                         className="w-full flex items-center justify-center py-3 px-4 border border-[var(--border)] rounded-md shadow-sm text-sm font-medium bg-[var(--background)] hover:bg-opacity-80 transition"
                     >
                        <XIcon className="h-5 w-5 mr-2" /> X (Twitter)

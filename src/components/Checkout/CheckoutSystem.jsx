@@ -4,7 +4,7 @@ import {
   FaCreditCard, FaPaypal, FaBitcoin, FaLock, FaCheckCircle,
   FaShippingFast, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt,
   FaArrowLeft, FaArrowRight, FaShoppingCart, FaPercent,
-  FaWallet, FaMobileAlt, FaQrcode, FaUniversity, FaTimes
+  FaWallet, FaMobileAlt, FaQrcode, FaUniversity, FaTimes, FaWhatsapp
 } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +15,7 @@ import PayPalButton from '../Payment/PayPalButton';
 
 const CheckoutSystem = () => {
   const navigate = useNavigate();
-  const { cartItems, getCartTotal, checkout } = useCart();
+  const { cartItems = [], getCartTotal, checkout } = useCart();
   const { user } = useAuth();
   
   const [currentStep, setCurrentStep] = useState(1);

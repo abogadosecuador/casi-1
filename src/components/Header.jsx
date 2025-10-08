@@ -1,15 +1,16 @@
-import { Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import { Fragment, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import { FaWhatsapp, FaPhone, FaUser, FaCalendarAlt, FaNewspaper, FaGavel, FaHome, FaEnvelope, FaBook } from 'react-icons/fa';
-import Navigation from './Navigation/Navigation';
+import { Bars3Icon, XMarkIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
+import { FaWhatsapp, FaPhone, FaUser, FaCalendarAlt, FaNewspaper, FaGavel, FaHome, FaEnvelope, FaBook, FaShoppingCart } from 'react-icons/fa';
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
 const navigation = [
   { name: 'Inicio', href: '/', current: true, icon: <FaHome className="mr-1" /> },
   { name: 'Servicios', href: '/servicios', current: false, icon: <FaGavel className="mr-1" /> },
   { name: 'Consultas', href: '/consultas', current: false, icon: <FaUser className="mr-1" /> },
-  { name: 'Blog', href: '/blog', current: false, icon: <FaNewspaper className="mr-1" /> },
+  { name: 'Tienda', href: '/tienda', current: false, icon: <FaShoppingCart className="mr-1" /> },
   { name: 'Noticias', href: '/noticias', current: false, icon: <FaBook className="mr-1" /> },
   { name: 'E-Books', href: '/ebooks', current: false, icon: <FaBook className="mr-1" /> },
   { name: 'Contacto', href: '/contacto', current: false, icon: <FaEnvelope className="mr-1" /> },
@@ -21,6 +22,11 @@ function classNames(...classes) {
 }
 
 export default function Header() {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const { cart, cartTotal, removeFromCart } = useCart();
+  const [showCart, setShowCart] = useState(false);
+
   return (
     <Disclosure as="nav" className="bg-white shadow-lg">
       {({ open }) => (
@@ -68,6 +74,69 @@ export default function Header() {
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                {/* Carrito de Compras */}
+                <div className="relative mr-4">
+                  <button
+                    onClick={() => setShowCart(!showCart)}
+                    className="relative p-2 text-gray-700 hover:text-blue-700 focus:outline-none"
+                  >
+                    <ShoppingCartIcon className="h-6 w-6" />
+                    {cart.length > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        {cart.length}
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Dropdown del Carrito */}
+                  {showCart && (
+                    <div className="absolute right-0 z-50 mt-2 w-80 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <div className="p-4">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Carrito de Compras</h3>
+                        {cart.length === 0 ? (
+                          <p className="text-gray-500">Tu carrito está vacío</p>
+                        ) : (
+                          <>
+                            <div className="space-y-3 max-h-60 overflow-y-auto">
+                              {cart.map((item) => (
+                                <div key={item.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                  <div className="flex-1">
+                                    <p className="font-medium text-gray-900">{item.name}</p>
+                                    <p className="text-sm text-gray-600">
+                                      Cantidad: {item.quantity} x ${item.price.toFixed(2)}
+                                    </p>
+                                  </div>
+                                  <button
+                                    onClick={() => removeFromCart(item.id)}
+                                    className="text-red-600 hover:text-red-800 ml-2"
+                                  >
+                                    <XMarkIcon className="h-4 w-4" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="border-t pt-4 mt-4">
+                              <div className="flex justify-between items-center mb-4">
+                                <span className="font-semibold">Total:</span>
+                                <span className="font-bold text-lg">${cartTotal.toFixed(2)}</span>
+                              </div>
+                              <button
+                                onClick={() => {
+                                  setShowCart(false);
+                                  navigate('/checkout');
+                                }}
+                                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+                              >
+                                Proceder al Pago
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex items-center space-x-2">
                   <a
                     href="https://wa.me/593988835269?text=Hola%20Abg.%20Wilson,%20me%20gustaría%20consultar%20sobre%20sus%20servicios%20legales."
@@ -116,26 +185,63 @@ export default function Header() {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            to="/dashboard"
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                          >
-                            Mi Dashboard
-                          </Link>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            to="/calendario"
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                          >
-                            Agendar Cita
-                          </Link>
-                        )}
-                      </Menu.Item>
+                      {user ? (
+                        <>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link
+                                to="/dashboard"
+                                className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                              >
+                                Mi Dashboard
+                              </Link>
+                            )}
+                          </Menu.Item>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link
+                                to="/dashboard/my-purchases"
+                                className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                              >
+                                Mis Compras
+                              </Link>
+                            )}
+                          </Menu.Item>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <button
+                                onClick={logout}
+                                className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700 w-full text-left')}
+                              >
+                                Cerrar Sesión
+                              </button>
+                            )}
+                          </Menu.Item>
+                        </>
+                      ) : (
+                        <>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link
+                                to="/login"
+                                className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                              >
+                                Iniciar Sesión
+                              </Link>
+                            )}
+                          </Menu.Item>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link
+                                to="/register"
+                                className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                              >
+                                Registrarse
+                              </Link>
+                            )}
+                          </Menu.Item>
+                        </>
+                      )}
                     </Menu.Items>
                   </Transition>
                 </Menu>

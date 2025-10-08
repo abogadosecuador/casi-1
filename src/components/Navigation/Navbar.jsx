@@ -1,17 +1,18 @@
 import { Fragment, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Disclosure, Menu, Transition, Popover } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon, ChevronDownIcon, UserIcon } from '@heroicons/react/24/outline';
-import { FaUsers, FaHandshake, FaComments, FaGavel, FaBook, FaShieldAlt, FaFileContract, FaFileAlt, FaUserTie, FaWhatsapp, FaPhone, FaEnvelope, FaUserPlus, FaSignInAlt, FaLock } from 'react-icons/fa';
+import { Bars3Icon, XMarkIcon, ChevronDownIcon, UserIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
+import { FaUsers, FaHandshake, FaComments, FaGavel, FaBook, FaShieldAlt, FaFileContract, FaFileAlt, FaUserTie, FaWhatsapp, FaPhone, FaEnvelope, FaUserPlus, FaSignInAlt, FaLock, FaShoppingCart } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 import ThemeSwitcher from '../ThemeSwitcher';
 
 const mainNavigation = [
   { name: 'Inicio', href: '/', current: false },
   { name: 'Servicios', href: '#', current: false, hasSubmenu: true, icon: <FaGavel className="text-blue-600" /> },
   { name: 'Consultas', href: '#', current: false, hasSubmenu: true, icon: <FaFileAlt className="text-blue-600" /> },
+  { name: 'Tienda', href: '/tienda', current: false, icon: <FaShoppingCart className="text-blue-600" /> },
   { name: 'Blog', href: '/blog', current: false, icon: <FaBook className="text-blue-600" /> },
-  { name: 'Foro', href: '/forum', current: false, icon: <FaComments className="text-blue-600" /> },
   { name: 'Comunidad', href: '#', current: false, hasSubmenu: true, icon: <FaUsers className="text-blue-600" /> },
   { name: 'Contacto', href: '/contacto', current: false, icon: <FaEnvelope className="text-blue-600" /> },
 ];
@@ -52,6 +53,7 @@ function classNames(...classes) {
 
 function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
+  const { itemCount } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -174,6 +176,19 @@ function Navbar() {
 
               {/* Right side buttons */}
               <div className="absolute inset-y-0 right-0 flex items-center space-x-1 sm:static sm:space-x-2">
+                {/* Carrito de Compras */}
+                <Link 
+                  to="/tienda"
+                  className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <FaShoppingCart className="h-6 w-6 text-gray-700" />
+                  {itemCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                      {itemCount}
+                    </span>
+                  )}
+                </Link>
+
                 {/* Theme Switcher */}
                 <div className="hidden sm:block">
                   <ThemeSwitcher />
@@ -231,7 +246,7 @@ function Navbar() {
                 ) : (
                   <div className="flex space-x-1">
                     <Link
-                      to="/registro"
+                      to="/register"
                       className="inline-flex items-center p-1.5 text-xs font-medium rounded text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100"
                     >
                       <FaUserPlus className="mr-1" /> Registrarse

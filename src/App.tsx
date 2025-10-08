@@ -6,6 +6,7 @@ import { useCredits } from './context/CreditContext';
 import { useTokens } from './context/TokenContext';
 import { initializeCatalogData } from './data/catalogData';
 import CursorGlow from './components/Effects/CursorGlow';
+import CheckoutPage from './pages/CheckoutPage';
 
 // Layouts
 import PublicLayout from './layouts/PublicLayout';
@@ -53,8 +54,9 @@ const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const PromotionsManager = lazy(() => import('./components/Promotions/PromotionsManager'));
 import CatalogPage from './pages/CatalogPage';
-import CheckoutPage from './pages/CheckoutPage';
-import MyPurchasesPage from './pages/MyPurchasesPage';
+import CivilConsultationDetailPage from './pages/CivilConsultationPage';
+import PenalConsultationDetailPage from './pages/PenalConsultationPage';
+import AffiliatesSystemPage from './pages/AffiliatesPage';
 
 // Course Pages
 import CoursesPage from './pages/CoursesPage';
@@ -150,7 +152,7 @@ function App() {
             isAuthenticated ? <MyCoursesPage /> : <Navigate to="/login" replace />
           } />
           <Route path="my-purchases" element={
-            isAuthenticated ? <MyPurchasesPage /> : <Navigate to="/login" replace />
+            isAuthenticated ? <MyCoursesPage /> : <Navigate to="/login" replace />
           } />
           <Route path="profile" element={
             isAuthenticated ? <ProfilePage /> : <Navigate to="/login" replace />

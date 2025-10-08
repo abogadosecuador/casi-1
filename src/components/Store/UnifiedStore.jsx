@@ -92,6 +92,14 @@ const UnifiedStore = () => {
     setView(newView);
   };
 
+  const categories = [
+    { id: 'all', name: 'Todos', icon: FaShoppingBag, color: 'from-blue-500 to-purple-500' },
+    { id: 'course', name: 'Cursos', icon: FaGraduationCap, color: 'from-green-500 to-emerald-500' },
+    { id: 'ebook', name: 'E-books', icon: FaBook, color: 'from-orange-500 to-red-500' },
+    { id: 'service', name: 'Servicios Legales', icon: FaGavel, color: 'from-blue-600 to-indigo-600' },
+    { id: 'consultation', name: 'Consultas', icon: FaFileContract, color: 'from-purple-500 to-pink-500' },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header Hero */}

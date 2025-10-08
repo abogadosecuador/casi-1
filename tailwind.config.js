@@ -4,6 +4,7 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -35,7 +36,19 @@ export default {
       fontFamily: {
         sans: ['Inter var', 'sans-serif'],
       },
+      backgroundColor: {
+        'background-primary': 'var(--bg-primary)',
+        'background-secondary': 'var(--bg-secondary)',
+      },
+      textColor: {
+        'text-primary': 'var(--text-primary)',
+        'text-secondary': 'var(--text-secondary)',
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/aspect-ratio'),
+  ],
 }

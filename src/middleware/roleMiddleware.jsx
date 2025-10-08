@@ -17,7 +17,7 @@ export const ProtectedRoute = ({ children, requiredRole = null, requiredPermissi
   }
 
   // Si no está autenticado, redirigir al login
-  if (!isAuthenticated()) {
+  if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
@@ -48,7 +48,7 @@ export const VisitorOnlyRoute = ({ children }) => {
   }
 
   // Si está autenticado, redirigir al dashboard
-  if (isAuthenticated()) {
+  if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -89,14 +89,14 @@ export const useRouteAccess = (requiredRole = null, requiredPermission = null) =
 
   const canAccess = () => {
     if (!authReady || loading) return false;
-    if (!isAuthenticated()) return false;
+    if (!isAuthenticated) return false;
     if (requiredRole && !hasRole(requiredRole)) return false;
     if (requiredPermission && !hasPermission(requiredPermission)) return false;
     return true;
   };
 
   const redirectTo = () => {
-    if (!isAuthenticated()) return '/login';
+    if (!isAuthenticated) return '/login';
     if (requiredRole && !hasRole(requiredRole)) return '/unauthorized';
     if (requiredPermission && !hasPermission(requiredPermission)) return '/unauthorized';
     return null;
@@ -136,7 +136,7 @@ export const RoleBasedContent = ({
 export const VisitorOnlyContent = ({ children, fallback = null }) => {
   const { isAuthenticated } = useAuth();
 
-  if (!isAuthenticated()) {
+  if (!isAuthenticated) {
     return children;
   }
 
@@ -147,7 +147,7 @@ export const VisitorOnlyContent = ({ children, fallback = null }) => {
 export const AuthenticatedContent = ({ children, fallback = null }) => {
   const { isAuthenticated } = useAuth();
 
-  if (isAuthenticated()) {
+  if (isAuthenticated) {
     return children;
   }
 
