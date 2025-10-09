@@ -12,7 +12,7 @@ import JudicialNews from '../JudicialNews';
 import Newsletter from '../Newsletter/Newsletter';
 import ProcessSearch from '../ProcessSearch';
 import SocialMediaIntegration from '../Social/SocialMediaIntegration';
-import IntelligentChatbot from '../Chat/IntelligentChatbot';
+import Chat from '../Chat';
 
 // Usar nuestro HelmetWrapper seguro en lugar de Helmet directamente
 import HelmetWrapper from '../Common/HelmetWrapper';
@@ -60,8 +60,8 @@ const HomePage = () => {
       
       <Newsletter />
       
-      {/* Chatbot inteligente */}
-      <IntelligentChatbot />
+      {/* Chatbot Legal IA */}
+      <Chat />
     </>
   );
 };

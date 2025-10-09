@@ -23,15 +23,27 @@ const Chat = () => {
   }, [messages]);
 
   useEffect(() => {
-    // Cargar mensajes anteriores del usuario si hay un ID de sesión en localStorage
-    const sessionId = localStorage.getItem('chatSessionId');
-    if (sessionId) {
-      loadPreviousMessages(sessionId);
+    // Crear un nuevo ID de sesión si no existe
+    let sessionId = localStorage.getItem('chatSessionId');
+    if (!sessionId) {
+      sessionId = `session_${Date.now()}`;
+      localStorage.setItem('chatSessionId', sessionId);
+    }
+
+    // Cargar mensajes previos del localStorage
+    const savedMessages = localStorage.getItem(`chat_messages_${sessionId}`);
+    if (savedMessages) {
+      try {
+        setMessages(JSON.parse(savedMessages));
+      } catch (error) {
+        console.error('Error al cargar mensajes:', error);
+        setMessages([{
+          text: '¡Bienvenido de nuevo! ¿En qué puedo ayudarle hoy?',
+          sender: 'bot',
+          timestamp: new Date().toISOString()
+        }]);
+      }
     } else {
-      // Crear un nuevo ID de sesión
-      const newSessionId = `session_${Date.now()}`;
-      localStorage.setItem('chatSessionId', newSessionId);
-      
       // Mensaje de bienvenida
       const welcomeMessage = {
         text: '¡Bienvenido al chat de asistencia legal! ¿En qué puedo ayudarle hoy?',
@@ -51,29 +63,15 @@ const Chat = () => {
     }
   }, []);
 
-  const loadPreviousMessages = async (sessionId) => {
-    try {
-      const { data, error } = await dataService.getAll('chat_messages', {
-        sessionId: sessionId,
-        sortBy: 'timestamp',
-        sortDirection: 'asc'
-      });
-
-      if (error) throw error;
-      
-      if (data && data.length > 0) {
-        setMessages(data);
-      } else {
-        // Si no hay mensajes previos, mostrar mensaje de bienvenida
-        const welcomeMessage = {
-          text: '¡Bienvenido de nuevo! ¿En qué puedo ayudarle hoy?',
-          sender: 'bot',
-          timestamp: new Date().toISOString()
-        };
-        setMessages([welcomeMessage]);
+  // Guardar mensajes en localStorage
+  const saveMessagesToStorage = (messages) => {
+    const sessionId = localStorage.getItem('chatSessionId');
+    if (sessionId) {
+      try {
+        localStorage.setItem(`chat_messages_${sessionId}`, JSON.stringify(messages));
+      } catch (error) {
+        console.error('Error al guardar mensajes:', error);
       }
-    } catch (error) {
-      console.error('Error al cargar mensajes:', error);
     }
   };
 
@@ -92,50 +90,34 @@ const Chat = () => {
       text: input,
       sender: 'user',
       timestamp: new Date().toISOString(),
-      session_id: localStorage.getItem('chatSessionId'),
-      user_name: userName || 'Anónimo',
-      user_email: userEmail || 'no-email'
+      user_name: userName || 'Anónimo'
     };
     
     // Actualizar mensajes localmente primero para mejor UX
-    setMessages(prevMessages => [...prevMessages, userMessage]);
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
+    saveMessagesToStorage(newMessages);
+    
     setInput('');
     setIsLoading(true);
     inputRef.current?.focus();
     
-    try {
-      // Guardar mensaje del usuario
-      await dataService.create('chat_messages', userMessage);
-      
-      // Simular respuesta del bot después de un breve retraso
-      setTimeout(async () => {
-        // Obtener respuesta del bot
-        const botResponse = {
-          text: getBotResponse(input),
-          sender: 'bot',
-          timestamp: new Date().toISOString(),
-          session_id: localStorage.getItem('chatSessionId')
-        };
-
-        // Actualizar mensajes con la respuesta del bot
-        setMessages(prevMessages => [...prevMessages, botResponse]);
-        
-        // Guardar mensaje del bot
-        await dataService.create('chat_messages', botResponse);
-        
-        setIsLoading(false);
-      }, 1000);
-    } catch (error) {
-      console.error('Error al enviar mensaje:', error);
-      setIsLoading(false);
-      
-      // Mensaje de error
-      setMessages(prevMessages => [...prevMessages, {
-        text: 'Lo siento, ha ocurrido un error al procesar su mensaje. Por favor, inténtelo de nuevo.',
+    // Simular respuesta del bot después de un breve retraso
+    setTimeout(() => {
+      // Obtener respuesta del bot
+      const botResponse = {
+        text: getBotResponse(input),
         sender: 'bot',
         timestamp: new Date().toISOString()
-      }]);
-    }
+      };
+
+      // Actualizar mensajes con la respuesta del bot
+      const updatedMessages = [...newMessages, botResponse];
+      setMessages(updatedMessages);
+      saveMessagesToStorage(updatedMessages);
+      
+      setIsLoading(false);
+    }, 1000);
   };
 
   const handleUserFormSubmit = (e) => {
@@ -212,11 +194,13 @@ const Chat = () => {
       {/* Botón flotante para abrir/cerrar el chat */}
       <motion.button
         onClick={toggleChat}
-        className="fixed bottom-6 right-6 z-50 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-300"
+        className="fixed bottom-6 left-6 z-50 bg-purple-600 text-white p-4 rounded-full shadow-lg hover:bg-purple-700 transition-all duration-300"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
+        title="Chat de Asistencia Legal IA"
+        aria-label="Abrir chat de asistencia"
       >
-        {isOpen ? <FaTimes size={20} /> : <FaComments size={20} />}
+        {isOpen ? <FaTimes size={20} /> : <FaRobot size={20} />}
       </motion.button>
 
       {/* Ventana de chat */}
@@ -227,19 +211,19 @@ const Chat = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
             transition={{ type: 'spring', damping: 25, stiffness: 500 }}
-            className="fixed bottom-20 right-6 w-96 bg-white rounded-xl shadow-2xl z-40 overflow-hidden border border-gray-200"
+            className="fixed bottom-20 left-6 w-96 bg-white rounded-xl shadow-2xl z-40 overflow-hidden border border-gray-200"
           >
             {/* Encabezado del chat */}
-            <div className="p-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+            <div className="p-4 bg-gradient-to-r from-purple-600 to-purple-700 text-white">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <FaComments />
-                  Chat Legal
+                  <FaRobot />
+                  Asistente Legal IA
                 </h3>
                 <span className="text-xs bg-green-500 px-2 py-1 rounded-full">En línea</span>
               </div>
-              <p className="text-sm text-blue-100 mt-1">
-                Asistencia legal inmediata
+              <p className="text-sm text-purple-100 mt-1">
+                Respuestas instantáneas 24/7
               </p>
             </div>
 
@@ -257,7 +241,7 @@ const Chat = () => {
                 >
                   <div className="flex items-start max-w-[80%]">
                     {message.sender === 'bot' && (
-                      <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white mr-2 mt-1">
+                      <div className="h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center text-white mr-2 mt-1">
                         <FaRobot size={16} />
                       </div>
                     )}
@@ -266,7 +250,7 @@ const Chat = () => {
                         className={`p-3 rounded-lg ${
                           message.sender === 'user'
                             ? 'bg-blue-600 text-white rounded-tr-none'
-                            : 'bg-white text-gray-800 border border-gray-200 rounded-tl-none'
+                            : 'bg-purple-50 text-gray-800 border border-purple-200 rounded-tl-none'
                         }`}
                       >
                         {message.text}
@@ -289,14 +273,14 @@ const Chat = () => {
               {isLoading && (
                 <div className="flex justify-start">
                   <div className="flex items-start">
-                    <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white mr-2">
+                    <div className="h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center text-white mr-2">
                       <FaRobot size={16} />
                     </div>
-                    <div className="p-3 bg-white text-gray-800 rounded-lg border border-gray-200 rounded-tl-none">
+                    <div className="p-3 bg-purple-50 text-gray-800 rounded-lg border border-purple-200 rounded-tl-none">
                       <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
                       </div>
                     </div>
                   </div>

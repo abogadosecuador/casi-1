@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 export default function JudicialNews() {
   const [activeCategory, setActiveCategory] = useState('Todos');
-  
+  const [visibleNews, setVisibleNews] = useState(6);
+
   const categories = ['Todos', 'Nacional', 'Local', 'Constitucional', 'Penal', 'Civil'];
-  
+
   const news = [
     {
       id: 1,
@@ -73,6 +76,14 @@ export default function JudicialNews() {
     ? news 
     : news.filter(item => item.category === activeCategory);
 
+  const displayedNews = filteredNews.slice(0, visibleNews);
+  const hasMore = visibleNews < filteredNews.length;
+
+  const handleLoadMore = () => {
+    setVisibleNews(prev => prev + 3);
+    toast.success('Mostrando más noticias...');
+  };
+
   return (
     <div className="py-12 bg-secondary-50">
       <div className="container-custom">
@@ -98,7 +109,7 @@ export default function JudicialNews() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredNews.map(item => (
+          {displayedNews.map(item => (
             <motion.article
               key={item.id}
               className="card overflow-hidden"
@@ -124,26 +135,35 @@ export default function JudicialNews() {
                   <span className="text-sm text-secondary-500">{item.author}</span>
                   <span className="text-sm text-secondary-500">{item.readTime} de lectura</span>
                 </div>
+                <Link 
+                  to={`/blog/noticia-judicial-${item.id}`}
+                  className="mt-4 inline-flex items-center text-primary-600 font-semibold hover:text-primary-700 transition-colors"
+                >
+                  Leer más →
+                </Link>
               </div>
             </motion.article>
           ))}
         </div>
 
-        {filteredNews.length === 0 && (
+        {displayedNews.length === 0 && (
           <div className="text-center py-12">
             <p className="text-lg text-secondary-600">No hay noticias disponibles en esta categoría.</p>
           </div>
         )}
 
-        <div className="mt-12 text-center">
-          <motion.button
-            className="btn-primary"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Cargar Más Noticias
-          </motion.button>
-        </div>
+        {hasMore && (
+          <div className="mt-12 text-center">
+            <motion.button
+              onClick={handleLoadMore}
+              className="btn-primary px-8 py-3 text-lg font-semibold"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Cargar Más Noticias ({filteredNews.length - visibleNews} restantes)
+            </motion.button>
+          </div>
+        )}
 
         {/* Suscripción a Noticias */}
         <motion.div

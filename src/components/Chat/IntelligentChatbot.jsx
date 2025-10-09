@@ -119,7 +119,7 @@ const IntelligentChatbot = () => {
   };
   
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-24 left-6 z-50">
       {expanded && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -223,7 +223,9 @@ const IntelligentChatbot = () => {
       
       <button
         onClick={toggleChat}
-        className="bg-blue-600 hover:bg-blue-700 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center"
+        className="bg-teal-600 hover:bg-teal-700 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110"
+        title="Asistente Legal Avanzado"
+        aria-label="Abrir asistente legal"
       >
         {expanded ? <FaTimes /> : <FaRobot />}
       </button>
