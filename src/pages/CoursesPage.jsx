@@ -9,6 +9,7 @@ import Footer from '../components/Footer/Footer';
 import Navbar from '../components/Navigation/NavbarFixed';
 import { useCart } from '../context/CartContext';
 import { dataService } from '../services/supabaseService';
+import ImageWithFallback from '../components/Common/ImageWithFallback';
 
 // Datos de ejemplo para los cursos
 const SAMPLE_COURSES = [
@@ -109,9 +110,10 @@ const CourseCard = ({ course, addToCart }) => {
       onHoverEnd={() => setIsHovered(false)}
     >
       <div className="relative">
-        <img 
-          src={course.imageUrl || "/images/courses/default.jpg"} 
-          alt={course.title} 
+        <ImageWithFallback
+          src={course.imageUrl}
+          alt={course.title}
+          fallbackType="course"
           className="w-full h-48 object-cover"
         />
         {course.featured && (

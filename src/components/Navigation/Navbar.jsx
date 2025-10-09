@@ -17,6 +17,24 @@ const mainNavigation = [
   { name: 'Contacto', href: '/contacto', current: false, icon: <FaEnvelope className="text-blue-600" /> },
 ];
 
+const serviceSubmenu = [
+  { name: 'Todos los Servicios', href: '/servicios', current: false, icon: <FaGavel className="text-blue-500" /> },
+  { name: 'Derecho Penal', href: '/servicios/penal', current: false, icon: <FaGavel className="text-red-500" /> },
+  { name: 'Derecho Civil', href: '/servicios/civil', current: false, icon: <FaFileContract className="text-blue-500" /> },
+  { name: 'Derecho Comercial', href: '/servicios/comercial', current: false, icon: <FaBriefcase className="text-green-500" /> },
+  { name: 'Derecho de Tránsito', href: '/servicios/transito', current: false, icon: <FaFileAlt className="text-yellow-500" /> },
+  { name: 'Derecho Aduanero', href: '/servicios/aduanero', current: false, icon: <FaFileAlt className="text-indigo-500" /> },
+  { name: 'Derecho Laboral', href: '/servicios/laboral', current: false, icon: <FaUserTie className="text-purple-500" /> },
+];
+
+const consultasSubmenu = [
+  { name: 'Consulta General', href: '/consultas/general', current: false, icon: <FaFileContract className="text-blue-500" /> },
+  { name: 'Consulta Penal', href: '/consultas/penal', current: false, icon: <FaGavel className="text-red-500" /> },
+  { name: 'Consulta Civil', href: '/consultas/civil', current: false, icon: <FaFileContract className="text-blue-500" /> },
+  { name: 'Consulta Empresarial', href: '/consultas/empresarial', current: false, icon: <FaBriefcase className="text-green-500" /> },
+  { name: 'Consulta Digital/Online', href: '/consultas/digital', current: false, icon: <FaGlobe className="text-purple-500" /> },
+];
+
 const comunidadSubmenu = [
   { name: 'Cursos', href: '/cursos', current: false, icon: <FaUsers className="text-blue-500" /> },
   { name: 'E-Books', href: '/ebooks', current: false, icon: <FaBook className="text-green-500" /> },

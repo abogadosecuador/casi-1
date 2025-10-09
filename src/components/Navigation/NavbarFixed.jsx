@@ -6,13 +6,16 @@ import { FaUsers, FaHandshake, FaComments, FaGavel, FaBook, FaShieldAlt, FaFileC
 import CartDrawer from '../Cart/CartDrawer';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import ThemeSwitcher from '../ThemeSwitcher';
 
 const serviceSubmenu = [
   { name: 'Todos los Servicios', href: '/servicios', current: false, icon: <FaGavel className="text-blue-500" /> },
   { name: 'Derecho Penal', href: '/servicios/penal', current: false, icon: <FaGavel className="text-red-500" /> },
   { name: 'Derecho Civil', href: '/servicios/civil', current: false, icon: <FaFileContract className="text-blue-500" /> },
+  { name: 'Derecho Comercial', href: '/servicios/comercial', current: false, icon: <FaBriefcase className="text-green-500" /> },
   { name: 'Derecho de Tránsito', href: '/servicios/transito', current: false, icon: <FaFileAlt className="text-yellow-500" /> },
   { name: 'Derecho Aduanero', href: '/servicios/aduanero', current: false, icon: <FaFileAlt className="text-indigo-500" /> },
+  { name: 'Derecho Laboral', href: '/servicios/laboral', current: false, icon: <FaUserTie className="text-purple-500" /> },
 ];
 
 const consultasSubmenu = [
