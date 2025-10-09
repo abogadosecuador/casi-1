@@ -201,52 +201,85 @@ export default function Ebooks() {
         {/* Featured Free Ebook */}
         <div className="mb-16">
           <motion.div
-            className="card p-6 border-2 border-primary-500"
+            className="bg-gradient-to-br from-blue-50 via-white to-blue-50 p-8 rounded-3xl border-2 border-blue-200 shadow-2xl overflow-hidden relative"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div className="relative">
-                <img
-                  src={ebooksData[0].coverImage}
-                  alt={ebooksData[0].title}
-                  className="w-full h-64 object-cover rounded-lg shadow-lg"
-                />
-                <div className="absolute top-4 right-4 bg-primary-600 text-white px-4 py-2 rounded-full font-bold">
-                  GRATIS
+            {/* Background decoration */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-400/10 to-transparent rounded-full blur-3xl"></div>
+            
+            <div className="grid md:grid-cols-2 gap-8 items-center relative z-10">
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-blue-400 rounded-2xl opacity-75 group-hover:opacity-100 blur transition duration-1000 group-hover:duration-200"></div>
+                <div className="relative">
+                  <img
+                    src={ebooksData[0].coverImage}
+                    alt={ebooksData[0].title}
+                    className="w-full h-80 object-cover rounded-2xl shadow-2xl transform group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute top-4 right-4 bg-gradient-to-r from-green-500 to-green-600 text-white px-5 py-2.5 rounded-full font-bold shadow-xl animate-pulse">
+                    🎁 GRATIS
+                  </div>
+                  <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm rounded-xl p-3 shadow-lg">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="flex items-center text-gray-700 font-semibold">
+                        <FaFilePdf className="mr-2 text-red-600" /> {ebooksData[0].pages} páginas
+                      </span>
+                      <span className="flex items-center text-gray-700 font-semibold">
+                        <FaDownload className="mr-2 text-blue-600" /> PDF
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div>
-                <span className="text-primary-600 font-semibold mb-2 block">E-book Gratuito</span>
-                <h2 className="text-2xl font-bold text-secondary-900 mb-4">{ebooksData[0].title}</h2>
-                <p className="text-secondary-600 mb-6">{ebooksData[0].description}</p>
-                <div className="flex items-center gap-4 mb-4">
-                  <span className="flex items-center text-secondary-600">
-                    <FaFilePdf className="mr-2" /> {ebooksData[0].pages} páginas
-                  </span>
-                  <span className="flex items-center text-secondary-600">
-                    <FaDownload className="mr-2" /> PDF descargable
-                  </span>
+                <div className="inline-flex items-center bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-bold mb-4">
+                  <FaBook className="mr-2" />
+                  E-book Gratuito
                 </div>
+                <h2 className="text-4xl font-extrabold text-gray-900 mb-4 leading-tight">{ebooksData[0].title}</h2>
+                <p className="text-gray-600 mb-6 text-lg leading-relaxed">{ebooksData[0].description}</p>
+                
                 <motion.button
                   onClick={() => handleDownload(ebooksData[0])}
-                  className="btn-primary w-full md:w-auto flex items-center justify-center gap-2"
+                  disabled={downloading}
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-105 flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl w-full md:w-auto"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <FaDownload /> Descargar Ahora
+                  {downloading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      Descargando...
+                    </>
+                  ) : (
+                    <>
+                      <FaDownload className="text-xl" />
+                      Descargar Ahora Gratis
+                    </>
+                  )}
                 </motion.button>
+                <p className="text-sm text-gray-500 mt-3">✓ Descarga instantánea • ✓ Sin registro • ✓ 100% gratis</p>
               </div>
             </div>
           </motion.div>
         </div>
 
         <div className="text-center mb-12">
-          <h2 className="section-title">Biblioteca Legal Digital</h2>
-          <p className="text-xl text-secondary-600">
-            E-books especializados para entender sus derechos y procedimientos legales
-          </p>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="inline-block bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-2 rounded-full text-sm font-semibold mb-4 shadow-lg">
+              📚 Recursos Digitales
+            </div>
+            <h2 className="text-5xl font-extrabold text-gray-900 mb-4">Biblioteca Legal Digital</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              E-books especializados para entender sus derechos y procedimientos legales
+            </p>
+          </motion.div>
         </div>
 
         {/* Barra de búsqueda y filtros */}
