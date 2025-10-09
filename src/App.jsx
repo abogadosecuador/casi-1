@@ -84,6 +84,7 @@ import ServicioTransitoPage from './pages/ServicioTransitoPage';
 import ServicioComercialPage from './pages/ServicioComercialPage';
 import ServicioAduaneroPage from './pages/ServicioAduaneroPage';
 import ServicioLaboralPage from './pages/ServicioLaboralPage';
+import ServicioCobrosPage from './pages/ServicioCobrosPage';
 
 // Páginas de consultas
 import PenalConsultationPage from './pages/ConsultationTypes/PenalConsultationPage';
@@ -134,6 +135,7 @@ function App() {
                     <Route path="/servicios/transito" element={<ServicioTransitoPage />} />
                     <Route path="/servicios/aduanero" element={<ServicioAduaneroPage />} />
                     <Route path="/servicios/laboral" element={<ServicioLaboralPage />} />
+                    <Route path="/servicios/cobros" element={<ServicioCobrosPage />} />
                     
                     {/* Rutas de consultas */}
                     <Route path="/consultas/penal" element={<PenalConsultationPage />} />

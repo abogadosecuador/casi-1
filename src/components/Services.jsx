@@ -339,7 +339,7 @@ const Services = () => {
                   className="w-full btn-primary flex items-center justify-center space-x-2"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => window.location.href = '/contacto'}
+                  onClick={() => window.location.href = '/suscripciones'}
                 >
                   <span>Comenzar Ahora</span>
                   <svg
