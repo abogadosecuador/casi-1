@@ -32,7 +32,7 @@ import AboutPage from './components/About/AboutPage';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TerminosCondiciones from './components/TerminosCondiciones';
 import Seguridad from './components/Seguridad';
-import Ebooks from './components/Ebooks/EbookStore';
+import Ebooks from './components/Ebooks';
 import CourseCatalog from './components/Courses/CourseSystem';
 import CourseDetail from './pages/CourseDetailPage';
 
@@ -71,6 +71,7 @@ import SubscriptionsPage from './pages/SubscriptionsPage';
 import ThankYouPage from './components/Payment/ThankYouPage';
 import AIConsultationSystem from './components/Consultation/AIConsultationSystem';
 import AppointmentScheduler from './components/Appointment/AppointmentScheduler';
+import TestShoppingPage from './components/TestShoppingPage';
 // Páginas de comunidad
 import AffiliatePage from './pages/CleanAffiliatePage';
 import ReferralsPage from './pages/CleanReferralsPage';
@@ -148,7 +149,7 @@ function App() {
                     <Route path="/contacto" element={<Contact />} />
                     <Route path="/blog" element={<Blog />} />
                     <Route path="/blog/:slug" element={<BlogArticle />} />
-                    <Route path="/ebooks" element={<Ebooks />} />
+                    <Route path="/test-shopping" element={<TestShoppingPage />} />
                     <Route path="/cursos" element={<CourseCatalog />} />
                     <Route path="/cursos/:slug" element={<CourseDetail />} />
                     <Route path="/tienda" element={<UnifiedStore />} />
