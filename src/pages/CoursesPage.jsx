@@ -127,15 +127,15 @@ const CourseCard = ({ course, addToCart }) => {
           </div>
         )}
         <div 
-          className={`absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center transition-opacity duration-300 ${
+          className={`absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center transition-opacity duration-300 ${
             isHovered ? 'opacity-100' : 'opacity-0'
           }`}
         >
           <Link 
             to={`/cursos/${course.id}`}
-            className="bg-white text-blue-600 rounded-full p-3 transform hover:scale-110 transition-transform"
+            className="bg-white text-blue-600 px-4 py-2 rounded-lg mb-2 font-semibold hover:bg-blue-50 transition-colors"
           >
-            <FaPlay />
+            Ver Detalles
           </Link>
         </div>
       </div>
@@ -163,20 +163,12 @@ const CourseCard = ({ course, addToCart }) => {
         
         <div className="border-t border-gray-200 pt-3 mt-auto">
           <div className="flex items-center justify-between">
-            <span className="text-blue-600 font-bold">${course.price.toFixed(2)}</span>
+            <span className="text-2xl text-blue-600 font-bold">${course.price.toFixed(2)}</span>
             <button
-              onClick={() => addToCart({
-                id: course.id,
-                name: course.title,
-                price: course.price,
-                category: 'Curso',
-                imageUrl: course.imageUrl,
-                quantity: 1,
-                type: 'course'
-              })}
-              className="bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium hover:bg-blue-700 transition-colors flex items-center"
+              onClick={() => handleAddToCart(course)}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all transform hover:scale-105 flex items-center gap-2 shadow-md"
             >
-              <FaShoppingCart className="mr-1" /> Comprar
+              <FaShoppingCart /> COMPRAR AHORA
             </button>
           </div>
         </div>
@@ -216,8 +208,17 @@ const CoursesPage = () => {
   }, []);
   
   const handleAddToCart = (course) => {
-    addToCart(course);
-    toast.success(`${course.name} agregado al carrito`);
+    const cartItem = {
+      id: course.id,
+      name: course.title,
+      price: course.price,
+      category: 'Curso',
+      imageUrl: course.imageUrl,
+      quantity: 1,
+      type: 'course'
+    };
+    addToCart(cartItem);
+    toast.success(`${course.title} agregado al carrito`);
   };
   
   const filteredCourses = courses.filter(course => {

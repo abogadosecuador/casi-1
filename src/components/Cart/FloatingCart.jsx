@@ -9,8 +9,8 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import ImageWithFallback from '../Common/ImageWithFallback';
 
-const CartDrawer = () => {
-  const { cartItems = [], removeFromCart, updateQuantity, getCartTotal, itemCount } = useCart();
+const FloatingCart = () => {
+  const { cartItems = [], removeFromCart, updateQuantity, getCartTotal, itemCount, clearCart } = useCart();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -28,22 +28,35 @@ const CartDrawer = () => {
     navigate('/tienda');
   };
 
+  const handleClearCart = () => {
+    clearCart();
+    toast.success('Carrito limpiado');
+  };
+
   return (
     <>
-      {/* Cart Button */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
-      >
-        <FaShoppingCart className="h-6 w-6 text-gray-700" />
-        {itemCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-            {itemCount}
-          </span>
-        )}
-      </button>
+      {/* Floating Cart Button */}
+      <div className="fixed bottom-6 right-6 z-40">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setIsOpen(true)}
+          className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-colors relative"
+        >
+          <FaShoppingCart className="text-xl" />
+          {itemCount > 0 && (
+            <motion.span
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center"
+            >
+              {itemCount}
+            </motion.span>
+          )}
+        </motion.button>
+      </div>
 
-      {/* Cart Drawer */}
+      {/* Cart Sidebar */}
       <AnimatePresence>
         {isOpen && (
           <>
@@ -56,13 +69,13 @@ const CartDrawer = () => {
               onClick={() => setIsOpen(false)}
             />
 
-            {/* Drawer */}
+            {/* Sidebar */}
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'tween', duration: 0.3 }}
-              className="fixed top-0 right-0 h-full w-full max-w-lg bg-white shadow-xl z-50 overflow-y-auto"
+              className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-xl z-50 overflow-y-auto"
             >
               <div className="p-6">
                 {/* Header */}
@@ -90,10 +103,10 @@ const CartDrawer = () => {
                   </div>
                 ) : (
                   <>
-                    <div className="space-y-4 mb-6">
+                    <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
                       {cartItems.map((item) => (
                         <motion.div
-                          key={item.id}
+                          key={`${item.id}-${item.type}`}
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg"
@@ -105,33 +118,41 @@ const CartDrawer = () => {
                             className="w-16 h-16 object-cover rounded-lg"
                           />
                           <div className="flex-1">
-                            <h3 className="font-semibold">{item.name}</h3>
-                            <p className="text-sm text-gray-600">
-                              Cantidad: {item.quantity}
+                            <h3 className="font-semibold text-sm">{item.name}</h3>
+                            <p className="text-xs text-gray-600 capitalize">
+                              {item.type === 'course' ? 'Curso' : item.type === 'ebook' ? 'E-book' : 'Producto'}
                             </p>
-                            <p className="text-lg font-bold text-green-600">
+                            <p className="text-sm font-bold text-green-600">
                               ${item.price * item.quantity}
                             </p>
                           </div>
                           <div className="flex items-center space-x-2">
                             <button
-                              onClick={() => updateQuantity(item.id, item.type || 'product', item.quantity - 1)}
+                              onClick={() => {
+                                updateQuantity(item.id, item.type, item.quantity - 1);
+                              }}
                               className="p-1 bg-gray-200 hover:bg-gray-300 rounded transition-colors"
+                              disabled={item.quantity <= 1}
                             >
                               <FaMinus className="text-xs" />
                             </button>
-                            <span className="px-2 py-1 bg-gray-100 rounded">
+                            <span className="px-2 py-1 bg-gray-100 rounded text-sm">
                               {item.quantity}
                             </span>
                             <button
-                              onClick={() => updateQuantity(item.id, item.type || 'product', item.quantity + 1)}
+                              onClick={() => {
+                                updateQuantity(item.id, item.type, item.quantity + 1);
+                              }}
                               className="p-1 bg-gray-200 hover:bg-gray-300 rounded transition-colors"
                             >
                               <FaPlus className="text-xs" />
                             </button>
                             <button
-                              onClick={() => removeFromCart(item.id, item.type || 'product')}
+                              onClick={() => {
+                                removeFromCart(item.id, item.type);
+                              }}
                               className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
+                              title="Eliminar producto"
                             >
                               <FaTrash />
                             </button>
@@ -141,8 +162,8 @@ const CartDrawer = () => {
                     </div>
 
                     {/* Total */}
-                    <div className="border-t pt-6 mb-6">
-                      <div className="flex justify-between items-center text-xl font-bold">
+                    <div className="border-t pt-4 mb-6">
+                      <div className="flex justify-between items-center text-lg font-bold">
                         <span>Total:</span>
                         <span className="text-green-600">${getCartTotal().toFixed(2)}</span>
                       </div>
@@ -154,19 +175,27 @@ const CartDrawer = () => {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={handleCheckout}
-                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all flex items-center justify-center"
+                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all flex items-center justify-center"
                       >
                         <FaCreditCard className="mr-2" />
                         Proceder al Pago
                         <FaArrowRight className="ml-2" />
                       </motion.button>
 
-                      <button
-                        onClick={handleContinueShopping}
-                        className="w-full border-2 border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:border-blue-500 hover:text-blue-600 transition-all"
-                      >
-                        Seguir Comprando
-                      </button>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={handleContinueShopping}
+                          className="border border-gray-300 text-gray-700 py-2 rounded-lg font-semibold hover:border-blue-500 hover:text-blue-600 transition-all"
+                        >
+                          Seguir Comprando
+                        </button>
+                        <button
+                          onClick={handleClearCart}
+                          className="border border-red-300 text-red-700 py-2 rounded-lg font-semibold hover:border-red-500 hover:text-red-800 transition-all"
+                        >
+                          Limpiar Carrito
+                        </button>
+                      </div>
                     </div>
 
                     {/* Security Badge */}
@@ -190,4 +219,4 @@ const CartDrawer = () => {
   );
 };
 
-export default CartDrawer;
+export default FloatingCart;

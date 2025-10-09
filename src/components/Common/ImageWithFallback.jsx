@@ -5,12 +5,12 @@ import { FaImage } from 'react-icons/fa';
  * Componente de imagen con fallback profesional
  * Si la imagen no carga, muestra un placeholder con icono y color
  */
-const ImageWithFallback = ({ 
-  src, 
-  alt, 
-  className = '', 
+const ImageWithFallback = ({
+  src,
+  alt,
+  className = '',
   fallbackType = 'course', // 'course', 'ebook', 'product'
-  ...props 
+  ...props
 }) => {
   const [imageError, setImageError] = useState(false);
   const [loading, setLoading] = useState(true);
