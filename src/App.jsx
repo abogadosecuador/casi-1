@@ -6,6 +6,12 @@ import { CartProvider } from './context/CartContext';
 import { ModuleProvider } from './context/ModuleContext';
 import { Toaster } from 'react-hot-toast';
 
+// Componentes comunes
+import LoadingSpinner from './components/Common/LoadingSpinner';
+import Navbar from './components/Navigation/Navbar';
+import Footer from './components/Footer/Footer';
+import FullCart from './components/Cart/FullCart';
+
 // Middleware de autenticación
 import { 
   ProtectedRoute, 

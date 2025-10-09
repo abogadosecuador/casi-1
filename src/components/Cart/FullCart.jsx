@@ -98,12 +98,12 @@ const FullCart = () => {
                           </span>
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-semibold text-sm">{item.name}</h3>
+                          <h3 className="font-semibold text-sm">{item.name || item.title || 'Producto'}</h3>
                           <p className="text-xs text-gray-600">
-                            Cantidad: {item.quantity}
+                            Cantidad: {item.quantity || 1}
                           </p>
                           <p className="text-sm font-bold text-green-600">
-                            ${item.price * item.quantity}
+                            ${((item.price || 0) * (item.quantity || 1)).toFixed(2)}
                           </p>
                         </div>
                         <div className="flex items-center space-x-2">

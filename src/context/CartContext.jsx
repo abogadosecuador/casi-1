@@ -28,12 +28,17 @@ const calculateTotal = (items) => {
 
 // Reducer para manejar las acciones del carrito
 const cartReducer = (state, action) => {
+  console.log('🔄 Reducer ejecutado:', action.type, 'Payload:', action.payload);
+  console.log('📊 Estado actual:', state);
+  
   switch (action.type) {
     case CART_ACTIONS.ADD_TO_CART: {
       // Verificar si el item ya está en el carrito
       const existingItemIndex = state.items.findIndex(item => 
         item.id === action.payload.id && item.type === action.payload.type
       );
+      
+      console.log('🔍 Índice de item existente:', existingItemIndex);
       
       let newItems;
       
@@ -243,10 +248,24 @@ export const CartProvider = ({ children }) => {
   
   // Función para agregar un item genérico al carrito
   const addToCart = (item) => {
-    dispatch({ type: CART_ACTIONS.ADD_TO_CART, payload: item });
-    setIsCartVisible(true);
-    const itemName = item.title || item.name || 'Producto';
-    toast.success(`"${itemName}" agregado al carrito`);
+    console.log('🛒 addToCart llamado con:', item);
+    
+    if (!item || !item.id) {
+      console.error('❌ Error: Item inválido', item);
+      toast.error('Error al agregar producto al carrito');
+      return;
+    }
+    
+    try {
+      dispatch({ type: CART_ACTIONS.ADD_TO_CART, payload: item });
+      setIsCartVisible(true);
+      const itemName = item.title || item.name || 'Producto';
+      toast.success(`"${itemName}" agregado al carrito`);
+      console.log('✅ Item agregado exitosamente');
+    } catch (error) {
+      console.error('❌ Error al agregar al carrito:', error);
+      toast.error('Error al agregar producto al carrito');
+    }
   };
   
   // Función para actualizar la cantidad de un item
@@ -259,12 +278,19 @@ export const CartProvider = ({ children }) => {
   
   // Función para eliminar un item del carrito
   const removeFromCart = (id, type) => {
+    console.log('🗑️ removeFromCart llamado con:', { id, type });
+    
     const itemToRemove = state.items.find(item => item.id === id && item.type === type);
     
     if (itemToRemove) {
+      console.log('🗑️ Item encontrado para eliminar:', itemToRemove);
       dispatch({ type: CART_ACTIONS.REMOVE_FROM_CART, payload: { id, type } });
       const itemName = itemToRemove.title || itemToRemove.name || 'Producto';
       toast.success(`"${itemName}" eliminado del carrito`);
+      console.log('✅ Item eliminado exitosamente');
+    } else {
+      console.warn('⚠️ Item no encontrado en el carrito:', { id, type });
+      toast.error('Producto no encontrado en el carrito');
     }
   };
   
@@ -366,4 +392,12 @@ export const CartProvider = ({ children }) => {
 };
 
 // Hook personalizado para usar el carrito
-export const useCart = () => useContext(CartContext);
+export const useCart = () => {
+  const context = useContext(CartContext);
+  
+  if (!context) {
+    throw new Error('useCart debe usarse dentro de un CartProvider');
+  }
+  
+  return context;
+};
