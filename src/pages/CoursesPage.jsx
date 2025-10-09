@@ -6,7 +6,6 @@ import { FaBook, FaBookReader, FaGraduationCap, FaPlay, FaShoppingCart } from 'r
 import { toast } from 'react-hot-toast';
 
 import Footer from '../components/Footer/Footer';
-import Navbar from '../components/Navigation/NavbarFixed';
 import { useCart } from '../context/CartContext';
 import { dataService } from '../services/supabaseService';
 import ImageWithFallback from '../components/Common/ImageWithFallback';
@@ -240,18 +239,17 @@ const CoursesPage = () => {
   return (
     <>
       <Helmet>
-        <title>Cursos y Masterclass | Abg. Wilson Ipiales</title>
-        <meta name="description" content="Cursos y masterclass de derecho. Aprenda conceptos legales de manera práctica y efectiva." />
+        <title>Cursos | Abg. Wilson Ipiales</title>
+        <meta name="description" content="Cursos y masterclass de derecho. Aprende conceptos legales de manera práctica y efectiva." />
       </Helmet>
       
-      <Navbar />
-      
-      <main className="bg-gray-100 py-12">
+      <main className="bg-gray-100 py-12 mt-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
             <motion.h1 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
               className="text-3xl font-bold text-gray-900 mb-4"
             >
               Cursos y Masterclass

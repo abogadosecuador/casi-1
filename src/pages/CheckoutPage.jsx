@@ -10,10 +10,9 @@ import PayPalButton from '../components/Payment/PayPalButton';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { dataService } from '../services/supabaseService';
-import Navbar from '../components/Navigation/NavbarFixed';
 
 const CheckoutPage = () => {
-  const { cart, getCartTotal, clearCart } = useCart();
+  const { cart = [], getCartTotal, clearCart } = useCart() || {};
   const { user } = useAuth();
   const navigate = useNavigate();
   
@@ -56,9 +55,9 @@ const CheckoutPage = () => {
   
   // Verificar que hay productos en el carrito
   useEffect(() => {
-    if (cart.length === 0) {
+    if (!cart || cart.length === 0) {
       toast.error('No hay productos en el carrito');
-      navigate('/servicios');
+      navigate('/tienda');
     }
   }, [cart, navigate]);
   
@@ -93,33 +92,47 @@ const CheckoutPage = () => {
   const handleBankTransfer = async () => {
     if (!validateForm()) return;
     
+    if (!user) {
+      toast.error('Debes iniciar sesión para realizar la compra');
+      navigate('/login');
+      return;
+    }
+    
     setLoading(true);
     
     try {
       // Generar ID único para la orden
       const orderId = 'ORD-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5).toUpperCase();
       
-      // Guardar la orden en Supabase
-      await dataService.create('orders', {
+      // Guardar la orden en localStorage (modo sin BD)
+      const order = {
         id: orderId,
-        user_id: user ? user.id : null,
+        user_id: user.id,
         amount: getCartTotal(),
         status: 'pending',
         payment_method: 'bank_transfer',
         items: cart,
         billing_info: billingInfo,
         created_at: new Date().toISOString()
-      });
+      };
+      
+      // Guardar en localStorage
+      const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+      existingOrders.push(order);
+      localStorage.setItem('orders', JSON.stringify(existingOrders));
       
       // Limpiar carrito
       clearCart();
       
-      // Redirigir a página de confirmación
-      navigate('/transferencia-bancaria', { 
+      toast.success('Orden creada exitosamente');
+      
+      // Redirigir a página de éxito
+      navigate('/payment/success', { 
         state: { 
           orderId,
           amount: getCartTotal(),
-          billingInfo
+          billingInfo,
+          paymentMethod: 'bank_transfer'
         } 
       });
       
@@ -138,9 +151,7 @@ const CheckoutPage = () => {
         <meta name="description" content="Finalice su compra de servicios legales con el Abg. Wilson Ipiales" />
       </Helmet>
       
-      <Navbar />
-      
-      <main className="bg-gray-100 py-12">
+      <main className="bg-gray-100 py-12 mt-16">
         <div className="container mx-auto px-4">
           <motion.h1 
             initial={{ opacity: 0, y: -20 }}

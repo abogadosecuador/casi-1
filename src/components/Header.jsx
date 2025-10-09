@@ -24,7 +24,7 @@ function classNames(...classes) {
 export default function Header() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { cart, cartTotal, removeFromCart } = useCart();
+  const { cart = [], cartTotal = 0, removeFromCart } = useCart() || {};
   const [showCart, setShowCart] = useState(false);
 
   return (
@@ -103,11 +103,11 @@ export default function Header() {
                                   <div className="flex-1">
                                     <p className="font-medium text-gray-900">{item.name}</p>
                                     <p className="text-sm text-gray-600">
-                                      Cantidad: {item.quantity} x ${item.price.toFixed(2)}
+                                      Cantidad: {item.quantity || 1} x ${(item.price || 0).toFixed(2)}
                                     </p>
                                   </div>
                                   <button
-                                    onClick={() => removeFromCart(item.id)}
+                                    onClick={() => removeFromCart(item.id, item.type)}
                                     className="text-red-600 hover:text-red-800 ml-2"
                                   >
                                     <XMarkIcon className="h-4 w-4" />

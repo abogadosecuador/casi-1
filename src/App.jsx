@@ -67,6 +67,7 @@ import PromotionsManager from './components/Promotions/PromotionsManager';
 // Páginas de funcionalidad
 import PaymentSystem from './components/Payment/PaymentSystem';
 import CheckoutPage from './pages/CheckoutPage';
+import SubscriptionsPage from './pages/SubscriptionsPage';
 import ThankYouPage from './components/Payment/ThankYouPage';
 import AIConsultationSystem from './components/Consultation/AIConsultationSystem';
 import AppointmentScheduler from './components/Appointment/AppointmentScheduler';
@@ -296,7 +297,8 @@ function App() {
                     
                     {/* Rutas de pagos */}
                     <Route path="/payment" element={<PaymentSystem />} />
-                    <Route path="/checkout" element={<CheckoutSystem />} />
+                    <Route path="/checkout" element={<CheckoutPage />} />
+                    <Route path="/suscripciones" element={<SubscriptionsPage />} />
                     <Route path="/payment/success" element={<ThankYouPage />} />
                     <Route path="/payment/failed" element={<ThankYouPage />} />
                     
