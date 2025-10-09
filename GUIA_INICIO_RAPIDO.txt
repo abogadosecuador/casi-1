@@ -1,0 +1,230 @@
+═══════════════════════════════════════════════════════════════
+    GUÍA DE INICIO RÁPIDO - SISTEMA E-COMMERCE
+═══════════════════════════════════════════════════════════════
+
+📋 REQUISITOS PREVIOS:
+─────────────────────────────────────────────────────────────
+✅ Node.js v18 o superior
+   Descargar: https://nodejs.org
+   O instalar con: winget install OpenJS.NodeJS
+
+✅ npm (incluido con Node.js)
+
+
+🚀 OPCIÓN 1: INICIO RÁPIDO (Recomendado)
+─────────────────────────────────────────────────────────────
+1. Hacer doble clic en: INICIAR_RAPIDO.bat
+2. Esperar a que el servidor inicie
+3. Abrir navegador en: http://localhost:5173
+
+
+🖥️ OPCIÓN 2: LÍNEA DE COMANDOS
+─────────────────────────────────────────────────────────────
+1. Abrir PowerShell o CMD en esta carpeta
+2. Ejecutar:
+   npm install     (solo la primera vez)
+   npm run dev
+
+3. Abrir navegador en: http://localhost:5173
+
+
+🌐 RUTAS PRINCIPALES DEL SISTEMA:
+─────────────────────────────────────────────────────────────
+• Inicio:           http://localhost:5173/
+• Tienda:           http://localhost:5173/tienda
+• Cursos:           http://localhost:5173/cursos
+• E-books:          http://localhost:5173/ebooks
+• Checkout:         http://localhost:5173/checkout
+• Dashboard:        http://localhost:5173/dashboard
+• Login:            http://localhost:5173/login
+
+
+🛒 FLUJO DE COMPRA COMPLETO:
+─────────────────────────────────────────────────────────────
+1. Ir a /tienda
+2. Navegar productos (servicios, cursos, ebooks, consultas)
+3. Click en "Agregar al Carrito"
+4. Abrir carrito (icono superior derecha)
+5. Click en "Proceder al Pago"
+6. Completar información de facturación
+7. Seleccionar método de pago (PayPal funcional)
+8. Confirmar pedido
+9. ¡Listo! 🎉
+
+
+💳 MÉTODOS DE PAGO DISPONIBLES:
+─────────────────────────────────────────────────────────────
+✅ PayPal              - Integrado y funcional
+✅ Tarjeta             - UI lista (pendiente procesador)
+✅ Transferencia       - Datos bancarios configurados
+✅ WhatsApp            - Enlace directo +593988835269
+✅ Criptomonedas       - UI preparada
+✅ Pago Móvil          - UI preparada
+
+
+📦 PRODUCTOS DISPONIBLES EN LA TIENDA:
+─────────────────────────────────────────────────────────────
+
+SERVICIOS LEGALES:
+• Consulta Legal Completa - $150 (25% descuento)
+• Redacción de Contratos - $299
+• Defensa Legal Penal - $500
+
+CONSULTAS:
+• Consulta Express 30 min - $75 (25% descuento)
+• Consulta Virtual Premium - $200
+
+CURSOS:
+• Derecho Penal Completo - $399 (33% descuento, Bestseller)
+• Derecho Civil Principiantes - $199
+• Máster Derecho Comercial - $799
+
+E-BOOKS:
+• Guía Legal Ecuador 2024 - $49 (38% descuento)
+• Manual de Contratos - $39
+
+
+🔐 FUNCIONALIDADES IMPLEMENTADAS:
+─────────────────────────────────────────────────────────────
+✅ Sistema de carrito persistente (localStorage)
+✅ Actualizar cantidades de productos
+✅ Eliminar productos del carrito
+✅ Cálculo automático de totales
+✅ Códigos promocionales (DESCUENTO10 = 10% off)
+✅ IVA 12% calculado automáticamente
+✅ Checkout de 4 pasos
+✅ Validación de formularios
+✅ Integración PayPal real
+✅ Autenticación de usuarios
+✅ Dashboard de usuario
+✅ Historial de compras
+✅ Sistema de notificaciones (toasts)
+✅ Animaciones suaves (Framer Motion)
+✅ Diseño responsive (móvil, tablet, desktop)
+✅ Imágenes profesionales (Unsplash)
+
+
+🎯 PRUEBAS RECOMENDADAS:
+─────────────────────────────────────────────────────────────
+
+TEST 1: Navegación de Tienda
+1. Abrir /tienda
+2. Filtrar por categorías
+3. Buscar productos
+4. Ver vista rápida de producto
+
+TEST 2: Agregar al Carrito
+1. Hacer click en "Agregar al Carrito"
+2. Ver notificación de éxito
+3. Verificar contador del carrito
+
+TEST 3: Gestión de Carrito
+1. Abrir carrito (icono superior)
+2. Aumentar/disminuir cantidades
+3. Eliminar productos
+4. Verificar totales
+
+TEST 4: Proceso de Checkout
+1. Click "Proceder al Pago"
+2. Completar información personal
+3. Aplicar código promocional: DESCUENTO10
+4. Seleccionar método de pago
+5. Ver confirmación final
+
+TEST 5: Pago con PayPal (Sandbox)
+1. Llegar al paso de pago
+2. Seleccionar PayPal
+3. Click en botón PayPal
+4. Usar credenciales de sandbox
+5. Confirmar pago
+6. Ver celebración con confetti 🎉
+
+
+⚙️ CONFIGURACIÓN PAYPAL:
+─────────────────────────────────────────────────────────────
+Client ID: AWxKgr5n7ex5Lc3fDBOooaVHLgcAB-KCrYXgCmit9DpN...
+Modo: Sandbox (desarrollo)
+Moneda: USD
+
+
+🗄️ BASE DE DATOS:
+─────────────────────────────────────────────────────────────
+Sistema actualmente funciona con datos de muestra (mock data).
+Para conectar a Supabase real:
+
+1. Crear cuenta en: https://supabase.com
+2. Crear nuevo proyecto
+3. Copiar credenciales en archivo .env:
+   VITE_SUPABASE_URL=tu_url
+   VITE_SUPABASE_ANON_KEY=tu_key
+
+4. Crear tablas (SQL en SISTEMA_ECOMMERCE_VERIFICADO.md)
+
+
+🐛 SOLUCIÓN DE PROBLEMAS:
+─────────────────────────────────────────────────────────────
+
+PROBLEMA: "npm no se reconoce"
+SOLUCIÓN:
+• Instalar Node.js desde nodejs.org
+• O ejecutar: winget install OpenJS.NodeJS
+• Reiniciar terminal después de instalar
+
+PROBLEMA: Puerto 5173 ocupado
+SOLUCIÓN:
+• npm run dev -- --port 3000
+
+PROBLEMA: Errores al instalar dependencias
+SOLUCIÓN:
+• npm cache clean --force
+• Eliminar carpeta node_modules
+• npm install
+
+PROBLEMA: Carrito no guarda productos
+SOLUCIÓN:
+• Abrir DevTools (F12)
+• Application > Local Storage
+• Eliminar "cart"
+• Recargar página
+
+PROBLEMA: PayPal no carga
+SOLUCIÓN:
+• Verificar conexión a internet
+• Revisar Client ID en PayPalButton.jsx
+• Verificar que no haya bloqueador de anuncios
+
+
+📞 CONTACTO Y SOPORTE:
+─────────────────────────────────────────────────────────────
+WhatsApp: +593988835269
+Email: info@abgwilsonipiales.com
+
+
+📚 DOCUMENTACIÓN ADICIONAL:
+─────────────────────────────────────────────────────────────
+• SISTEMA_ECOMMERCE_VERIFICADO.md - Verificación completa
+• VERIFICACION_SISTEMA_COMPLETO.md - Detalles técnicos
+• README.md - Información general del proyecto
+
+
+✅ CHECKLIST ANTES DE USAR:
+─────────────────────────────────────────────────────────────
+[ ] Node.js instalado
+[ ] npm funcionando
+[ ] Dependencias instaladas (npm install)
+[ ] Servidor iniciado (npm run dev)
+[ ] Navegador abierto en localhost:5173
+[ ] Carrito funcional
+[ ] PayPal cargando correctamente
+
+
+═══════════════════════════════════════════════════════════════
+           ¡SISTEMA LISTO PARA USAR! 🚀
+═══════════════════════════════════════════════════════════════
+
+Para iniciar:
+1. Ejecutar INICIAR_RAPIDO.bat
+2. Abrir http://localhost:5173
+3. ¡Empezar a comprar!
+
+═══════════════════════════════════════════════════════════════

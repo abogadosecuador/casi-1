@@ -72,6 +72,8 @@ import AppointmentScheduler from './components/Appointment/AppointmentScheduler'
 // Páginas de comunidad
 import AffiliatePage from './pages/CleanAffiliatePage';
 import ReferralsPage from './pages/CleanReferralsPage';
+import AffiliateOverview from './components/Affiliates/AffiliateOverview';
+import AffiliateRegister from './components/Affiliates/AffiliateRegister';
 
 // Páginas de servicios individuales
 import ServicioPenalPage from './pages/ServicioPenalPage';

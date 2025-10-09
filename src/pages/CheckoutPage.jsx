@@ -10,6 +10,7 @@ import PayPalButton from '../components/Payment/PayPalButton';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { dataService } from '../services/supabaseService';
+import Navbar from '../components/Navigation/NavbarFixed';
 
 const CheckoutPage = () => {
   const { cart, getCartTotal, clearCart } = useCart();
@@ -137,7 +138,7 @@ const CheckoutPage = () => {
         <meta name="description" content="Finalice su compra de servicios legales con el Abg. Wilson Ipiales" />
       </Helmet>
       
-      <Header />
+      <Navbar />
       
       <main className="bg-gray-100 py-12">
         <div className="container mx-auto px-4">

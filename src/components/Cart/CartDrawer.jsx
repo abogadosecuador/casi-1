@@ -116,7 +116,7 @@ const CartDrawer = () => {
                           </div>
                           <div className="flex items-center space-x-2">
                             <button
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              onClick={() => updateQuantity(item.id, item.type || 'product', item.quantity - 1)}
                               className="p-1 bg-gray-200 hover:bg-gray-300 rounded transition-colors"
                             >
                               <FaMinus className="text-xs" />
@@ -125,13 +125,13 @@ const CartDrawer = () => {
                               {item.quantity}
                             </span>
                             <button
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              onClick={() => updateQuantity(item.id, item.type || 'product', item.quantity + 1)}
                               className="p-1 bg-gray-200 hover:bg-gray-300 rounded transition-colors"
                             >
                               <FaPlus className="text-xs" />
                             </button>
                             <button
-                              onClick={() => removeFromCart(item.id)}
+                              onClick={() => removeFromCart(item.id, item.type || 'product')}
                               className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
                             >
                               <FaTrash />

@@ -273,7 +273,7 @@ export const CartProvider = ({ children }) => {
     dispatch({ type: CART_ACTIONS.CLEAR_CART });
   };
   
-  // Función para procesar el pago
+  // Función para procesar el pago CON BACKEND REAL
   const checkout = async (paymentMethod, paymentDetails = {}) => {
     if (!user) {
       toast.error('Debes iniciar sesión para realizar el pago');
@@ -286,33 +286,50 @@ export const CartProvider = ({ children }) => {
     }
     
     try {
-      const response = await fetch('/api/purchase', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user?.token}` // Assuming token is needed
-        },
-        body: JSON.stringify({
-          items: state.items,
-          total: state.total,
-          paymentMethod,
-          paymentDetails // e.g., PayPal transaction ID
-        })
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        toast.success(data.message || '¡Compra realizada con éxito!');
-        clearCart(); // Clear cart on successful purchase
-        return { success: true, transactionId: data.transactionId };
+      // Importar servicio de API
+      const { default: apiBackend } = await import('../services/apiBackend.js');
+      
+      // Preparar datos de compra
+      const purchaseData = {
+        userId: user.id,
+        items: state.items,
+        total: state.total,
+        paymentMethod,
+        paymentDetails,
+        billingInfo: {
+          name: user.name || user.full_name,
+          email: user.email,
+          phone: user.phone
+        }
+      };
+      
+      // Procesar compra en el backend
+      const result = await apiBackend.purchase.processPurchase(
+        purchaseData,
+        user.token
+      );
+      
+      if (result.success) {
+        toast.success(result.message || '¡Compra realizada con éxito!');
+        clearCart();
+        
+        // Actualizar compras del usuario
+        if (user.purchases) {
+          user.purchases = [...(user.purchases || []), ...result.purchases.map(p => p.product_id)];
+        }
+        
+        return { 
+          success: true, 
+          transactionId: result.transactionId,
+          orderId: result.orderId
+        };
       } else {
-        throw new Error(data.message || 'Error al procesar la compra.');
+        throw new Error(result.error || 'Error al procesar la compra.');
       }
     } catch (error) {
       console.error('Error en el checkout:', error);
       toast.error(error.message || 'Error al procesar la compra. Inténtalo de nuevo.');
-      return { success: false, error };
+      return { success: false, error: error.message };
     }
   };
   
@@ -321,9 +338,16 @@ export const CartProvider = ({ children }) => {
     setIsCartVisible(!isCartVisible);
   };
   
+  // Función para obtener el total del carrito
+  const getCartTotal = () => {
+    return state.total;
+  };
+
   // Valores a proporcionar en el contexto
   const value = {
     items: state.items,
+    cartItems: state.items, // Alias para compatibilidad
+    cart: state.items, // Alias para compatibilidad con CheckoutPage
     total: state.total,
     itemCount: state.items.reduce((count, item) => count + (item.quantity || 1), 0),
     isCartVisible,
@@ -334,6 +358,7 @@ export const CartProvider = ({ children }) => {
     removeFromCart,
     clearCart,
     checkout,
+    getCartTotal, // Exponer función getCartTotal
     toggleCartVisibility
   };
   

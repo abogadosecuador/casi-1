@@ -6,6 +6,7 @@ import { FaBook, FaBookReader, FaGraduationCap, FaPlay, FaShoppingCart } from 'r
 import { toast } from 'react-hot-toast';
 
 import Footer from '../components/Footer/Footer';
+import Navbar from '../components/Navigation/NavbarFixed';
 import { useCart } from '../context/CartContext';
 import { dataService } from '../services/supabaseService';
 
@@ -240,7 +241,7 @@ const CoursesPage = () => {
         <meta name="description" content="Cursos y masterclass de derecho. Aprenda conceptos legales de manera práctica y efectiva." />
       </Helmet>
       
-      <Header />
+      <Navbar />
       
       <main className="bg-gray-100 py-12">
         <div className="container mx-auto px-4">
