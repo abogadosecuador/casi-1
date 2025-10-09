@@ -1,9 +1,10 @@
 /**
  * Servicio de API para conectar con el backend de producción
  * Sistema de pagos y compras real
+ * Usa proxy de Vite en desarrollo (/api) -> localhost:3001
  */
 
-const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001/api';
+const API_URL = import.meta.env.VITE_BACKEND_URL || '/api';
 
 // Helper para manejar respuestas
 const handleResponse = async (response) => {

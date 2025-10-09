@@ -551,11 +551,11 @@ setInterval(async () => {
 // INICIAR SERVIDOR
 // ============================================
 
-app.listen(PORT, () => {
+app.listen(PORT, 'localhost', () => {
   console.log('═══════════════════════════════════════════════════════');
-  console.log(`🚀 Servidor backend iniciado en puerto ${PORT}`);
-  console.log(`📡 API disponible en: http://localhost:${PORT}/api`);
-  console.log(`✅ Health check: http://localhost:${PORT}/api/health`);
+  console.log(`🚀 Backend interno en puerto ${PORT} (Solo localhost)`);
+  console.log(`📡 Acceso público: http://localhost:5173/api`);
+  console.log(`✅ Frontend con proxy: http://localhost:5173`);
   console.log('═══════════════════════════════════════════════════════');
 });
 

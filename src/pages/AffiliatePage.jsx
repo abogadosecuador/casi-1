@@ -6,7 +6,7 @@ import {
   FaCheckCircle, FaArrowRight, FaPercent, FaCalculator
 } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const AffiliatePage = () => {

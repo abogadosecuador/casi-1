@@ -4,6 +4,8 @@ import { Disclosure, Menu, Transition, Popover } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon, ChevronDownIcon, UserIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
 import { FaUsers, FaHandshake, FaComments, FaGavel, FaBook, FaShieldAlt, FaFileContract, FaFileAlt, FaUserTie, FaWhatsapp, FaPhone, FaEnvelope, FaUserPlus, FaSignInAlt, FaLock, FaShoppingCart, FaBriefcase, FaGlobe } from 'react-icons/fa';
 import CartDrawer from '../Cart/CartDrawer';
+import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 
 const serviceSubmenu = [
   { name: 'Todos los Servicios', href: '/servicios', current: false, icon: <FaGavel className="text-blue-500" /> },
