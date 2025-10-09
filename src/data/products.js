@@ -194,5 +194,78 @@ export const products = [
     shipping: true,
     stock: 32,
     tags: ['Libro']
+  },
+  // Más Cursos y Masterclass
+  {
+    id: 14,
+    name: 'Masterclass Derecho Penal',
+    category: 'course',
+    price: 599,
+    originalPrice: 899,
+    description: 'Masterclass intensivo con expertos en derecho penal',
+    image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400',
+    rating: 5.0,
+    reviews: 89,
+    featured: true,
+    discount: 33,
+    type: 'course',
+    duration: '4 semanas',
+    lessons: 16,
+    students: 345,
+    tags: ['Masterclass', 'Expertos']
+  },
+  {
+    id: 15,
+    name: 'Curso Tributación y RENTA',
+    category: 'course',
+    price: 299,
+    description: 'Todo sobre impuestos y declaraciones de renta',
+    image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400',
+    rating: 4.8,
+    reviews: 267,
+    type: 'course',
+    duration: '5 semanas',
+    lessons: 20,
+    students: 678,
+    tags: ['Tributario', 'Práctico']
+  },
+  {
+    id: 16,
+    name: 'E-book: Testamentos y Sucesiones',
+    category: 'ebook',
+    price: 45,
+    description: 'Guía completa sobre herencias y sucesiones',
+    image: 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=400',
+    rating: 4.7,
+    reviews: 123,
+    type: 'ebook',
+    pages: 180,
+    format: 'PDF',
+    tags: ['Herencias', 'Familia']
+  },
+  {
+    id: 17,
+    name: 'Consulta Empresarial',
+    category: 'consultation',
+    price: 250,
+    description: 'Asesoría legal especializada para empresas',
+    image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400',
+    rating: 4.9,
+    reviews: 198,
+    type: 'consultation',
+    duration: '120 minutos',
+    tags: ['Empresarial', 'Premium']
+  },
+  {
+    id: 18,
+    name: 'Servicio Defensa Tránsito',
+    category: 'service',
+    price: 399,
+    description: 'Defensa legal en casos de tránsito y accidentes',
+    image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400',
+    rating: 4.8,
+    reviews: 156,
+    type: 'service',
+    tags: ['Tránsito', 'Urgente']
   }
 ];

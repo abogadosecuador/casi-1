@@ -200,7 +200,7 @@ const EmpresarialConsultationPage: React.FC = () => {
               </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Modality Selection */}
         <div className="mb-12">

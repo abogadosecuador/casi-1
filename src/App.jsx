@@ -16,7 +16,7 @@ import {
 } from './middleware/roleMiddleware.jsx';
 
 // Componentes de navegación
-import Navbar from './components/Navigation/Navbar';
+import Navbar from './components/Navigation/NavbarFixed';
 import Footer from './components/Footer/Footer';
 import LoadingSpinner from './components/Common/LoadingSpinner';
 
@@ -56,22 +56,22 @@ import DataExporter from './components/Admin/DataExporter';
 import WhatsAppManager from './components/Admin/WhatsAppManager';
 
 // Nuevos componentes integrados
-import UnifiedStore from './components/Store/UnifiedStore';
+import UnifiedStore from './components/Store/CompleteStore';
 import CheckoutSystem from './components/Checkout/CheckoutSystem';
 import AppointmentCalendar from './components/Calendar/AppointmentCalendar';
 import AIChatSystem from './components/Chat/AIChatSystem';
 import TriviaSystem from './components/Gamification/TriviaSystem';
 import DragDropEditor from './components/Editor/DragDropEditor';
 import PromotionsManager from './components/Promotions/PromotionsManager';
-
 // Páginas de funcionalidad
 import PaymentSystem from './components/Payment/PaymentSystem';
 import CheckoutPage from './pages/CheckoutPage';
 import ThankYouPage from './components/Payment/ThankYouPage';
 import AIConsultationSystem from './components/Consultation/AIConsultationSystem';
 import AppointmentScheduler from './components/Appointment/AppointmentScheduler';
-import AffiliateRegister from './components/Affiliates/AffiliateRegister';
-import AffiliateOverview from './components/Affiliates/AffiliateOverview';
+// Páginas de comunidad
+import AffiliatePage from './pages/CleanAffiliatePage';
+import ReferralsPage from './pages/CleanReferralsPage';
 
 // Páginas de servicios individuales
 import ServicioPenalPage from './pages/ServicioPenalPage';
@@ -80,6 +80,13 @@ import ServicioTransitoPage from './pages/ServicioTransitoPage';
 import ServicioComercialPage from './pages/ServicioComercialPage';
 import ServicioAduaneroPage from './pages/ServicioAduaneroPage';
 import ServicioLaboralPage from './pages/ServicioLaboralPage';
+
+// Páginas de consultas
+import PenalConsultationPage from './pages/ConsultationTypes/PenalConsultationPage';
+import CivilConsultationPage from './pages/ConsultationTypes/CivilConsultationPage';
+import QuickConsultationPage from './pages/ConsultationTypes/QuickConsultationPage';
+import EmpresarialConsultationPage from './pages/ConsultationTypes/EmpresarialConsultationPage';
+import DigitalConsultationPage from './pages/ConsultationTypes/DigitalConsultationPage';
 
 // Páginas de error
 import NotFoundPage from './components/Common/NotFoundPage';
@@ -122,8 +129,16 @@ function App() {
                   <Route path="/servicios/civil" element={<ServicioCivilPage />} />
                   <Route path="/servicios/comercial" element={<ServicioComercialPage />} />
                   <Route path="/servicios/transito" element={<ServicioTransitoPage />} />
-                  <Route path="/servicios/aduanero" element={<ServicioAduaneroPage />} />\n
-                  <Route path="/servicios/laboral" element={<ServicioLaboralPage />} />\n
+                  <Route path="/servicios/aduanero" element={<ServicioAduaneroPage />} />
+                  <Route path="/servicios/laboral" element={<ServicioLaboralPage />} />
+                  
+                  {/* Rutas de consultas */}
+                  <Route path="/consultas/penal" element={<PenalConsultationPage />} />
+                  <Route path="/consultas/civil" element={<CivilConsultationPage />} />
+                  <Route path="/consultas/general" element={<QuickConsultationPage />} />
+                  <Route path="/consultas/empresarial" element={<EmpresarialConsultationPage />} />
+                  <Route path="/consultas/digital" element={<DigitalConsultationPage />} />
+
                   <Route path="/sobre-nosotros" element={<AboutPage />} />
                   <Route path="/contacto" element={<Contact />} />
                   <Route path="/blog" element={<Blog />} />
@@ -140,6 +155,10 @@ function App() {
                   <Route path="/newsletter" element={<Blog />} />
                   <Route path="/forum" element={<ForumHome />} />
                   <Route path="/catalog" element={<UnifiedStore />} />
+
+                  {/* Rutas de comunidad */}
+                  <Route path="/afiliados" element={<AffiliatePage />} />
+                  <Route path="/referidos" element={<ReferralsPage />} />
                   
                   {/* Rutas de autenticación (solo visitantes) */}
                   <Route path="/login" element={
