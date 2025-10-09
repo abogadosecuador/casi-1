@@ -152,6 +152,7 @@ function App() {
                     <Route path="/test-shopping" element={<TestShoppingPage />} />
                     <Route path="/cursos" element={<CourseCatalog />} />
                     <Route path="/cursos/:slug" element={<CourseDetail />} />
+                    <Route path="/ebooks" element={<Ebooks />} />
                     <Route path="/tienda" element={<UnifiedStore />} />
                     <Route path="/calendario" element={<AppointmentCalendar />} />
                     <Route path="/promociones" element={<PromotionsManager />} />

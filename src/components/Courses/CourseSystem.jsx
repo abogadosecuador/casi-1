@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute, FaExpand, FaCheck, FaLock, FaClock, FaUser, FaStar } from 'react-icons/fa';
+import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute, FaExpand, FaCheck, FaLock, FaClock, FaUser, FaStar, FaShoppingCart } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
+import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const CourseSystem = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { addToCart, items } = useCart();
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [currentLesson, setCurrentLesson] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState({});
   const [userProgress, setUserProgress] = useState({});
+  const [purchasedCourses, setPurchasedCourses] = useState([]);
 
   const courses = [
     {
@@ -287,8 +294,35 @@ const CourseSystem = () => {
     return Math.round((completedLessons / totalLessons) * 100);
   };
 
+  const handleAddToCart = (course) => {
+    const cartItem = {
+      id: course.id,
+      name: course.title,
+      price: course.price,
+      category: 'Curso',
+      imageUrl: course.image,
+      quantity: 1,
+      type: 'course',
+      instructor: course.instructor,
+      duration: course.duration
+    };
+    
+    addToCart(cartItem);
+    toast.success(`${course.title} agregado al carrito`);
+  };
+
+  const isCourseInCart = (courseId) => {
+    return items.some(item => item.id === courseId && item.type === 'course');
+  };
+
+  const isCourseOwned = (courseId) => {
+    return purchasedCourses.includes(courseId);
+  };
+
   const CourseCard = ({ course }) => {
     const progress = getCourseProgress(course);
+    const isOwned = isCourseOwned(course.id);
+    const inCart = isCourseInCart(course.id);
     
     return (
       <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
@@ -346,13 +380,35 @@ const CourseSystem = () => {
           )}
 
           <div className="flex space-x-2">
-            <button
+            {isOwned ? (
+              <button
+                onClick={() => setSelectedCourse(course)}
+                className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+              >
+                <FaPlay className="text-sm" />
+                {progress > 0 ? 'Continuar' : 'Empezar Curso'}
+              </button>
+            ) : inCart ? (
+              <button
+                onClick={() => navigate('/checkout')}
+                className="flex-1 bg-orange-600 text-white py-2 px-4 rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center gap-2"
+              >
+                <FaShoppingCart className="text-sm" />
+                Ir al Carrito
+              </button>
+            ) : (
+              <button
+                onClick={() => handleAddToCart(course)}
+                className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+              >
+                <FaShoppingCart className="text-sm" />
+                Comprar ${course.price}
+              </button>
+            )}
+            <button 
               onClick={() => setSelectedCourse(course)}
-              className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              {progress > 0 ? 'Continuar' : 'Comenzar'}
-            </button>
-            <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
               Ver Detalles
             </button>
           </div>
