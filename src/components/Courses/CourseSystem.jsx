@@ -20,7 +20,7 @@ const CourseSystem = () => {
       price: 100,
       rating: 4.8,
       students: 45,
-      image: '/images/courses/penal.jpg',
+      image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
       category: 'Penal',
       level: 'Básico',
       lessons: [
@@ -60,7 +60,7 @@ const CourseSystem = () => {
       price: 150,
       rating: 4.9,
       students: 32,
-      image: '/images/courses/civil.jpg',
+      image: 'https://images.unsplash.com/photo-1589998059171-988d887df646?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
       category: 'Civil',
       level: 'Avanzado',
       lessons: [
@@ -92,7 +92,7 @@ const CourseSystem = () => {
       price: 80,
       rating: 4.7,
       students: 56,
-      image: '/images/courses/transito.jpg',
+      image: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
       category: 'Tránsito',
       level: 'Intermedio',
       lessons: [

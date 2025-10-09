@@ -283,84 +283,122 @@ export default function Ebooks() {
         </div>
 
         {/* Barra de búsqueda y filtros */}
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row md:justify-between mb-4 gap-4">
-            <div className="relative w-full md:w-2/3">
-              <input
-                type="text"
-                placeholder="Buscar e-books..."
-                className="form-input pl-10 w-full"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                <svg className="w-5 h-5 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mb-10 bg-white p-6 rounded-2xl shadow-xl border border-gray-100"
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex-1 relative">
+              <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
+              <input
+                type="text"
+                placeholder="Buscar e-books por título, categoría o descripción..."
+                className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
-            <div className="flex space-x-2 overflow-x-auto pb-2">
+            <div className="flex flex-wrap gap-2">
               {categories.map(category => (
                 <motion.button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-lg whitespace-nowrap ${selectedCategory === category ? 'btn-primary' : 'btn-secondary'}`}
+                  className={`px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all transform hover:scale-105 ${
+                    selectedCategory === category 
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
+                  {category === 'Todos' && '📚 '}
+                  {category === 'Civil' && '⚖️ '}
+                  {category === 'Penal' && '🔒 '}
+                  {category === 'Comercial' && '💼 '}
+                  {category === 'Tránsito' && '🚗 '}
+                  {category === 'Aduanas' && '📦 '}
                   {category}
                 </motion.button>
               ))}
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Resumen del carrito */}
         {cartItems.length > 0 && (
           <motion.div 
-            className="mb-8 card border-2 border-primary-100"
+            className="mb-10 bg-gradient-to-br from-blue-50 to-white p-6 rounded-2xl border-2 border-blue-200 shadow-xl"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="p-4">
-              <h3 className="text-xl font-bold text-secondary-900 mb-4 flex items-center">
-                <FaShoppingCart className="mr-2 text-primary-600" /> 
-                Carrito de Compra ({cartItems.length} {cartItems.length === 1 ? 'item' : 'items'})
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="bg-blue-600 text-white p-3 rounded-xl">
+                  <FaShoppingCart className="text-xl" />
+                </div>
+                Carrito de Compra
+                <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+                  {cartItems.length}
+                </span>
               </h3>
-              
-              <div className="divide-y divide-secondary-100">
-                {cartItems.map(item => (
-                  <div key={item.id} className="py-3 flex justify-between items-center">
-                    <div className="flex items-center">
-                      <FaBook className="mr-2 text-primary-600" />
-                      <span className="font-medium">{item.title}</span>
+            </div>
+            
+            <div className="space-y-3">
+              {cartItems.map(item => (
+                <motion.div 
+                  key={item.id} 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="bg-white p-4 rounded-xl shadow-md flex justify-between items-center hover:shadow-lg transition-shadow"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-100 p-2 rounded-lg">
+                      <FaBook className="text-blue-600 text-lg" />
                     </div>
-                    <div className="flex items-center">
-                      <span className="mr-4 font-bold">${item.price}</span>
-                      <button 
-                        onClick={() => removeFromCart(item.id)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
+                    <div>
+                      <span className="font-semibold text-gray-900 block">{item.title}</span>
+                      <span className="text-sm text-gray-500">{item.category}</span>
                     </div>
                   </div>
-                ))}
+                  <div className="flex items-center gap-4">
+                    <span className="text-xl font-bold text-blue-600">${item.price.toFixed(2)}</span>
+                    <motion.button 
+                      onClick={() => removeFromCart(item.id)}
+                      className="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition-colors"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </motion.button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            
+            <div className="flex flex-col sm:flex-row justify-between items-center mt-6 pt-6 border-t-2 border-blue-200 gap-4">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Total a pagar</p>
+                <span className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+                  ${cartTotal}
+                </span>
               </div>
-              
-              <div className="flex justify-between items-center mt-4 pt-4 border-t border-secondary-100">
-                <span className="text-lg font-bold">Total: ${cartTotal}</span>
-                <motion.button 
-                  onClick={handleCheckout}
-                  className="btn-primary"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Proceder al pago
-                </motion.button>
-              </div>
+              <motion.button 
+                onClick={handleCheckout}
+                className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl flex items-center gap-3"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FaShoppingCart className="text-xl" />
+                Proceder al Pago
+              </motion.button>
             </div>
           </motion.div>
         )}
@@ -376,49 +414,88 @@ export default function Ebooks() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredEbooks.filter(ebook => !ebook.isFree).map(ebook => (
+            {filteredEbooks.filter(ebook => !ebook.isFree).map((ebook, index) => (
               <motion.div
                 key={ebook.id}
-                className="card overflow-hidden"
+                className="bg-white rounded-2xl shadow-lg overflow-hidden group hover:shadow-2xl transition-all duration-300"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ y: -8 }}
               >
-                <div className="relative">
+                <div className="relative overflow-hidden">
+                  {/* Gradient background for image loading */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300"></div>
+                  
                   <img
                     src={ebook.coverImage}
                     alt={ebook.title}
-                    className="w-full h-48 object-cover"
+                    className="w-full h-64 object-cover relative z-10 transform group-hover:scale-110 transition-transform duration-500"
+                    loading="lazy"
                   />
+                  
+                  {/* Gradient overlay on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"></div>
+                  
+                  {/* Popular badge */}
                   {ebook.popular && (
-                    <div className="absolute top-0 right-0 bg-primary-600 text-white px-3 py-1 text-sm font-bold">
-                      Popular
-                    </div>
+                    <motion.div 
+                      initial={{ x: 20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      className="absolute top-3 right-3 bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-full text-sm font-bold shadow-xl z-30"
+                    >
+                      🔥 Popular
+                    </motion.div>
                   )}
-                  <div className="absolute bottom-0 left-0 bg-secondary-900 bg-opacity-80 text-white px-3 py-1">
+                  
+                  {/* Pages count badge */}
+                  <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-sm text-gray-900 px-4 py-2 rounded-full text-sm font-semibold shadow-lg z-30 flex items-center gap-2">
+                    <FaFilePdf className="text-red-600" />
                     {ebook.pages} páginas
                   </div>
-                </div>
-                <div className="p-5">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-xl font-bold text-secondary-900">{ebook.title}</h3>
-                    <span className="badge-primary">{ebook.category}</span>
+                  
+                  {/* Category badge - shows on hover */}
+                  <div className="absolute top-3 left-3 bg-blue-600/90 backdrop-blur-sm text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {ebook.category}
                   </div>
-                  <p className="text-secondary-600 mb-4">{ebook.description}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-2xl font-bold text-primary-600">${ebook.price}</span>
-                    {cartItems.some(item => item.id === ebook.id) ? (
-                      <span className="flex items-center text-green-600 font-medium">
-                        <FaCheck className="mr-1" /> Agregado
+                </div>
+                
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors leading-tight">
+                    {ebook.title}
+                  </h3>
+                  <p className="text-gray-600 mb-4 text-sm line-clamp-3 leading-relaxed">{ebook.description}</p>
+                  
+                  <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Precio</p>
+                      <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+                        ${ebook.price.toFixed(2)}
                       </span>
+                    </div>
+                    
+                    {cartItems.some(item => item.id === ebook.id) ? (
+                      <div className="flex items-center gap-2 bg-green-50 text-green-700 px-4 py-3 rounded-xl font-semibold border-2 border-green-200">
+                        <FaCheck className="text-lg" /> 
+                        <span>Agregado</span>
+                      </div>
+                    ) : purchasedEbooks.includes(ebook.id) ? (
+                      <button
+                        onClick={() => handleDownload(ebook)}
+                        disabled={downloading}
+                        className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-3 rounded-xl font-semibold hover:from-green-700 hover:to-green-800 transition-all transform hover:scale-105 flex items-center gap-2 shadow-lg"
+                      >
+                        <FaDownload /> Descargar
+                      </button>
                     ) : (
                       <motion.button
                         onClick={() => addToCart(ebook)}
-                        className="btn-primary flex items-center"
+                        className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-5 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-105 flex items-center gap-2 shadow-lg hover:shadow-xl"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <FaShoppingCart className="mr-2" /> Comprar
+                        <FaShoppingCart className="text-base" /> 
+                        <span>Comprar</span>
                       </motion.button>
                     )}
                   </div>
@@ -429,42 +506,79 @@ export default function Ebooks() {
         )}
 
         {/* Sección de beneficios */}
-        <div className="mt-16">
-          <h3 className="text-2xl font-bold text-secondary-900 text-center mb-8">
-            Beneficios de nuestros E-Books Legales
-          </h3>
+        <div className="mt-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <h3 className="text-4xl font-extrabold text-gray-900 mb-4">
+              ¿Por qué elegir nuestros E-Books?
+            </h3>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Recursos digitales diseñados para facilitar tu comprensión legal
+            </p>
+          </motion.div>
+          
           <div className="grid md:grid-cols-3 gap-8">
             <motion.div 
-              className="card text-center p-6"
-              whileHover={{ y: -10 }}
+              className="bg-white rounded-2xl text-center p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              whileHover={{ y: -10, scale: 1.02 }}
             >
-              <div className="rounded-full bg-primary-100 w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <FaBook className="text-primary-600 text-2xl" />
+              <div className="relative inline-block mb-6">
+                <div className="absolute inset-0 bg-blue-400 rounded-full blur-xl opacity-30"></div>
+                <div className="relative rounded-full bg-gradient-to-br from-blue-500 to-blue-600 w-20 h-20 flex items-center justify-center">
+                  <FaBook className="text-white text-3xl" />
+                </div>
               </div>
-              <h4 className="text-xl font-bold text-secondary-900 mb-2">Conocimiento Accesible</h4>
-              <p className="text-secondary-600">Información legal especializada explicada en lenguaje claro y comprensible.</p>
+              <h4 className="text-2xl font-bold text-gray-900 mb-3">Conocimiento Accesible</h4>
+              <p className="text-gray-600 leading-relaxed">
+                Información legal especializada explicada en lenguaje claro y comprensible para todos.
+              </p>
             </motion.div>
+            
             <motion.div 
-              className="card text-center p-6"
-              whileHover={{ y: -10 }}
+              className="bg-white rounded-2xl text-center p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              whileHover={{ y: -10, scale: 1.02 }}
             >
-              <div className="rounded-full bg-primary-100 w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <FaDownload className="text-primary-600 text-2xl" />
+              <div className="relative inline-block mb-6">
+                <div className="absolute inset-0 bg-green-400 rounded-full blur-xl opacity-30"></div>
+                <div className="relative rounded-full bg-gradient-to-br from-green-500 to-green-600 w-20 h-20 flex items-center justify-center">
+                  <FaDownload className="text-white text-3xl" />
+                </div>
               </div>
-              <h4 className="text-xl font-bold text-secondary-900 mb-2">Disponibilidad Inmediata</h4>
-              <p className="text-secondary-600">Descarga instantánea tras la compra, sin esperas ni envíos.</p>
+              <h4 className="text-2xl font-bold text-gray-900 mb-3">Disponibilidad Inmediata</h4>
+              <p className="text-gray-600 leading-relaxed">
+                Descarga instantánea tras la compra, sin esperas ni envíos. Acceso 24/7.
+              </p>
             </motion.div>
+            
             <motion.div 
-              className="card text-center p-6"
-              whileHover={{ y: -10 }}
+              className="bg-white rounded-2xl text-center p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              whileHover={{ y: -10, scale: 1.02 }}
             >
-              <div className="rounded-full bg-primary-100 w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+              <div className="relative inline-block mb-6">
+                <div className="absolute inset-0 bg-purple-400 rounded-full blur-xl opacity-30"></div>
+                <div className="relative rounded-full bg-gradient-to-br from-purple-500 to-purple-600 w-20 h-20 flex items-center justify-center">
+                  <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
               </div>
-              <h4 className="text-xl font-bold text-secondary-900 mb-2">Ahorro de Tiempo</h4>
-              <p className="text-secondary-600">Resuelva dudas legales básicas sin necesidad de consultas presenciales.</p>
+              <h4 className="text-2xl font-bold text-gray-900 mb-3">Ahorro de Tiempo</h4>
+              <p className="text-gray-600 leading-relaxed">
+                Resuelva dudas legales básicas sin necesidad de consultas presenciales costosas.
+              </p>
             </motion.div>
           </div>
         </div>
