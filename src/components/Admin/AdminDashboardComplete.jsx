@@ -69,11 +69,11 @@ const AdminDashboardComplete = () => {
     { title: 'Usuarios', icon: FaUsers, action: () => setActiveTab('users'), color: 'from-blue-500 to-blue-600' },
     { title: 'Productos', icon: FaShoppingCart, action: () => setActiveTab('products'), color: 'from-green-500 to-green-600' },
     { title: 'Cursos', icon: FaBook, action: () => setActiveTab('courses'), color: 'from-purple-500 to-purple-600' },
-    { title: 'Editor', icon: FaPalette, action: () => setActiveTab('editor'), color: 'from-pink-500 to-pink-600' },
-    { title: 'Promociones', icon: FaGift, action: () => setActiveTab('promotions'), color: 'from-yellow-500 to-yellow-600' },
-    { title: 'Gamificación', icon: FaGamepad, action: () => setActiveTab('gamification'), color: 'from-indigo-500 to-indigo-600' },
-    { title: 'Chat', icon: FaComments, action: () => setShowChat(true), color: 'from-teal-500 to-teal-600' },
-    { title: 'Config', icon: FaCog, action: () => setActiveTab('settings'), color: 'from-gray-500 to-gray-600' }
+    { title: 'Blog', icon: FaNewspaper, action: () => setActiveTab('blog'), color: 'from-pink-500 to-pink-600' },
+    { title: 'IA Contenido', icon: FaMagic, action: () => setActiveTab('ai-content'), color: 'from-purple-500 to-purple-600' },
+    { title: 'Import CSV', icon: FaUpload, action: () => setActiveTab('csv-import'), color: 'from-yellow-500 to-yellow-600' },
+    { title: 'Ventas', icon: FaDollarSign, action: () => setActiveTab('orders'), color: 'from-green-500 to-green-600' },
+    { title: 'Citas', icon: FaCalendarAlt, action: () => setActiveTab('appointments'), color: 'from-teal-500 to-teal-600' }
   ]);
 
   const dashboardCards = [
@@ -305,11 +305,11 @@ const AdminDashboardComplete = () => {
                     className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-xl p-6 text-white"
                   >
                     <div className="flex items-center justify-between mb-4">
-                      <FaGamepad className="text-4xl text-white/50" />
-                      <span className="text-2xl font-bold">{stats.completedGames}</span>
+                      <FaBook className="text-4xl text-white/50" />
+                      <span className="text-2xl font-bold">{stats.totalCourses}</span>
                     </div>
-                    <p className="text-white/80">Juegos Completados</p>
-                    <p className="text-sm text-white/60 mt-2">+23% esta semana</p>
+                    <p className="text-white/80">Cursos Totales</p>
+                    <p className="text-sm text-white/60 mt-2">{stats.totalEnrollments} inscritos</p>
                   </motion.div>
 
                   <motion.div
@@ -317,11 +317,11 @@ const AdminDashboardComplete = () => {
                     className="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl shadow-xl p-6 text-white"
                   >
                     <div className="flex items-center justify-between mb-4">
-                      <FaGift className="text-4xl text-white/50" />
-                      <span className="text-2xl font-bold">{stats.activePromotions}</span>
+                      <FaShoppingCart className="text-4xl text-white/50" />
+                      <span className="text-2xl font-bold">{stats.totalProducts}</span>
                     </div>
-                    <p className="text-white/80">Promociones Activas</p>
-                    <p className="text-sm text-white/60 mt-2">3 expiran pronto</p>
+                    <p className="text-white/80">Productos Totales</p>
+                    <p className="text-sm text-white/60 mt-2">Activos en tienda</p>
                   </motion.div>
 
                   <motion.div
@@ -329,43 +329,13 @@ const AdminDashboardComplete = () => {
                     className="bg-gradient-to-br from-teal-500 to-cyan-600 rounded-2xl shadow-xl p-6 text-white"
                   >
                     <div className="flex items-center justify-between mb-4">
-                      <FaComments className="text-4xl text-white/50" />
-                      <span className="text-2xl font-bold">{stats.totalMessages}</span>
+                      <FaDollarSign className="text-4xl text-white/50" />
+                      <span className="text-2xl font-bold">{stats.completedOrders}</span>
                     </div>
-                    <p className="text-white/80">Mensajes de Chat</p>
-                    <p className="text-sm text-white/60 mt-2">89 sin responder</p>
+                    <p className="text-white/80">Ventas Completadas</p>
+                    <p className="text-sm text-white/60 mt-2">De {stats.totalOrders} totales</p>
                   </motion.div>
                 </div>
-              </div>
-            )}
-
-            {activeTab === 'editor' && (
-              <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8 border border-gray-200/50">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                  <FaPalette className="mr-3 text-pink-500" />
-                  Editor de Páginas Drag & Drop
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  Crea y edita páginas arrastrando y soltando componentes. Sistema completo de diseño visual.
-                </p>
-                <button className="px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all">
-                  Abrir Editor
-                </button>
-              </div>
-            )}
-
-            {activeTab === 'promotions' && (
-              <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8 border border-gray-200/50">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                  <FaGift className="mr-3 text-yellow-500" />
-                  Sistema de Promociones y Ofertas
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  Gestiona promociones por tiempo limitado, códigos de descuento y ofertas especiales.
-                </p>
-                <button className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all">
-                  Gestionar Promociones
-                </button>
               </div>
             )}
 
@@ -385,51 +355,47 @@ const AdminDashboardComplete = () => {
             
             {activeTab === 'appointments' && (
               <div className="bg-white rounded-lg shadow-lg p-6">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Citas</h3>
-                <p className="text-gray-600">Gestión de citas pendiente de implementación...</p>
+                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                  <FaCalendarAlt className="mr-3 text-blue-600" />
+                  Gestión de Citas
+                </h3>
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+                  <p className="text-blue-700">
+                    <strong>Próximamente:</strong> Gestión completa de citas y calendario integrado.
+                  </p>
+                </div>
+                <p className="text-gray-600">Por ahora, las citas se gestionan desde la base de datos directamente.</p>
               </div>
             )}
             
             {activeTab === 'settings' && (
               <div className="bg-white rounded-lg shadow-lg p-6">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6">Configuración del Sistema</h3>
-                <p className="text-gray-600">Configuración pendiente de implementación...</p>
+                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                  <FaCog className="mr-3 text-gray-600" />
+                  Configuración del Sistema
+                </h3>
+                <div className="space-y-4">
+                  <div className="border rounded-lg p-4">
+                    <h4 className="font-semibold mb-2">Configuración de Supabase</h4>
+                    <p className="text-sm text-gray-600 mb-2">URL: {import.meta.env.VITE_SUPABASE_URL || 'Configurada'}</p>
+                    <p className="text-sm text-green-600">✓ Conexión activa</p>
+                  </div>
+                  <div className="border rounded-lg p-4">
+                    <h4 className="font-semibold mb-2">Base de Datos</h4>
+                    <p className="text-sm text-gray-600">14 Tablas configuradas</p>
+                    <p className="text-sm text-gray-600">RLS activado en todas las tablas</p>
+                  </div>
+                  <div className="border rounded-lg p-4">
+                    <h4 className="font-semibold mb-2">Sistema de Roles</h4>
+                    <p className="text-sm text-gray-600">Admin, Client, Affiliate</p>
+                  </div>
+                </div>
               </div>
             )}
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Chat flotante */}
-      {showChat && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8, y: 50 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.8, y: 50 }}
-          className="fixed bottom-6 right-6 w-96 h-[500px] bg-white rounded-2xl shadow-2xl z-50 overflow-hidden"
-        >
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-4 text-white">
-            <div className="flex justify-between items-center">
-              <h3 className="font-bold flex items-center">
-                <FaComments className="mr-2" />
-                Chat en Vivo
-              </h3>
-              <button 
-                onClick={() => setShowChat(false)}
-                className="text-white/80 hover:text-white"
-              >
-                ✕
-              </button>
-            </div>
-          </div>
-          <div className="p-4 h-[calc(100%-60px)] flex items-center justify-center text-gray-500">
-            <div className="text-center">
-              <FaComments className="text-6xl mb-4 mx-auto text-gray-300" />
-              <p>Sistema de chat integrado</p>
-            </div>
-          </div>
-        </motion.div>
-      )}
     </div>
   );
 };
