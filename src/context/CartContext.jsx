@@ -151,7 +151,8 @@ const cartReducer = (state, action) => {
 export const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
   const [isCartVisible, setIsCartVisible] = useState(false);
-  const { user, hasUserPurchasedCourse } = useAuth();
+  const authContext = useAuth() || {};
+  const { user, hasUserPurchasedCourse } = authContext;
   
   // Cargar el carrito desde localStorage al iniciar
   useEffect(() => {
