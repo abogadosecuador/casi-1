@@ -76,114 +76,7 @@ const CourseSystem = () => {
     }
   };
 
-  // Resto del código permanece igual
-  const oldCourses = [
-    {
-      id: 1,
-      title: 'Derecho Penal Básico',
-      instructor: 'Dr. Wilson Ipiales',
-      description: 'Aprenda los fundamentos del derecho penal ecuatoriano',
-      duration: '8 semanas',
-      totalLessons: 24,
-      price: 100,
-      rating: 4.8,
-      students: 45,
-      image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-      category: 'Penal',
-      level: 'Básico',
-      lessons: [
-        {
-          id: 1,
-          title: 'Introducción al Derecho Penal',
-          duration: '15:30',
-          videoUrl: 'https://example.com/video1.mp4',
-          description: 'Conceptos básicos y fundamentos del derecho penal',
-          completed: false
-        },
-        {
-          id: 2,
-          title: 'Elementos del Delito',
-          duration: '22:15',
-          videoUrl: 'https://example.com/video2.mp4',
-          description: 'Análisis de los elementos constitutivos del delito',
-          completed: false
-        },
-        {
-          id: 3,
-          title: 'Tipos Penales',
-          duration: '18:45',
-          videoUrl: 'https://example.com/video3.mp4',
-          description: 'Clasificación y estudio de los tipos penales',
-          completed: false
-        }
-      ]
-    },
-    {
-      id: 2,
-      title: 'Derecho Civil Avanzado',
-      instructor: 'Dr. Wilson Ipiales',
-      description: 'Profundice en el derecho civil y sus aplicaciones prácticas',
-      duration: '12 semanas',
-      totalLessons: 36,
-      price: 150,
-      rating: 4.9,
-      students: 32,
-      image: 'https://images.unsplash.com/photo-1589998059171-988d887df646?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-      category: 'Civil',
-      level: 'Avanzado',
-      lessons: [
-        {
-          id: 1,
-          title: 'Contratos Civiles',
-          duration: '20:00',
-          videoUrl: 'https://example.com/video4.mp4',
-          description: 'Análisis de contratos y sus elementos',
-          completed: false
-        },
-        {
-          id: 2,
-          title: 'Responsabilidad Civil',
-          duration: '25:30',
-          videoUrl: 'https://example.com/video5.mp4',
-          description: 'Estudio de la responsabilidad civil extracontractual',
-          completed: false
-        }
-      ]
-    },
-    {
-      id: 3,
-      title: 'Derecho de Tránsito',
-      instructor: 'Dr. Wilson Ipiales',
-      description: 'Todo sobre las leyes de tránsito y procedimientos',
-      duration: '6 semanas',
-      totalLessons: 18,
-      price: 80,
-      rating: 4.7,
-      students: 56,
-      image: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-      category: 'Tránsito',
-      level: 'Intermedio',
-      lessons: [
-        {
-          id: 1,
-          title: 'Normativa de Tránsito',
-          duration: '16:45',
-          videoUrl: 'https://example.com/video6.mp4',
-          description: 'Leyes y reglamentos de tránsito vigentes',
-          completed: false
-        },
-        {
-          id: 2,
-          title: 'Infracciones y Sanciones',
-          duration: '19:20',
-          videoUrl: 'https://example.com/video7.mp4',
-          description: 'Tipos de infracciones y sus sanciones',
-          completed: false
-        }
-      ]
-    }
-  ];
-
+  // Funciones auxiliares
   const VideoPlayer = ({ lesson }) => {
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
@@ -480,7 +373,23 @@ const CourseSystem = () => {
 
   const CoursePlayer = ({ course }) => {
     const [activeTab, setActiveTab] = useState('video');
-    const currentLessonData = course.lessons[currentLesson];
+    
+    // Validar que el curso y sus lecciones existan
+    if (!course || !course.lessons || course.lessons.length === 0) {
+      return (
+        <div className="max-w-6xl mx-auto p-8 text-center">
+          <p className="text-gray-600 mb-4">Este curso aún no tiene contenido disponible.</p>
+          <button
+            onClick={() => setSelectedCourse(null)}
+            className="text-blue-600 hover:text-blue-800"
+          >
+            ← Volver a los cursos
+          </button>
+        </div>
+      );
+    }
+    
+    const currentLessonData = course.lessons[currentLesson] || course.lessons[0];
 
     return (
       <div className="max-w-6xl mx-auto">
