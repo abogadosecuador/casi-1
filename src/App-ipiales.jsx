@@ -102,17 +102,19 @@ const ProtectedDownload = lazy(() => import('./components/ProtectedDownload'));
 // Determinar la URL base según el entorno (similar a apiService.js)
 const getBaseUrl = () => {
   if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    return '';  // URL relativa para Cloudflare
+    return 'https://api.abogadowilson.com';  // URL base para producción
   }
   return 'http://localhost:8787';
 };
 
 import { CartProvider } from './context/CartContext';
+import { ModuleProvider, useModules } from './context/ModuleContext';
 
 function App() {
   const [apiReady, setApiReady] = useState(true); // Optimista por defecto
   const [isLoading, setIsLoading] = useState(true);
 
+// ... rest of the code remains the same ...
   // Verificar la API al iniciar
   useEffect(() => {
     const verifyApiConnection = async () => {
