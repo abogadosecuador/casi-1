@@ -22,8 +22,8 @@ bucket = "./dist"
 # Configuración de KV y D1 Database - PRODUCCIÓN
 [[kv_namespaces]]
 binding = "KV"
-id = "9585583f15824e6891e9660bd6f85d7d"
-preview_id = "9585583f15824e6891e9660bd6f85d7d"
+id = "1f3d19c7f0a74ff0bec6b1b9abf60ddf"
+preview_id = "1f3d19c7f0a74ff0bec6b1b9abf60ddf"
 
 [[d1_databases]]
 binding = "DB"
