@@ -56,7 +56,8 @@ function classNames(...classes) {
 }
 
 function Navbar() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const authContext = useAuth() || {};
+  const { user, isAuthenticated, logout } = authContext;
   const { itemCount } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();

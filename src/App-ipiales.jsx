@@ -107,8 +107,7 @@ const getBaseUrl = () => {
   return 'http://localhost:8787';
 };
 
-// Importar el contexto de módulos
-import { ModuleProvider, useModules } from './context/ModuleContext';
+import { CartProvider } from './context/CartContext';
 
 function App() {
   const [apiReady, setApiReady] = useState(true); // Optimista por defecto
@@ -118,13 +117,14 @@ function App() {
   useEffect(() => {
     const verifyApiConnection = async () => {
       try {
-        // En producción, asumimos que la API está lista
-        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        // En desarrollo local, siempre asumir que la API está disponible
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
           setApiReady(true);
           setIsLoading(false);
           return;
         }
 
+        // En producción, verificar conexión real
         const healthEndpoint = `${getBaseUrl()}/api/health`;
         const response = await axios.get(healthEndpoint, { timeout: 5000 });
         
@@ -181,7 +181,9 @@ function App() {
   return (
     <Suspense fallback={<LoadingIndicator />}>
       <ModuleProvider>
-        <AppContent />
+        <CartProvider>
+          <AppContent />
+        </CartProvider>
       </ModuleProvider>
     </Suspense>
   );
@@ -339,7 +341,8 @@ function AppContent() {
 
 // Componente para proteger rutas que requieren autenticación
 function RequireAuth({ children }) {
-  const { isAuthenticated, loading } = useAuth();
+  const authContext = useAuth() || {};
+  const { isAuthenticated, loading } = authContext;
   const location = useLocation();
 
   if (loading) {
