@@ -62,12 +62,31 @@ export const AdminRoute = ({ children }) => (
   </ProtectedRoute>
 );
 
-// Componente para rutas de cliente
-export const ClientRoute = ({ children }) => (
-  <ProtectedRoute requiredRole="client">
-    {children}
-  </ProtectedRoute>
-);
+// Componente para rutas de cliente (cualquier usuario autenticado que no sea admin)
+export const ClientRoute = ({ children }) => {
+  const { isAuthenticated, user, loading, authReady } = useAuth();
+  const location = useLocation();
+
+  if (!authReady || loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // Si es admin, redirigir a dashboard de admin
+  if (user?.role === 'admin') {
+    return <Navigate to="/admin" replace />;
+  }
+
+  // Cualquier otro usuario autenticado puede acceder
+  return children;
+};
 
 // Componente para rutas de afiliado
 export const AffiliateRoute = ({ children }) => (
@@ -119,7 +138,7 @@ export const RoleBasedContent = ({
   const { hasRole, hasPermission, isAuthenticated } = useAuth();
 
   const canShow = () => {
-    if (!isAuthenticated()) return false;
+    if (!isAuthenticated) return false;
     if (requiredRole && !hasRole(requiredRole)) return false;
     if (requiredPermission && !hasPermission(requiredPermission)) return false;
     return true;

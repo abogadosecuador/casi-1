@@ -275,21 +275,37 @@ const PurchaseHistory = () => {
       if (!user) return;
       
       try {
-        // En una aplicación real, obtendríamos las compras desde Supabase
-        // const { data, error } = await dataService.query(
-        //   'purchases',
-        //   q => q.eq('user_id', user.id).eq('status', 'completed')
-        // );
-        // if (error) throw error;
+        setLoading(true);
         
-        // Por ahora, usamos datos de muestra
-        setTimeout(() => {
-          setPurchases(SAMPLE_PURCHASES);
-          setLoading(false);
-        }, 800);
+        // Obtener compras reales desde Supabase
+        const { data: purchasesData, error } = await dataService.query(
+          'purchases',
+          q => q.eq('user_id', user.id).eq('status', 'active').order('created_at', { ascending: false })
+        );
+        
+        if (error) throw error;
+        
+        // Formatear las compras para el componente
+        const formattedPurchases = (purchasesData || []).map(purchase => ({
+          id: purchase.id,
+          type: purchase.product_type,
+          item_id: purchase.product_id,
+          title: purchase.product_name,
+          amount: parseFloat(purchase.amount),
+          date: purchase.created_at,
+          status: 'completed',
+          payment_method: purchase.payment_method,
+          invoice_url: '#',
+          thumbnail: '/images/placeholder.jpg'
+        }));
+        
+        setPurchases(formattedPurchases);
+        setLoading(false);
       } catch (error) {
         console.error('Error al obtener historial de compras:', error);
         toast.error('Error al cargar tu historial de compras');
+        // En caso de error, mostrar datos de muestra para debugging
+        setPurchases(SAMPLE_PURCHASES);
         setLoading(false);
       }
     };

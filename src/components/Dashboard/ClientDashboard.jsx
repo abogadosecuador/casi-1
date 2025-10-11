@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaCalendarAlt, FaFileAlt, FaCreditCard, FaUser, FaBell, FaSignOutAlt, FaArrowRight, FaChartBar, FaShoppingCart, FaGraduationCap } from 'react-icons/fa';
-import { dataService } from '../../services/apiService';
+import { dataService } from '../../services/supabaseService';
+import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-hot-toast';
 
 const ClientDashboard = () => {
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState('inicio');
   const [userData, setUserData] = useState({
     nombre: 'Usuario',
@@ -25,47 +28,85 @@ const ClientDashboard = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+
       try {
         setLoading(true);
         
-        // Simulación de carga de datos del usuario
-        // En implementación real: 
-        // const userResponse = await dataService.getById('users', userId);
-        // const consultasResponse = await dataService.getAll('consultas');
-        // const citasResponse = await dataService.getAll('citas');
-        // const comprasResponse = await dataService.getAll('compras');
-        // const cursosResponse = await dataService.getAll('cursos');
+        // Obtener perfil del usuario
+        const { data: profile } = await dataService.getById('profiles', user.id);
         
-        // For demo purposes, we'll use sample data with timeout
-        setTimeout(() => {
-          const sampleUserData = {
-            nombre: 'Juan',
-            apellido: 'Pérez',
-            creditos: 3,
-            consultas: [
-              { id: 1, fecha: '2025-03-05', tipo: 'Derecho Penal', estado: 'Completada' },
-              { id: 2, fecha: '2025-03-10', tipo: 'Derecho Civil', estado: 'Pendiente' }
-            ],
-            citas: [
-              { id: 1, fecha: '2025-03-15T14:00:00', tipo: 'Consulta Inicial', abogado: 'Wilson Ipiales' }
-            ],
-            compras: [
-              { id: 1, producto: 'Curso Derecho Penal', fecha: '2025-02-20', estado: 'Completado' }
-            ],
-            cursos: [
-              { id: 1, titulo: 'Derecho Penal Básico', progreso: 75, completado: false }
-            ]
-          };
-          
-          setUserData(sampleUserData);
-          setStats({
-            totalConsultas: sampleUserData.consultas.length,
-            totalCursos: sampleUserData.cursos.length,
-            totalCompras: sampleUserData.compras.length,
-            totalCitas: sampleUserData.citas.length
-          });
-          setLoading(false);
-        }, 1000);
+        // Obtener consultas del usuario
+        const { data: consultations } = await dataService.query(
+          'consultations',
+          (query) => query.eq('user_id', user.id).order('created_at', { ascending: false }).limit(10)
+        );
+        
+        // Obtener citas del usuario
+        const { data: appointments } = await dataService.query(
+          'appointments',
+          (query) => query.eq('user_id', user.id).gte('start_time', new Date().toISOString()).order('start_time', { ascending: true }).limit(10)
+        );
+        
+        // Obtener compras del usuario
+        const { data: purchases } = await dataService.query(
+          'purchases',
+          (query) => query.eq('user_id', user.id).order('created_at', { ascending: false }).limit(10)
+        );
+        
+        // Obtener cursos inscritos
+        const { data: enrollments } = await dataService.query(
+          'course_enrollments',
+          (query) => query.eq('user_id', user.id).order('created_at', { ascending: false }).limit(10)
+        );
+        
+        // Formatear datos del usuario
+        const fullName = profile?.full_name || user.email || 'Usuario';
+        const nameParts = fullName.split(' ');
+        
+        setUserData({
+          nombre: nameParts[0] || 'Usuario',
+          apellido: nameParts.slice(1).join(' ') || '',
+          creditos: profile?.credits || 0,
+          consultas: (consultations || []).map(c => ({
+            id: c.id,
+            fecha: c.created_at,
+            tipo: c.subject || c.type,
+            estado: c.status === 'completed' ? 'Completada' : 'Pendiente'
+          })),
+          citas: (appointments || []).map(a => ({
+            id: a.id,
+            fecha: a.start_time,
+            tipo: a.title,
+            abogado: 'Wilson Ipiales',
+            status: a.status
+          })),
+          compras: (purchases || []).map(p => ({
+            id: p.id,
+            producto: p.product_name,
+            fecha: p.created_at,
+            estado: p.status === 'active' ? 'Completado' : p.status,
+            amount: p.amount
+          })),
+          cursos: (enrollments || []).map(e => ({
+            id: e.id,
+            titulo: e.course_id,
+            progreso: e.progress || 0,
+            completado: e.status === 'completed'
+          }))
+        });
+        
+        setStats({
+          totalConsultas: consultations?.length || 0,
+          totalCursos: enrollments?.length || 0,
+          totalCompras: purchases?.length || 0,
+          totalCitas: appointments?.length || 0
+        });
+        
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching user data:', error);
         toast.error('Error al cargar la información del usuario');
@@ -74,7 +115,68 @@ const ClientDashboard = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [user, navigate]);
+
+  // Función para reprogramar cita
+  const handleRescheduleAppointment = async (appointmentId) => {
+    try {
+      // Redirigir a página de calendario con el ID de la cita
+      navigate(`/calendario?reschedule=${appointmentId}`);
+      toast.info('Seleccione una nueva fecha para su cita');
+    } catch (error) {
+      console.error('Error al reprogramar cita:', error);
+      toast.error('Error al reprogramar la cita');
+    }
+  };
+
+  // Función para cancelar cita
+  const handleCancelAppointment = async (appointmentId) => {
+    if (!window.confirm('¿Está seguro de que desea cancelar esta cita?')) {
+      return;
+    }
+
+    try {
+      const { error } = await dataService.update('appointments', appointmentId, {
+        status: 'cancelled'
+      });
+
+      if (error) throw error;
+
+      toast.success('Cita cancelada exitosamente');
+      
+      // Actualizar la lista de citas
+      setUserData(prev => ({
+        ...prev,
+        citas: prev.citas.filter(c => c.id !== appointmentId)
+      }));
+      
+      setStats(prev => ({
+        ...prev,
+        totalCitas: prev.totalCitas - 1
+      }));
+    } catch (error) {
+      console.error('Error al cancelar cita:', error);
+      toast.error('Error al cancelar la cita');
+    }
+  };
+
+  // Función para actualizar perfil
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const { error } = await dataService.update('profiles', user.id, {
+        full_name: `${userData.nombre} ${userData.apellido}`.trim()
+      });
+
+      if (error) throw error;
+
+      toast.success('Perfil actualizado exitosamente');
+    } catch (error) {
+      console.error('Error al actualizar perfil:', error);
+      toast.error('Error al actualizar el perfil');
+    }
+  };
 
   // Componente para la sección de inicio
   const InicioTab = () => (
@@ -253,8 +355,18 @@ const ClientDashboard = () => {
                   <td className="px-6 py-4 whitespace-nowrap">{cita.tipo}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{cita.abogado}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <button className="text-blue-600 hover:text-blue-800">Reprogramar</button>
-                    <button className="text-red-600 hover:text-red-800 ml-4">Cancelar</button>
+                    <button 
+                      onClick={() => handleRescheduleAppointment(cita.id)}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      Reprogramar
+                    </button>
+                    <button 
+                      onClick={() => handleCancelAppointment(cita.id)}
+                      className="text-red-600 hover:text-red-800 ml-4"
+                    >
+                      Cancelar
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -338,7 +450,7 @@ const ClientDashboard = () => {
       <div className="bg-white rounded-xl shadow-md p-6 mb-8">
         <h3 className="font-bold text-lg mb-4">Información Personal</h3>
         
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form onSubmit={handleUpdateProfile} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
             <input 
@@ -362,7 +474,7 @@ const ClientDashboard = () => {
             <input 
               type="email" 
               className="w-full p-2 border border-gray-300 rounded-md" 
-              value="usuario@ejemplo.com"
+              value={user?.email || ''}
               readOnly
             />
           </div>
@@ -376,7 +488,7 @@ const ClientDashboard = () => {
           </div>
           
           <div className="col-span-2 mt-4">
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+            <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
               Actualizar Información
             </button>
           </div>

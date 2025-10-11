@@ -312,46 +312,100 @@ export const CartProvider = ({ children }) => {
     }
     
     try {
-      // Importar servicio de API
-      const { default: apiBackend } = await import('../services/apiBackend.js');
+      // Importar servicios necesarios
+      const { dataService } = await import('../services/supabaseService.js');
       
-      // Preparar datos de compra
-      const purchaseData = {
-        userId: user.id,
+      // Generar ID único para la orden
+      const orderId = 'ORD-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5).toUpperCase();
+      
+      // Calcular totales
+      const subtotal = state.total;
+      const tax = subtotal * 0.12; // 12% IVA
+      const total = subtotal + tax;
+      
+      // Crear la orden en Supabase
+      const orderData = {
+        id: orderId,
+        user_id: user.id,
+        amount: total,
+        subtotal: subtotal,
+        tax: tax,
+        discount: 0,
+        status: 'completed',
+        payment_method: paymentMethod,
+        payment_details: paymentDetails,
+        transaction_id: paymentDetails.id || paymentDetails.orderID || Date.now().toString(),
         items: state.items,
-        total: state.total,
-        paymentMethod,
-        paymentDetails,
-        billingInfo: {
-          name: user.name || user.full_name,
+        billing_info: {
+          name: user.name || user.full_name || user.email,
           email: user.email,
           phone: user.phone
-        }
+        },
+        completed_at: new Date().toISOString()
       };
       
-      // Procesar compra en el backend
-      const result = await apiBackend.purchase.processPurchase(
-        purchaseData,
-        user.token
-      );
+      const { data: order, error: orderError } = await dataService.create('orders', orderData);
       
-      if (result.success) {
-        toast.success(result.message || '¡Compra realizada con éxito!');
-        clearCart();
+      if (orderError) {
+        console.error('Error al crear orden:', orderError);
+        throw new Error('Error al crear la orden');
+      }
+      
+      // Crear registros de compra individuales para cada item
+      const purchasePromises = state.items.map(async (item) => {
+        const purchaseData = {
+          user_id: user.id,
+          product_id: item.id,
+          product_type: item.type || 'product',
+          product_name: item.title || item.name,
+          amount: item.price,
+          quantity: item.quantity || 1,
+          order_id: orderId,
+          payment_method: paymentMethod,
+          transaction_id: orderData.transaction_id,
+          status: 'active'
+        };
         
-        // Actualizar compras del usuario
-        if (user.purchases) {
-          user.purchases = [...(user.purchases || []), ...result.purchases.map(p => p.product_id)];
+        const { error } = await dataService.create('purchases', purchaseData);
+        
+        if (error) {
+          console.error('Error al crear compra:', error);
         }
         
-        return { 
-          success: true, 
-          transactionId: result.transactionId,
-          orderId: result.orderId
-        };
-      } else {
-        throw new Error(result.error || 'Error al procesar la compra.');
-      }
+        // Si es un curso, crear inscripción
+        if (item.type === 'course') {
+          await dataService.create('course_enrollments', {
+            user_id: user.id,
+            course_id: item.id,
+            order_id: orderId,
+            progress: 0,
+            status: 'active'
+          });
+        }
+        
+        // Crear acceso al producto
+        await dataService.create('user_products', {
+          user_id: user.id,
+          product_id: item.id,
+          product_type: item.type || 'product',
+          access_granted: true,
+          purchase_id: null // Se puede actualizar después si es necesario
+        });
+        
+        return purchaseData;
+      });
+      
+      await Promise.all(purchasePromises);
+      
+      toast.success('¡Compra realizada con éxito!');
+      clearCart();
+      
+      return { 
+        success: true, 
+        transactionId: orderData.transaction_id,
+        orderId: orderId,
+        order: order
+      };
     } catch (error) {
       console.error('Error en el checkout:', error);
       toast.error(error.message || 'Error al procesar la compra. Inténtalo de nuevo.');

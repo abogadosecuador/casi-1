@@ -36,7 +36,7 @@ const CheckoutSystem = () => {
     country: 'Ecuador'
   });
   
-  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [paymentMethod, setPaymentMethod] = useState('paypal');
 
   const steps = [
     { id: 1, name: 'Carrito', icon: FaShoppingCart },
@@ -46,12 +46,7 @@ const CheckoutSystem = () => {
   ];
 
   const paymentMethods = [
-    { id: 'card', name: 'Tarjeta de Crédito/Débito', icon: FaCreditCard, color: 'blue' },
     { id: 'paypal', name: 'PayPal', icon: FaPaypal, color: 'blue' },
-    { id: 'bank', name: 'Transferencia', icon: FaUniversity, color: 'green' },
-    { id: 'whatsapp', name: 'WhatsApp', icon: FaWhatsapp, color: 'green' },
-    { id: 'crypto', name: 'Criptomonedas', icon: FaBitcoin, color: 'yellow' },
-    { id: 'mobile', name: 'Pago Móvil', icon: FaMobileAlt, color: 'purple' },
   ];
 
   const calculateSubtotal = () => getCartTotal();
@@ -308,103 +303,41 @@ const CheckoutSystem = () => {
     <div className="space-y-6">
       <h3 className="text-xl font-bold mb-4">Método de Pago</h3>
       
-      {/* Métodos de Pago */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {paymentMethods.map((method) => (
-          <button
-            key={method.id}
-            onClick={() => setPaymentMethod(method.id)}
-            className={`p-4 rounded-lg border-2 transition-all ${
-              paymentMethod === method.id
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <method.icon className={`text-2xl mb-2 text-${method.color}-500`} />
-            <p className="text-sm font-medium">{method.name}</p>
-          </button>
-        ))}
+      {/* Método de Pago PayPal */}
+      <div className="bg-blue-50 p-6 rounded-lg border-2 border-blue-500">
+        <div className="flex items-center justify-center mb-4">
+          <FaPaypal className="text-4xl text-blue-600 mr-3" />
+          <h4 className="text-lg font-semibold text-gray-900">Pago Seguro con PayPal</h4>
+        </div>
+        <p className="text-sm text-gray-600 text-center mb-6">
+          Pague de forma segura con PayPal o tarjeta de crédito/débito
+        </p>
+        <PayPalButton
+          amount={calculateTotal().toFixed(2)}
+          onSuccess={async (details) => {
+            console.log('PayPal payment successful:', details);
+            setIsProcessing(true);
+            
+            const result = await checkout('paypal', details);
+
+            setIsProcessing(false);
+
+            if (result.success) {
+              setOrderComplete(true);
+              setCurrentStep(4);
+              confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+              });
+            }
+          }}
+          onError={(err) => {
+            console.error('PayPal payment error:', err);
+            toast.error('Ocurrió un error durante el pago con PayPal.');
+          }}
+        />
       </div>
-
-
-
-      {/* Formulario de Tarjeta de Crédito */}
-      {paymentMethod === 'card' && (
-        <div className="bg-gray-50 p-6 rounded-lg">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Número de Tarjeta</label>
-              <input type="text" placeholder="**** **** **** ****" className="w-full px-4 py-2 border rounded-lg" />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Fecha de Expiración</label>
-                <input type="text" placeholder="MM/AA" className="w-full px-4 py-2 border rounded-lg" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">CVC</label>
-                <input type="text" placeholder="123" className="w-full px-4 py-2 border rounded-lg" />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Otros métodos de pago */}
-      {paymentMethod === 'paypal' && (
-        <div className="bg-blue-50 p-6 rounded-lg text-center">
-          <PayPalButton
-            amount={calculateTotal().toFixed(2)}
-            onSuccess={async (details) => {
-              console.log('PayPal payment successful:', details);
-              setIsProcessing(true);
-              
-              const result = await checkout('paypal', details);
-
-              setIsProcessing(false);
-
-              if (result.success) {
-                setOrderComplete(true);
-                setCurrentStep(4);
-                confetti({
-                  particleCount: 100,
-                  spread: 70,
-                  origin: { y: 0.6 }
-                });
-              }
-            }}
-            onError={(err) => {
-              console.error('PayPal payment error:', err);
-              toast.error('Ocurrió un error durante el pago con PayPal.');
-            }}
-          />
-        </div>
-      )}
-
-      {paymentMethod === 'whatsapp' && (
-        <div className="bg-green-50 p-6 rounded-lg text-center">
-          <FaQrcode className="text-6xl text-green-600 mx-auto mb-4" />
-          <p>Conecte con nosotros por WhatsApp para completar el pago</p>
-          <a 
-            href="https://wa.me/593988835269" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="mt-4 inline-block px-6 py-3 bg-green-600 text-white rounded-lg"
-          >
-            Contactar por WhatsApp
-          </a>
-        </div>
-      )}
-
-      {paymentMethod === 'bank' && (
-        <div className="bg-green-50 p-6 rounded-lg">
-          <h4 className="font-semibold mb-2">Datos para Transferencia:</h4>
-          <p className="text-sm">Banco: Banco Pichincha</p>
-          <p className="text-sm">Cuenta: 2200123456</p>
-          <p className="text-sm">Tipo: Ahorros</p>
-          <p className="text-sm">Beneficiario: Abogado Wilson Ipiales</p>
-        </div>
-      )}
 
       {/* Seguridad */}
       <div className="flex items-center justify-center text-gray-500 text-sm">

@@ -12,7 +12,7 @@ import { useAuth } from '../context/AuthContext';
 import { dataService } from '../services/supabaseService';
 
 const CheckoutPage = () => {
-  const { cart = [], getCartTotal, clearCart } = useCart() || {};
+  const { cart = [], getCartTotal, clearCart, checkout } = useCart() || {};
   const { user } = useAuth();
   const navigate = useNavigate();
   
@@ -104,33 +104,60 @@ const CheckoutPage = () => {
       // Generar ID único para la orden
       const orderId = 'ORD-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5).toUpperCase();
       
-      // Guardar la orden en localStorage (modo sin BD)
-      const order = {
+      // Calcular totales
+      const subtotal = getCartTotal();
+      const tax = subtotal * 0.12; // 12% IVA
+      const total = subtotal + tax;
+      
+      // Crear la orden en Supabase
+      const orderData = {
         id: orderId,
         user_id: user.id,
-        amount: getCartTotal(),
-        status: 'pending',
+        amount: total,
+        subtotal: subtotal,
+        tax: tax,
+        status: 'pending', // Pendiente hasta que se confirme el pago
         payment_method: 'bank_transfer',
         items: cart,
         billing_info: billingInfo,
         created_at: new Date().toISOString()
       };
       
-      // Guardar en localStorage
-      const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-      existingOrders.push(order);
-      localStorage.setItem('orders', JSON.stringify(existingOrders));
+      const { error: orderError } = await dataService.create('orders', orderData);
+      
+      if (orderError) {
+        throw new Error('Error al crear la orden');
+      }
+      
+      // Crear registros de compra individuales (en estado pendiente)
+      const purchasePromises = cart.map(async (item) => {
+        const purchaseData = {
+          user_id: user.id,
+          product_id: item.id,
+          product_type: item.category || 'product',
+          product_name: item.name,
+          amount: item.price,
+          quantity: item.quantity || 1,
+          order_id: orderId,
+          payment_method: 'bank_transfer',
+          status: 'pending' // Se activará cuando se confirme el pago
+        };
+        
+        return dataService.create('purchases', purchaseData);
+      });
+      
+      await Promise.all(purchasePromises);
       
       // Limpiar carrito
       clearCart();
       
-      toast.success('Orden creada exitosamente');
+      toast.success('Orden creada exitosamente. Pendiente de confirmación de pago.');
       
       // Redirigir a página de éxito
       navigate('/payment/success', { 
         state: { 
           orderId,
-          amount: getCartTotal(),
+          amount: total,
           billingInfo,
           paymentMethod: 'bank_transfer'
         } 
@@ -255,7 +282,7 @@ const CheckoutPage = () => {
                 </h2>
                 
                 <div className="space-y-4">
-                  <div className="flex items-center">
+                  <div className="flex items-center p-4 bg-blue-50 rounded-lg border-2 border-blue-600">
                     <input
                       id="paypal"
                       name="payment-method"
@@ -264,50 +291,55 @@ const CheckoutPage = () => {
                       onChange={() => setPaymentMethod('paypal')}
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                     />
-                    <label htmlFor="paypal" className="ml-3 block text-sm font-medium text-gray-700">
+                    <label htmlFor="paypal" className="ml-3 block text-sm font-medium text-gray-900">
                       PayPal (Tarjeta de crédito/débito)
                     </label>
-                    <img src="/images/paypal.png" alt="PayPal" className="h-8 ml-auto" />
+                    <div className="ml-auto flex items-center gap-2">
+                      <svg className="h-6 w-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.77.77 0 0 1 .76-.633h8.14c2.97 0 4.968 1.238 5.156 3.195.087.904-.008 1.637-.283 2.256.278.63.425 1.332.425 2.117 0 3.257-2.606 5.682-6.63 5.682H9.647a.77.77 0 0 0-.76.633l-.54 3.438a.641.641 0 0 1-.633.633h-.038z"/>
+                      </svg>
+                      <span className="text-xs text-gray-600">Pago Seguro</span>
+                    </div>
                   </div>
                   
-                  <div className="flex items-center">
-                    <input
-                      id="bank-transfer"
-                      name="payment-method"
-                      type="radio"
-                      checked={paymentMethod === 'bank-transfer'}
-                      onChange={() => setPaymentMethod('bank-transfer')}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                    />
-                    <label htmlFor="bank-transfer" className="ml-3 block text-sm font-medium text-gray-700">
-                      Transferencia Bancaria
-                    </label>
+                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <p className="text-sm text-gray-600 mb-2">
+                      <strong>Nota:</strong> La transferencia bancaria requiere validación manual del administrador.
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Por favor, use PayPal para recibir acceso inmediato a sus productos.
+                    </p>
                   </div>
                 </div>
                 
-                {paymentMethod === 'bank-transfer' && (
-                  <div className="mt-4 p-4 bg-gray-50 rounded-md border border-gray-200">
-                    <h3 className="text-md font-medium text-gray-800 mb-2">Datos Bancarios:</h3>
-                    <p className="text-sm text-gray-700">Banco Pichincha</p>
-                    <p className="text-sm text-gray-700">Cuenta Corriente: 2203728320</p>
-                    <p className="text-sm text-gray-700">Titular: Wilson Alexander Ipiales Guerron</p>
-                    <p className="text-sm text-gray-700">CI: 1003385786</p>
-                    <p className="text-sm text-gray-500 mt-2">
-                      Al seleccionar este método, recibirá instrucciones para completar su pago.
-                    </p>
-                    
-                    <button
-                      onClick={handleBankTransfer}
-                      disabled={loading}
-                      className="mt-4 w-full px-6 py-3 text-base font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-                    >
-                      {loading ? 'Procesando...' : 'Continuar con Transferencia Bancaria'}
-                    </button>
-                  </div>
-                )}
-                
                 {paymentMethod === 'paypal' && (
-                  <PayPalButton amount={getCartTotal().toFixed(2)} />
+                  <PayPalButton 
+                    amount={(getCartTotal() * 1.12).toFixed(2)}
+                    onSuccess={async (details) => {
+                      console.log('PayPal payment successful:', details);
+                      setLoading(true);
+                      
+                      const result = await checkout('paypal', details);
+                      
+                      setLoading(false);
+                      
+                      if (result.success) {
+                        toast.success('¡Compra realizada con éxito!');
+                        navigate('/payment/success', {
+                          state: {
+                            orderId: result.orderId,
+                            amount: getCartTotal() * 1.12,
+                            billingInfo,
+                            paymentMethod: 'paypal'
+                          }
+                        });
+                      }
+                    }}
+                    onError={(err) => {
+                      console.error('PayPal payment error:', err);
+                      toast.error('Ocurrió un error durante el pago con PayPal.');
+                    }}
+                  />
                 )}
               </div>
             </motion.div>

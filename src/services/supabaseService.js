@@ -510,16 +510,20 @@ export const authService = {
               .from('profiles')
               .insert([
                 { 
-                  id: data.user.id, 
+                  id: data.user.id,
+                  email: email,
                   full_name: userData.fullName || '',
                   phone: userData.phone || '',
                   address: userData.address || '',
+                  role: 'client', // Asignar rol por defecto
                   ...userData
                 }
               ]);
               
             if (insertError) {
               console.error('Error al crear perfil:', insertError);
+            } else {
+              console.log('✅ Perfil creado con rol client');
             }
           }
         } catch (profileError) {
@@ -559,9 +563,34 @@ export const authService = {
       
       if (error) throw error;
       
+      if (!data.user) {
+        throw new Error('No se pudo obtener el usuario');
+      }
+      
+      // Obtener perfil del usuario desde la tabla profiles
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+      
+      // Combinar datos de auth con perfil
+      const userWithProfile = {
+        ...data.user,
+        full_name: profile?.full_name || data.user.email,
+        role: profile?.role || 'client',
+        roles: [profile?.role || 'client'], // Array de roles para compatibilidad
+        phone: profile?.phone,
+        address: profile?.address,
+        city: profile?.city,
+        country: profile?.country,
+        avatar_url: profile?.avatar_url,
+        credits: profile?.credits || 0
+      };
+      
       return {
         success: true,
-        user: data.user,
+        user: userWithProfile,
         session: data.session,
         error: null
       };
@@ -634,9 +663,38 @@ export const authService = {
       
       if (error) throw error;
       
+      if (!data.user) {
+        return {
+          success: false,
+          user: null,
+          error: { message: 'No user found' }
+        };
+      }
+      
+      // Obtener perfil del usuario desde la tabla profiles
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+      
+      // Combinar datos de auth con perfil
+      const userWithProfile = {
+        ...data.user,
+        full_name: profile?.full_name || data.user.email,
+        role: profile?.role || 'client',
+        roles: [profile?.role || 'client'], // Array de roles para compatibilidad
+        phone: profile?.phone,
+        address: profile?.address,
+        city: profile?.city,
+        country: profile?.country,
+        avatar_url: profile?.avatar_url,
+        credits: profile?.credits || 0
+      };
+      
       return {
         success: true,
-        user: data.user,
+        user: userWithProfile,
         error: null
       };
     } catch (error) {

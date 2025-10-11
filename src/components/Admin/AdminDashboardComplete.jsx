@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   FaUsers, FaChartLine, FaFileAlt, FaCalendarAlt, FaShoppingCart, 
   FaBook, FaNewspaper, FaCog, FaSignOutAlt, FaPlus, FaEdit, FaTrash,
@@ -12,24 +12,46 @@ import {
 } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../../context/AuthContext';
+import adminService from '../../services/adminService';
+import ProductManager from './ProductManager';
+import CourseManager from './CourseManager';
+import BlogManager from './BlogManager';
 
 const AdminDashboardComplete = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [showChat, setShowChat] = useState(false);
   const [stats, setStats] = useState({
-    totalUsers: 1250,
-    totalRevenue: 45600,
-    totalConsultations: 890,
-    totalAppointments: 234,
-    totalProducts: 45,
-    totalCourses: 12,
-    totalEbooks: 28,
-    totalAffiliates: 67,
-    activePromotions: 8,
-    completedGames: 342,
-    pagesCreated: 23,
-    totalMessages: 1567
+    totalUsers: 0,
+    totalRevenue: 0,
+    totalProducts: 0,
+    totalCourses: 0,
+    totalEnrollments: 0,
+    totalAppointments: 0,
+    totalOrders: 0,
+    completedOrders: 0
   });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const loadStats = async () => {
+    setLoading(true);
+    const result = await adminService.dashboard.getStats();
+    if (result.success) {
+      setStats(result.data);
+    }
+    setLoading(false);
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   const [recentActivities] = useState([
     { id: 1, type: 'user_registration', user: 'María González', time: '2 min ago', action: 'Nuevo usuario registrado' },
@@ -50,24 +72,21 @@ const AdminDashboardComplete = () => {
     { title: 'Config', icon: FaCog, action: () => setActiveTab('settings'), color: 'from-gray-500 to-gray-600' }
   ]);
 
-  const [dashboardCards] = useState([
-    { title: 'Ventas del Mes', value: '$45,600', change: '+12%', icon: FaDollarSign, color: 'from-green-400 to-green-600' },
-    { title: 'Usuarios Activos', value: '1,250', change: '+8%', icon: FaUsers, color: 'from-blue-400 to-blue-600' },
-    { title: 'Cursos Completados', value: '342', change: '+15%', icon: FaUserGraduate, color: 'from-purple-400 to-purple-600' },
-    { title: 'Tasa de Conversión', value: '24.8%', change: '+3%', icon: FaChartPie, color: 'from-orange-400 to-orange-600' }
-  ]);
+  const dashboardCards = [
+    { title: 'Ingresos Totales', getValue: () => `$${stats.totalRevenue}`, change: '+12%', icon: FaDollarSign, color: 'from-green-400 to-green-600' },
+    { title: 'Usuarios Totales', getValue: () => stats.totalUsers.toString(), change: '+8%', icon: FaUsers, color: 'from-blue-400 to-blue-600' },
+    { title: 'Cursos Activos', getValue: () => stats.totalCourses.toString(), change: '+15%', icon: FaBook, color: 'from-purple-400 to-purple-600' },
+    { title: 'Productos', getValue: () => stats.totalProducts.toString(), change: '+3%', icon: FaShoppingCart, color: 'from-orange-400 to-orange-600' }
+  ];
 
   const menuItems = [
-    { id: 'overview', label: 'Overview', icon: FaChartLine },
+    { id: 'overview', label: 'Dashboard', icon: FaChartLine },
     { id: 'users', label: 'Usuarios', icon: FaUsers },
     { id: 'products', label: 'Productos', icon: FaShoppingCart },
     { id: 'courses', label: 'Cursos', icon: FaBook },
-    { id: 'editor', label: 'Editor Páginas', icon: FaPalette },
-    { id: 'promotions', label: 'Promociones', icon: FaGift },
-    { id: 'gamification', label: 'Gamificación', icon: FaGamepad },
     { id: 'blog', label: 'Blog', icon: FaNewspaper },
+    { id: 'orders', label: 'Ventas', icon: FaDollarSign },
     { id: 'appointments', label: 'Citas', icon: FaCalendarAlt },
-    { id: 'analytics', label: 'Analíticas', icon: FaChartPie },
     { id: 'settings', label: 'Configuración', icon: FaCog }
   ];
 
@@ -113,6 +132,7 @@ const AdminDashboardComplete = () => {
         <motion.button 
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          onClick={handleLogout}
           className="absolute bottom-6 left-6 right-6 p-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-lg flex items-center justify-center transition-all shadow-lg"
         >
           <FaSignOutAlt className="mr-2" />
@@ -181,7 +201,7 @@ const AdminDashboardComplete = () => {
                         <div className="flex items-center justify-between">
                           <div>
                             <p className="text-white/80 text-sm font-medium">{card.title}</p>
-                            <p className="text-3xl font-bold text-white mt-2">{card.value}</p>
+                            <p className="text-3xl font-bold text-white mt-2">{card.getValue()}</p>
                             <p className="text-white/60 text-sm mt-2 flex items-center">
                               <span className={`${card.change.startsWith('+') ? 'text-green-300' : 'text-red-300'}`}>
                                 {card.change}
@@ -343,22 +363,39 @@ const AdminDashboardComplete = () => {
               </div>
             )}
 
-            {activeTab === 'gamification' && (
-              <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8 border border-gray-200/50">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                  <FaGamepad className="mr-3 text-indigo-500" />
-                  Sistema de Gamificación y Trivia
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  Sistema completo de gamificación con trivias, puntos, logros y tablas de clasificación.
-                </p>
-                <button className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all">
-                  Configurar Gamificación
-                </button>
+            {activeTab === 'products' && <ProductManager />}
+            
+            {activeTab === 'courses' && <CourseManager />}
+            
+            {activeTab === 'blog' && <BlogManager />}
+            
+            {activeTab === 'users' && (
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <h3 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Usuarios</h3>
+                <p className="text-gray-600">Gestión completa de usuarios pendiente de implementación...</p>
               </div>
             )}
-
-            {/* Más tabs pueden agregarse aquí */}
+            
+            {activeTab === 'orders' && (
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <h3 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Ventas</h3>
+                <p className="text-gray-600">Vista de órdenes y ventas pendiente de implementación...</p>
+              </div>
+            )}
+            
+            {activeTab === 'appointments' && (
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <h3 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Citas</h3>
+                <p className="text-gray-600">Gestión de citas pendiente de implementación...</p>
+              </div>
+            )}
+            
+            {activeTab === 'settings' && (
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <h3 className="text-2xl font-bold text-gray-800 mb-6">Configuración del Sistema</h3>
+                <p className="text-gray-600">Configuración pendiente de implementación...</p>
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
