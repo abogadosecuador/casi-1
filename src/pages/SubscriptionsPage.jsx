@@ -6,7 +6,6 @@ import { toast } from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import Footer from '../components/Footer/Footer';
 
 const SubscriptionsPage = () => {
   const { addToCart } = useCart();
@@ -253,8 +252,6 @@ const SubscriptionsPage = () => {
           </motion.div>
         </div>
       </main>
-
-      <Footer />
     </>
   );
 };

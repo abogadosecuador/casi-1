@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Footer from '../components/Footer/Footer';
 import HelmetWrapper from '../components/Common/HelmetWrapper';
 import { ShieldCheckIcon, LockClosedIcon, EyeSlashIcon, FingerPrintIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 
@@ -135,8 +134,6 @@ const Seguridad = () => {
           </Link>
         </div>
       </div>
-      
-      <Footer />
     </div>
   );
 };

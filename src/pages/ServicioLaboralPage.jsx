@@ -37,39 +37,7 @@ const ServicioLaboralPage = () => {
           </div>
         </div>
 
-        {/* Header */}
-        <div className="bg-gradient-to-r from-blue-900 to-blue-800 text-white py-12 md:py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-3xl">
-              <div className="flex items-center mb-4">
-                <FaUserTie className="text-yellow-400 text-2xl mr-3" />
-                <span className="bg-white/20 text-sm font-medium px-3 py-1 rounded-full">Especialidad Legal</span>
-              </div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-                Derecho Laboral
-              </h1>
-              <p className="text-xl text-blue-100 mb-6">
-                Protegemos los derechos de trabajadores y asesoramos a empleadores en todos los aspectos del derecho laboral ecuatoriano.
-              </p>
-              <div className="flex flex-wrap gap-4 text-sm">
-                <div className="flex items-center">
-                  <FaClock className="mr-2" />
-                  <span>Respuesta en 24 horas</span>
-                </div>
-                <div className="flex items-center">
-                  <FaFileAlt className="mr-2" />
-                  <span>+15 años de experiencia</span>
-                </div>
-                <div className="flex items-center">
-                  <FaGraduationCap className="mr-2" />
-                  <span>Especialistas certificados</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content - Service Component */}
+        {/* Main Content - El componente Laboral incluye su propio header */}
         <Laboral />
 
         {/* CTA Section */}

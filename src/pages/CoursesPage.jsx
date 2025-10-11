@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { FaBook, FaBookReader, FaGraduationCap, FaPlay, FaShoppingCart } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 
-import Footer from '../components/Footer/Footer';
 import { useCart } from '../context/CartContext';
 import { dataService } from '../services/supabaseService';
 import ImageWithFallback from '../components/Common/ImageWithFallback';
@@ -432,8 +431,6 @@ const CoursesPage = () => {
           )}
         </div>
       </main>
-      
-      <Footer />
     </>
   );
 };

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import Footer from '../components/Footer/Footer';
 import HelmetWrapper from '../components/Common/HelmetWrapper';
 import { ScaleIcon, ClockIcon, ChatBubbleLeftRightIcon, DocumentTextIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 
@@ -293,8 +292,6 @@ const ConsultaGeneral = () => {
           </div>
         </div>
       </div>
-      
-      <Footer />
     </div>
   );
 };

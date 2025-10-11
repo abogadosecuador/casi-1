@@ -524,32 +524,53 @@ function renderMaintenancePage(env) {
 }
 
 /**
- * Maneja las solicitudes a recursos estáticos
+ * Maneja las solicitudes a recursos estáticos usando ASSETS binding
  */
-async function handleStaticRequest(request, url) {
-  // Verificar si es una solicitud de favicon
-  if (url.pathname === '/favicon.ico') {
-    // Servir el favicon desde la carpeta /dist/favicon.ico
-    try {
-      return fetch(request);
-    } catch (error) {
-      console.error('Error al servir favicon:', error);
-      // Fallback - responder con una imagen vacía
-      return new Response(null, {
-        status: 204
-      });
-    }
-  }
-
-  // Intentar servir el archivo estático
-  try {
-    return fetch(request);
-  } catch (error) {
-    console.error('Error al servir archivo estático:', error);
+async function handleStaticRequest(request, url, env) {
+  // Verificar si tenemos el binding ASSETS disponible
+  if (!env.ASSETS) {
+    console.warn('ASSETS binding no disponible');
     return new Response('Recurso no encontrado', {
       status: 404,
       headers: { 'Content-Type': 'text/plain' }
     });
+  }
+
+  try {
+    // Intentar servir el recurso a través de ASSETS
+    const assetResponse = await env.ASSETS.fetch(request);
+    
+    // Si el recurso existe, devolverlo
+    if (assetResponse.status !== 404) {
+      return assetResponse;
+    }
+    
+    // Para una SPA, si no se encuentra el recurso y no es un archivo con extensión,
+    // servir index.html
+    const hasFileExtension = /\.[a-zA-Z0-9]+$/.test(url.pathname);
+    if (!hasFileExtension && url.pathname !== '/') {
+      const indexUrl = new URL(request.url);
+      indexUrl.pathname = '/index.html';
+      const indexRequest = new Request(indexUrl.toString(), request);
+      return await env.ASSETS.fetch(indexRequest);
+    }
+    
+    return assetResponse;
+  } catch (error) {
+    console.error('Error al servir archivo estático:', error);
+    
+    // Intentar servir index.html como fallback para SPA
+    try {
+      const indexUrl = new URL(request.url);
+      indexUrl.pathname = '/index.html';
+      const indexRequest = new Request(indexUrl.toString(), request);
+      return await env.ASSETS.fetch(indexRequest);
+    } catch (indexError) {
+      return new Response('Recurso no encontrado', {
+        status: 404,
+        headers: { 'Content-Type': 'text/plain' }
+      });
+    }
   }
 }
 
@@ -619,16 +640,9 @@ export default {
       if (url.pathname.startsWith('/api/')) {
         response = await handleApiRequest(request, env);
       } 
-      // Handle static assets - let Cloudflare handle them automatically
+      // Handle static assets using ASSETS binding
       else {
-        // For static assets, we'll try to fetch from the request directly
-        // Cloudflare Workers with assets config handles this automatically
-        try {
-          response = await fetch(request);
-        } catch (error) {
-          console.error('Error serving static asset:', error);
-          response = new Response('Not Found', { status: 404 });
-        }
+        response = await handleStaticRequest(request, url, env);
       }
     } catch (error) {
       console.error('Critical Worker Error:', error);

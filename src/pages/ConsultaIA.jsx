@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import Footer from '../components/Footer/Footer';
 import HelmetWrapper from '../components/Common/HelmetWrapper';
 import { tokenService } from '../services/tokenService';
 import { FiSend, FiMessageSquare, FiAlertCircle, FiInfo, FiCpu } from 'react-icons/fi';
@@ -301,8 +300,6 @@ const ConsultaIA = () => {
           </div>
         </div>
       </div>
-      
-      <Footer />
     </div>
   );
 };

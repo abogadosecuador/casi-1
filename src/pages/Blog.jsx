@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import Footer from '../components/Footer/Footer';
 import HelmetWrapper from '../components/Common/HelmetWrapper';
 
 const Blog = () => {
@@ -118,8 +117,6 @@ const Blog = () => {
           </Link>
         </div>
       </div>
-      
-      <Footer />
     </div>
   );
 };

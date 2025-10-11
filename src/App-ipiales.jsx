@@ -25,9 +25,11 @@ function LoadingIndicator() {
 
 // Componentes de navegación y estructura - siempre cargar de forma estática
 import Navbar from './components/Navigation/Navbar';
+import Footer from './components/Footer';
 import { CartProvider } from './context/CartContext';
 import { ModuleProvider, useModules } from './context/ModuleContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Componentes principales cargados dinámicamente con React.lazy
 const Hero = lazy(() => import('./components/Hero'));
@@ -37,10 +39,11 @@ const ProcessSearch = lazy(() => import('./components/ProcessSearch'));
 const Testimonials = lazy(() => import('./components/Testimonials'));
 const Newsletter = lazy(() => import('./components/Newsletter/Newsletter'));
 
-// Nuevas páginas
-const Blog = lazy(() => import('./pages/Blog'));
+// Política de privacidad y términos
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const PoliticasCondiciones = lazy(() => import('./pages/PoliticasCondiciones'));
 const Seguridad = lazy(() => import('./pages/Seguridad'));
+const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'));
 const ConsultaGeneral = lazy(() => import('./pages/ConsultaGeneral'));
 const ConsultaIA = lazy(() => import('./pages/ConsultaIA'));
 
@@ -50,8 +53,8 @@ const Forum = lazy(() => import('./components/Forum'));
 const TopicDetail = lazy(() => import('./components/Forum/TopicDetail'));
 
 // Componentes de páginas informativas
-const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
 const JudicialNews = lazy(() => import('./components/JudicialNews'));
+const Blog = lazy(() => import('./pages/Blog'));
 const Afiliados = lazy(() => import('./components/Afiliados'));
 const Referidos = lazy(() => import('./components/Referidos'));
 const Registration = lazy(() => import('./components/Registration'));
@@ -72,23 +75,38 @@ const PaymentForm = lazy(() => import('./components/Payment/PaymentForm'));
 const ThankYouPage = lazy(() => import('./components/Payment/ThankYouPage'));
 const CheckoutForm = lazy(() => import('./components/Payment/CheckoutForm'));
 
-// Componentes de consultas específicas
-const ConsultasPenales = lazy(() => import('./components/ConsultasPenales'));
-const ConsultasTransito = lazy(() => import('./components/ConsultasTransito'));
-const ConsultasCiviles = lazy(() => import('./components/ConsultasCiviles'));
+// Consultas - Páginas profesionales con formularios completos y BD
+const PenalConsultationPage = lazy(() => import('./pages/PenalConsultationPage'));
+const CivilConsultationPage = lazy(() => import('./pages/CivilConsultationPage'));
+const ConsultationsPage = lazy(() => import('./pages/ConsultationsPage'));
+const FreeConsultationPage = lazy(() => import('./pages/FreeConsultationPage'));
+// Consultas alternativas con paquetes de precios
+const PenalConsultationPackages = lazy(() => import('./pages/ConsultationTypes/PenalConsultationPage'));
+const CivilConsultationPackages = lazy(() => import('./pages/ConsultationTypes/CivilConsultationPage'));
+const EmpresarialConsultationPage = lazy(() => import('./pages/ConsultationTypes/EmpresarialConsultationPage'));
+const DigitalConsultationPage = lazy(() => import('./pages/ConsultationTypes/DigitalConsultationPage'));
+const QuickConsultationPage = lazy(() => import('./pages/ConsultationTypes/QuickConsultationPage'));
 
 // Componentes de autenticación
 const Login = lazy(() => import('./components/Auth/Login'));
 const Register = lazy(() => import('./components/Auth/Register'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const ForgotPassword = lazy(() => import('./components/Auth/ForgotPassword'));
 const ResetPassword = lazy(() => import('./components/Auth/ResetPassword'));
 
-// Servicios específicos
-const Penal = lazy(() => import('./components/Services/Penal'));
-const Civil = lazy(() => import('./components/Services/Civil'));
-const Comercial = lazy(() => import('./components/Services/Comercial'));
-const Transito = lazy(() => import('./components/Services/Transito'));
-const Aduanas = lazy(() => import('./components/Services/Aduanas'));
+// Páginas principales
+const ServicesLandingPage = lazy(() => import('./pages/ServicesLandingPage'));
+const CoursesPage = lazy(() => import('./pages/CoursesPage.jsx'));
+const TiendaStore = lazy(() => import('./components/Store/ProfessionalStore'));
+const SubscriptionsPage = lazy(() => import('./pages/SubscriptionsPage'));
+
+// Servicios específicos - Páginas completas con mejor diseño
+const ServicioPenalPage = lazy(() => import('./pages/ServicioPenalPage'));
+const ServicioCivilPage = lazy(() => import('./pages/ServicioCivilPage'));
+const ServicioComercialPage = lazy(() => import('./pages/ServicioComercialPage'));
+const ServicioTransitoPage = lazy(() => import('./pages/ServicioTransitoPage'));
+const ServicioAduaneroPage = lazy(() => import('./pages/ServicioAduaneroPage'));
+const ServicioLaboralPage = lazy(() => import('./pages/ServicioLaboralPage'));
 
 // Componentes de chat
 const WhatsAppChat = lazy(() => import('./components/Chat/WhatsAppChat'));
@@ -180,13 +198,15 @@ function App() {
 
   return (
     <Suspense fallback={<LoadingIndicator />}>
-      <ModuleProvider>
-        <ThemeProvider>
-          <CartProvider>
-            <AppContent />
-          </CartProvider>
-        </ThemeProvider>
-      </ModuleProvider>
+      <AuthProvider>
+        <ModuleProvider>
+          <ThemeProvider>
+            <CartProvider>
+              <AppContent />
+            </CartProvider>
+          </ThemeProvider>
+        </ModuleProvider>
+      </AuthProvider>
     </Suspense>
   );
 }
@@ -232,18 +252,34 @@ function AppContent() {
             </>
           } />
           
-          {/* Servicios */}
-          <Route path="/servicios/penal" element={<Penal />} />
-          <Route path="/servicios/civil" element={<Civil />} />
-          <Route path="/servicios/comercial" element={<Comercial />} />
-          <Route path="/servicios/transito" element={<Transito />} />
-          <Route path="/servicios/aduanas" element={<Aduanas />} />
+          {/* Páginas principales */}
+          <Route path="/servicios" element={<ServicesLandingPage />} />
+          <Route path="/tienda" element={<TiendaStore />} />
+          <Route path="/cursos" element={<CoursesPage />} />
+          <Route path="/suscripciones" element={<SubscriptionsPage />} />
           
-          {/* Consultas */}
-          <Route path="/consultas/penales" element={<ConsultasPenales />} />
-          <Route path="/consultas/transito" element={<ConsultasTransito />} />
-          <Route path="/consultas/civiles" element={<ConsultasCiviles />} />
-          <Route path="/consultas" element={<ConsultaGeneral />} />
+          {/* Servicios específicos - Páginas completas */}
+          <Route path="/servicios/penal" element={<ServicioPenalPage />} />
+          <Route path="/servicios/civil" element={<ServicioCivilPage />} />
+          <Route path="/servicios/comercial" element={<ServicioComercialPage />} />
+          <Route path="/servicios/transito" element={<ServicioTransitoPage />} />
+          <Route path="/servicios/aduanas" element={<ServicioAduaneroPage />} />
+          <Route path="/servicios/aduanero" element={<ServicioAduaneroPage />} />
+          <Route path="/servicios/laboral" element={<ServicioLaboralPage />} />
+          
+          {/* Consultas - Páginas con diseño profesional */}
+          <Route path="/consultas" element={<ConsultationsPage />} />
+          <Route path="/consultas/general" element={<QuickConsultationPage />} />
+          <Route path="/consultas/rapida" element={<QuickConsultationPage />} />
+          <Route path="/consultas/gratis" element={<FreeConsultationPage />} />
+          {/* Consultas específicas con paquetes (diseño profesional como imagen) */}
+          <Route path="/consultas/penales" element={<PenalConsultationPackages />} />
+          <Route path="/consultas/penal" element={<PenalConsultationPackages />} />
+          <Route path="/consultas/civiles" element={<CivilConsultationPackages />} />
+          <Route path="/consultas/civil" element={<CivilConsultationPackages />} />
+          <Route path="/consultas/empresarial" element={<EmpresarialConsultationPage />} />
+          <Route path="/consultas/digital" element={<DigitalConsultationPage />} />
+          <Route path="/consultas/online" element={<DigitalConsultationPage />} />
           
           {/* Otras rutas */}
           <Route path="/contacto" element={<ContactPage />} />
@@ -255,10 +291,11 @@ function AppContent() {
           {/* Juegos */}
           <Route path="/juegos/3enraya" element={<TicTacToe />} />
           <Route path="/ebooks" element={<Ebooks />} />
-          <Route path="/politica-privacidad" element={<PrivacyPolicy />} />
-          <Route path="/privacidad" element={<PrivacyPolicy />} />
-          <Route path="/terminos-condiciones" element={<PoliticasCondiciones />} />
-          <Route path="/terminos" element={<PoliticasCondiciones />} />
+          <Route path="/politica-privacidad" element={<PrivacyPolicyPage />} />
+          <Route path="/politicas-privacidad" element={<PrivacyPolicyPage />} />
+          <Route path="/privacidad" element={<PrivacyPolicyPage />} />
+          <Route path="/terminos-condiciones" element={<TermsOfServicePage />} />
+          <Route path="/terminos" element={<TermsOfServicePage />} />
           <Route path="/seguridad" element={<Seguridad />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/consulta-general" element={<ConsultaGeneral />} />
@@ -269,8 +306,11 @@ function AppContent() {
           <Route path="/foro/tema/:id" element={<TopicDetail />} />
           
           {/* Rutas de autenticación */}
+          <Route path="/register" element={
+            isAuthenticated ? <Navigate to="/dashboard" /> : <RegisterPage />
+          } />
           <Route path="/registro" element={
-            isAuthenticated ? <Navigate to="/dashboard" /> : <Register />
+            isAuthenticated ? <Navigate to="/dashboard" /> : <RegisterPage />
           } />
           <Route path="/login" element={
             isAuthenticated ? <Navigate to="/dashboard" /> : <Login />
