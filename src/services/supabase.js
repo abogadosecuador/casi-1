@@ -1,4 +1,4 @@
-import { supabase } from '../config/supabase';
+import { supabase } from './supabaseService';
 
 // Función para implementar reintentos
 const withRetry = async (fn, maxRetries = 3, delay = 1000) => {

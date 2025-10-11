@@ -12,8 +12,8 @@ import manifestJSON from '__STATIC_CONTENT_MANIFEST'
 const assetManifest = JSON.parse(manifestJSON)
 
 // Valores por defecto para servicios esenciales (útiles para desarrollo local)
-const DEFAULT_SUPABASE_URL = 'https://phzldiaohelbyobhjrnc.supabase.co';
-const DEFAULT_SUPABASE_KEY = 'sbp_db5898ecc094d37ec87562399efe3833e63ab20f';
+const DEFAULT_SUPABASE_URL = 'https://kbybhgxqdefuquybstqk.supabase.co';
+const DEFAULT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWJoZ3hxZGVmdXF1eWJzdHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NjAwODMsImV4cCI6MjA3MzEzNjA4M30.s1knFM9QXd8CH8TC0IOtBBBvb-qm2XYl_VlhVb-CqcE';
 
 // Configuración de Cloudflare Turnstile
 const TURNSTILE_SITE_KEY = '0x4AAAAAABDkl--Sw4n_bwmU';

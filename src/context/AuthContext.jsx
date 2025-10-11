@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { authService } from '../services/apiService';
+import { authService as supabaseAuthService } from '../services/supabaseService';
 import purchasesService from '../services/purchasesService';
 
 // Crear el contexto
@@ -27,19 +27,18 @@ export const AuthProvider = ({ children }) => {
         }
         
         // Verificar si el token es válido obteniendo datos del usuario
-        const { data, error } = await authService.getUser();
+        const { user: currentUser, error } = await supabaseAuthService.getCurrentUser();
         
         if (error) {
           console.error('Error al verificar autenticación:', error);
-          // Si hay error, probablemente el token no es válido
           localStorage.removeItem('authToken');
           setUser(null);
-        } else if (data && data.user) {
-          const { purchases, error: purchasesError } = await purchasesService.getUserPurchases(data.user.id);
+        } else if (currentUser) {
+          const { purchases, error: purchasesError } = await purchasesService.getUserPurchases(currentUser.id);
           if (purchasesError) {
             console.error('Error al obtener las compras del usuario:', purchasesError);
           }
-          const userWithPurchases = { ...data.user, purchases };
+          const userWithPurchases = { ...currentUser, purchases };
           console.log('Usuario autenticado:', userWithPurchases);
           setUser(userWithPurchases);
         }
@@ -59,19 +58,19 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     setLoading(true);
     try {
-      const { data, error } = await authService.login(email, password);
+      const result = await supabaseAuthService.login(email, password);
       
-      if (error) {
-        throw new Error(error.message || 'Error al iniciar sesión');
+      if (!result.success || result.error) {
+        throw new Error(result.error?.message || 'Error al iniciar sesión');
       }
       
-      // Persistir token y usuario mínimos
+      // Persistir usuario
       try {
-        if (data?.token) localStorage.setItem('authToken', data.token);
-        if (data?.user) localStorage.setItem('user', JSON.stringify(data.user));
+        if (result.session) localStorage.setItem('authToken', result.session.access_token);
+        if (result.user) localStorage.setItem('user', JSON.stringify(result.user));
       } catch (_) {}
-      setUser(data.user);
-      return { success: true, data };
+      setUser(result.user);
+      return { success: true, data: result };
     } catch (err) {
       setError(err.message);
       return { success: false, error: err.message };
@@ -84,21 +83,28 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     setLoading(true);
     try {
-      const { data, error } = await authService.register(userData);
+      const result = await supabaseAuthService.register(
+        userData.email,
+        userData.password,
+        {
+          fullName: userData.name,
+          phone: userData.phone || '',
+          address: userData.address || ''
+        }
+      );
       
-      if (error) {
-        throw new Error(error.message || 'Error al registrar usuario');
+      if (!result.success || result.error) {
+        throw new Error(result.error?.message || 'Error al registrar usuario');
       }
       
-      if (data.user) {
+      if (result.user) {
         try {
-          if (data?.token) localStorage.setItem('authToken', data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
+          localStorage.setItem('user', JSON.stringify(result.user));
         } catch (_) {}
-        setUser(data.user);
+        setUser(result.user);
       }
       
-      return { success: true, data };
+      return { success: true, data: result };
     } catch (err) {
       setError(err.message);
       return { success: false, error: err.message };
@@ -111,10 +117,10 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     setLoading(true);
     try {
-      const { error } = await authService.signOut();
+      const result = await supabaseAuthService.signOut();
       
-      if (error) {
-        throw new Error(error.message || 'Error al cerrar sesión');
+      if (result.error) {
+        throw new Error(result.error.message || 'Error al cerrar sesión');
       }
       
       try {

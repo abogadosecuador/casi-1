@@ -5,7 +5,12 @@ import { useAuth } from '../../context/AuthContext';
 
 const UnauthorizedPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, getUserRole } = useAuth();
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
+  
+  const getUserRole = () => {
+    return user?.role || 'client';
+  };
 
   const goBack = () => {
     navigate(-1);
@@ -63,14 +68,14 @@ const UnauthorizedPage = () => {
         
         <p className="text-lg text-gray-600 mb-8 max-w-lg mx-auto">
           Lo sentimos, no tienes permisos para acceder a esta página. 
-          {isAuthenticated() 
+          {isAuthenticated 
             ? ' Tu cuenta no tiene los privilegios necesarios para esta funcionalidad.'
             : ' Debes iniciar sesión para acceder a esta área.'
           }
         </p>
 
         {/* Acciones según el estado de autenticación */}
-        {isAuthenticated() ? (
+        {isAuthenticated ? (
           <div className="space-y-6">
             {/* Usuario autenticado pero sin permisos */}
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">

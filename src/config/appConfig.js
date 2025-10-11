@@ -15,15 +15,15 @@ export const getBaseUrl = () => {
   if (typeof window !== 'undefined') {
     return window.location.origin;
   }
-  return 'https://abogado-wilson.anipets12.workers.dev';
+  return 'https://abogados.ecuador.workers.dev';
 };
 
 // Información de contacto
 export const contactInfo = {
   // Correos electrónicos
   emails: {
-    primary: "alexip2@hotmail.com",
-    secondary: "Wifirmalegal@gmail.com"
+    primary: "ecuadorabogado1@gmail.com",
+    secondary: "alexip2@hotmail.com"
   },
   
   // Teléfonos
@@ -68,12 +68,11 @@ export const socialMedia = {
 export const externalServices = {
   // n8n
   n8n: {
-    baseUrl: "https://n8nom.onrender.com",
-    apiKey: "eyJhbGciOiJIUzI1NilsInR5cCI6IkpXVCJ9.eyJzdWliOilwYTAyOTI1Yy0wYmQzLTQWZTQtYWU1MC1lMzE4YmFlYjAyMDIiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsa WMtYXBpliwiaWF0IjoxNzQ1MDcwMjQxfQ.qRIKTOe3b6cMnxaIcYaa0QjEzukpg UAp3zgJwR9b6Mw",
+    baseUrl: "https://n8n-latest-hurl.onrender.com",
     webhooks: {
-      test: "https://n8nom.onrender.com/webhook-test/1cfd2baa-f5ec-4bc4-a99d-dfb36793eabd",
-      production: "https://n8nom.onrender.com/webhook/1cfd2baa-f5ec-4bc4-a99d-dfb36793eabd"
-    }
+      production: "https://n8n-latest-hurl.onrender.com"
+    },
+    deployHook: "https://api.render.com/deploy/srv-d31573gdl3ps73e2rdn0?key=jQgEE8ZMVgo"
   },
   
   // OpenRouter para IA
@@ -96,26 +95,33 @@ export const externalServices = {
 
 // Configuración de Cloudflare
 export const cloudflareConfig = {
-  accountId: "f21b24d86935a055c03d21f7fffd1514",
-  apiToken: "hVCek95JiWpq9zRqRgN1LVp176mWH88FOE6vHIvL",
-  kvNamespaceId: "d977cf29acc749ba8aeabbcb2d395cb3",
-  d1DatabaseId: "f00d15a2-6069-4f19-a8eb-6f2217af2176",
-  turnstile: {
-    siteKey: "0x4AAAAAABDkl--Sw4n_bwmU",
-    secretKey: "0x4AAAAAABDkl-wPYTurHAniMDA2wqOJ__k"
-  }
+  accountId: "70661c46051942965565a5c976219dde",
+  apiToken: "41-I78-j2fXWe4xT82Gx-OaLKAZjExGH8VwgsbRv",
+  kvNamespaceId: "9585583f15824e6891e9660bd6f85d7d",
+  d1DatabaseId: "029949b9-4266-4060-8bcd-71525b26600c",
+  workersAI: "41-I78-j2fXWe4xT82Gx-OaLKAZjExGH8VwgsbRv",
+  globalApiKey: "38fb66c17031310f94d2ddc9e7ed025878a69",
+  originCA: "v1.0-de7d653e9bdd51a050d020f9-ffd678d2059783b887438d9fa74a3beef4c76b31ce43837dfd0bc4fd7c1a3879d207e5a14b93f19f053c7534c7de3b4f3cf37dd1da11e4abafad30013c34f8f0daee9f2d1741b29c9a",
+  createToken: "w6scVTJZRE37pozxeSQLXjmZaZilDaKCVanxTo-A",
+  workersEdit: "_ecllBBWXfnkFQyWt6kCg9c-OwN1EvK0WULk4OW6",
+  dnsToken: "3jRSE6bdEqud5BVyOsRSZWaZbiNwYitl3d7OEOe2",
+  subdomain: "ecuador.workers.dev",
+  workerUrl: "https://abogados.ecuador.workers.dev"
 };
 
-// Configuración de Supabase
+// Configuración de Supabase - PRODUCCIÓN
 export const supabaseConfig = {
   url: typeof process !== 'undefined' ? process.env?.VITE_SUPABASE_URL : 
       (typeof window !== 'undefined' ? window.__ENV__?.VITE_SUPABASE_URL : 
-      'https://phzldiaohelbyobhjrnc.supabase.co'),
+      'https://kbybhgxqdefuquybstqk.supabase.co'),
   key: typeof process !== 'undefined' ? process.env?.VITE_SUPABASE_KEY : 
       (typeof window !== 'undefined' ? window.__ENV__?.VITE_SUPABASE_KEY : 
-      'sbp_db5898ecc094d37ec87562399efe3833e63ab20f'),
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWJoZ3hxZGVmdXF1eWJzdHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NjAwODMsImV4cCI6MjA3MzEzNjA4M30.s1knFM9QXd8CH8TC0IOtBBBvb-qm2XYl_VlhVb-CqcE'),
+  databasePassword: '@#Zorretes1996',
+  orgName: 'abogadosecuador\'s Org',
+  projectName: 'abogadosecuador\'s Project',
   headers: {
-    'X-Client-Info': 'abogado-wilson'
+    'X-Client-Info': 'abogadosecuador-production'
   }
 };
 

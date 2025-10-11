@@ -24,9 +24,15 @@ let initCallCount = 0;
 // Usar la configuración centralizada
 const envConfig = import.meta.env;
 
-// Configuración de Supabase
-const supabaseUrl = envConfig.VITE_SUPABASE_URL || globalConfig.supabaseUrl || 'https://your-project.supabase.co';
-const supabaseKey = envConfig.VITE_SUPABASE_ANON_KEY || globalConfig.supabaseKey || 'your-anon-key';
+// FORZAR URL DE PRODUCCIÓN - NO USAR VARIABLES ANTIGUAS
+const PRODUCCION_URL = 'https://kbybhgxqdefuquybstqk.supabase.co';
+const PRODUCCION_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWJoZ3hxZGVmdXF1eWJzdHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NjAwODMsImV4cCI6MjA3MzEzNjA4M30.s1knFM9QXd8CH8TC0IOtBBBvb-qm2XYl_VlhVb-CqcE';
+
+// Configuración de Supabase - PRODUCCIÓN FORZADA
+const supabaseUrl = PRODUCCION_URL;
+const supabaseKey = PRODUCCION_KEY;
+
+console.log('🔧 Supabase URL configurada:', supabaseUrl);
 
 // Determinar si estamos en un entorno con problemas CORS (Cloudflare Workers)
 const shouldUseProxyWorker = () => {

@@ -32,8 +32,8 @@ const config = {
   
   // Configuración de Supabase
   supabase: {
-    url: getEnvVariable('SUPABASE_URL', 'https://phzldiaohelbyobhjrnc.supabase.co'),
-    key: getEnvVariable('SUPABASE_KEY'),
+    url: getEnvVariable('SUPABASE_URL', 'https://kbybhgxqdefuquybstqk.supabase.co'),
+    key: getEnvVariable('SUPABASE_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWJoZ3hxZGVmdXF1eWJzdHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1NjAwODMsImV4cCI6MjA3MzEzNjA4M30.s1knFM9QXd8CH8TC0IOtBBBvb-qm2XYl_VlhVb-CqcE'),
   },
   
   // Configuración de APIs externas

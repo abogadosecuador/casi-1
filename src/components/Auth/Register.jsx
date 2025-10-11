@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
-import { authService } from '../../services/apiService';
+import { supabaseService } from '../../services/supabaseService';
 
 const Register = () => {
   const { user, register } = useAuth();
@@ -35,15 +35,17 @@ const Register = () => {
     }
   }, [user, navigate]);
   
-  // Verificar conexión a la API al cargar el componente
+  // Verificar conexión con Supabase al cargar el componente
   useEffect(() => {
     const checkApiConnection = async () => {
       try {
-        // Intento simple de conexión
-        await authService.checkConnection();
-        setApiConnected(true);
+        const result = await supabaseService.checkConnection();
+        setApiConnected(result.connected);
+        if (!result.connected && !result.simulated) {
+          console.warn('Advertencia de conexión:', result.message);
+        }
       } catch (err) {
-        console.warn('No se pudo conectar con la API:', err);
+        console.warn('No se pudo conectar con Supabase:', err);
         setApiConnected(false);
       }
     };
