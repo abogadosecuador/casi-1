@@ -9,7 +9,7 @@ import { Toaster } from 'react-hot-toast';
 // Componentes comunes
 import LoadingSpinner from './components/Common/LoadingSpinner';
 import Navbar from './components/Navigation/Navbar';
-import Footer from './components/Footer/Footer';
+import Footer from './components/Footer';
 import FullCart from './components/Cart/FullCart';
 
 // Middleware de autenticación
@@ -329,7 +329,8 @@ function App() {
                     <Route path="*" element={<NotFoundPage />} />
                   </Routes>
                 </main>
-                <Footer />
+                
+                {/* Toast notifications */}
                 
                 {/* Toast notifications */}
                 <Toaster
@@ -359,6 +360,7 @@ function App() {
 
                 {/* Floating Cart */}
                 <FullCart />
+                <Footer />
               </div>
             </HelmetWrapper>
           </ThemeProvider>

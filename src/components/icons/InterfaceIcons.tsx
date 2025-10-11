@@ -1,15 +1,15 @@
 import React from 'react';
-import { 
+import {
   FaUser, FaShoppingCart, FaSignOutAlt, FaHome, FaCog, FaSearch, FaMoon, FaSun,
-  FaEdit, FaTrash, FaPlus, FaTimes, FaCheck, FaChevronDown, FaUpload, FaRobot,
+  FaEdit, FaTrash, FaPlus, FaTimes, FaCheck, FaChevronDown, FaUpload,
   FaCreditCard, FaPaypal, FaWhatsapp, FaCheckCircle, FaLightbulb, FaQuoteLeft,
-  FaBook, FaShield, FaUsers, FaDollarSign, FaBars, FaEnvelope, FaPhone,
-  FaGraduationCap, FaGavel, FaBuilding, FaFileAlt
+  FaBook, FaUsers, FaDollarSign, FaBars, FaEnvelope, FaPhone,
+  FaGraduationCap, FaGavel, FaBuilding, FaFileAlt, FaShieldAlt, FaInstagram,
+  FaLinkedin, FaTwitter, FaFacebook
 } from 'react-icons/fa';
-import { 
-  FaGoogle, FaApple, FaFacebook, FaXTwitter 
+import {
+  FaGoogle, FaApple
 } from 'react-icons/fa6';
-import { FaBox } from 'react-icons/fa';
 
 // Basic UI Icons
 export const UserIcon = FaUser;
@@ -34,12 +34,11 @@ export const CheckCircleIcon = FaCheckCircle;
 export const LightbulbIcon = FaLightbulb;
 export const QuoteIcon = FaQuoteLeft;
 export const BookOpenIcon = FaBook;
-export const ShieldCheckIcon = FaShield;
+export const ShieldCheckIcon = FaShieldAlt;
 export const UsersIcon = FaUsers;
 export const FinancialsIcon = FaDollarSign;
 export const ContactIcon = FaEnvelope;
 export const PhoneIcon = FaPhone;
-export const PackageIcon = FaBox;
 
 // Payment Icons
 export const CreditCardIcon = FaCreditCard;
@@ -50,10 +49,11 @@ export const WhatsAppIcon = FaWhatsapp;
 export const GoogleIcon = FaGoogle;
 export const AppleIcon = FaApple;
 export const FacebookIcon = FaFacebook;
-export { FaXTwitter as TwitterIcon };
+export const InstagramIcon = FaInstagram;
+export const LinkedInIcon = FaLinkedin;
+export const TwitterIcon = FaTwitter;
 
 // Professional Icons
-export const CrmIcon = FaUsers;
 export const EducationIcon = FaGraduationCap;
 export const LegalIcon = FaGavel;
 export const BusinessIcon = FaBuilding;
