@@ -14,8 +14,6 @@ dir = "."
 main = "./cloudflare-worker-clean.js"
 
 # Configuración simplificada para máxima compatibilidad
-[site]
-bucket = "./dist"
 
 # Configuración de KV y D1 Database - PRODUCCIÓN
 [[kv_namespaces]]
