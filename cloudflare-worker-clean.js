@@ -42,16 +42,16 @@ async function handleApiRequest(request, env) {
     const path = url.pathname;
 
     // Check if D1 database binding is available
-    if (!env.ABOGADO_WILSON_DB) {
+    if (!env.DB) {
         console.warn('D1 Database not available, using KV storage as fallback');
     }
 
     try {
         if (path === '/api/appointments' && request.method === 'GET') {
             // Use D1 database if available, otherwise use KV storage
-            if (env.ABOGADO_WILSON_DB) {
+            if (env.DB) {
                 // Query using D1
-                const { results } = await env.ABOGADO_WILSON_DB.prepare(
+                const { results } = await env.DB.prepare(
                     'SELECT * FROM appointments ORDER BY startTime ASC LIMIT 10'
                 ).all();
                 return new Response(JSON.stringify(results), {
@@ -59,7 +59,7 @@ async function handleApiRequest(request, env) {
                 });
             } else {
                 // Fallback to KV storage
-                const appointments = await env.ABOGADO_WILSON_KV.get('appointments');
+                const appointments = await env.KV.get('appointments');
                 const appointmentsArray = appointments ? JSON.parse(appointments) : [];
                 return new Response(JSON.stringify(appointmentsArray), {
                     headers: { 'Content-Type': 'application/json', ...standardHeaders }
@@ -73,9 +73,9 @@ async function handleApiRequest(request, env) {
             
             if (resource === 'searches') {
                 // Handle searches - use D1 database if available, otherwise use KV storage
-                if (env.ABOGADO_WILSON_DB) {
+                if (env.DB) {
                     // Query using D1 - get recent searches
-                    const { results } = await env.ABOGADO_WILSON_DB.prepare(
+                    const { results } = await env.DB.prepare(
                         'SELECT * FROM searches ORDER BY timestamp DESC LIMIT 5'
                     ).all();
                     return new Response(JSON.stringify(results), {
@@ -83,7 +83,7 @@ async function handleApiRequest(request, env) {
                     });
                 } else {
                     // Fallback to KV storage
-                    const searches = await env.ABOGADO_WILSON_KV.get('searches');
+                    const searches = await env.KV.get('searches');
                     const searchesArray = searches ? JSON.parse(searches) : [];
                     
                     // Return the 5 most recent searches
@@ -95,15 +95,15 @@ async function handleApiRequest(request, env) {
                 }
             } else if (resource === 'users' || resource === 'usuarios') {
                 // Handle users - use D1 database if available
-                if (env.ABOGADO_WILSON_DB) {
-                    const { results } = await env.ABOGADO_WILSON_DB.prepare(
+                if (env.DB) {
+                    const { results } = await env.DB.prepare(
                         'SELECT * FROM usuarios LIMIT 50'
                     ).all();
                     return new Response(JSON.stringify(results), {
                         headers: { 'Content-Type': 'application/json', ...standardHeaders }
                     });
                 } else {
-                    const users = await env.ABOGADO_WILSON_KV.get('usuarios');
+                    const users = await env.KV.get('usuarios');
                     const usersArray = users ? JSON.parse(users) : [];
                     return new Response(JSON.stringify(usersArray), {
                         headers: { 'Content-Type': 'application/json', ...standardHeaders }
@@ -111,15 +111,15 @@ async function handleApiRequest(request, env) {
                 }
             } else if (resource === 'services' || resource === 'servicios') {
                 // Handle services - use D1 database if available
-                if (env.ABOGADO_WILSON_DB) {
-                    const { results } = await env.ABOGADO_WILSON_DB.prepare(
+                if (env.DB) {
+                    const { results } = await env.DB.prepare(
                         'SELECT * FROM servicios LIMIT 50'
                     ).all();
                     return new Response(JSON.stringify(results), {
                         headers: { 'Content-Type': 'application/json', ...standardHeaders }
                     });
                 } else {
-                    const services = await env.ABOGADO_WILSON_KV.get('servicios');
+                    const services = await env.KV.get('servicios');
                     const servicesArray = services ? JSON.parse(services) : [];
                     return new Response(JSON.stringify(servicesArray), {
                         headers: { 'Content-Type': 'application/json', ...standardHeaders }
@@ -127,15 +127,15 @@ async function handleApiRequest(request, env) {
                 }
             } else if (resource === 'ebooks') {
                 // Handle ebooks - use D1 database if available
-                if (env.ABOGADO_WILSON_DB) {
-                    const { results } = await env.ABOGADO_WILSON_DB.prepare(
+                if (env.DB) {
+                    const { results } = await env.DB.prepare(
                         'SELECT * FROM ebooks LIMIT 50'
                     ).all();
                     return new Response(JSON.stringify(results), {
                         headers: { 'Content-Type': 'application/json', ...standardHeaders }
                     });
                 } else {
-                    const ebooks = await env.ABOGADO_WILSON_KV.get('ebooks');
+                    const ebooks = await env.KV.get('ebooks');
                     const ebooksArray = ebooks ? JSON.parse(ebooks) : [];
                     return new Response(JSON.stringify(ebooksArray), {
                         headers: { 'Content-Type': 'application/json', ...standardHeaders }
@@ -143,15 +143,15 @@ async function handleApiRequest(request, env) {
                 }
             } else if (resource === 'citas') {
                 // Handle appointments - use D1 database if available
-                if (env.ABOGADO_WILSON_DB) {
-                    const { results } = await env.ABOGADO_WILSON_DB.prepare(
+                if (env.DB) {
+                    const { results } = await env.DB.prepare(
                         'SELECT * FROM citas LIMIT 50'
                     ).all();
                     return new Response(JSON.stringify(results), {
                         headers: { 'Content-Type': 'application/json', ...standardHeaders }
                     });
                 } else {
-                    const citas = await env.ABOGADO_WILSON_KV.get('citas');
+                    const citas = await env.KV.get('citas');
                     const citasArray = citas ? JSON.parse(citas) : [];
                     return new Response(JSON.stringify(citasArray), {
                         headers: { 'Content-Type': 'application/json', ...standardHeaders }
@@ -160,9 +160,9 @@ async function handleApiRequest(request, env) {
             }
             
             // Handle other resources with D1 or KV
-            if (env.ABOGADO_WILSON_DB) {
+            if (env.DB) {
                 // Query using D1 database
-                const { results } = await env.ABOGADO_WILSON_DB.prepare(
+                const { results } = await env.DB.prepare(
                     `SELECT * FROM ${resource} LIMIT 50`
                 ).all();
                 return new Response(JSON.stringify(results), {
@@ -170,7 +170,7 @@ async function handleApiRequest(request, env) {
                 });
             } else {
                 // Fallback to KV storage
-                const data = await env.ABOGADO_WILSON_KV.get(resource);
+                const data = await env.KV.get(resource);
                 const dataArray = data ? JSON.parse(data) : [];
                 return new Response(JSON.stringify(dataArray), {
                     headers: { 'Content-Type': 'application/json', ...standardHeaders }
@@ -187,9 +187,9 @@ async function handleApiRequest(request, env) {
                 const body = await request.json();
                 
                 // Use D1 database if available, otherwise use KV storage
-                if (env.ABOGADO_WILSON_DB) {
+                if (env.DB) {
                     // Insert using D1 database
-                    await env.ABOGADO_WILSON_DB.prepare(
+                    await env.DB.prepare(
                         'INSERT INTO searches (search_type, search_value, province, timestamp) VALUES (?, ?, ?, ?)'
                     ).bind(
                         body.search_type,
@@ -203,7 +203,7 @@ async function handleApiRequest(request, env) {
                     });
                 } else {
                     // Fallback to KV storage
-                    const existingSearches = await env.ABOGADO_WILSON_KV.get('searches');
+                    const existingSearches = await env.KV.get('searches');
                     const searchesArray = existingSearches ? JSON.parse(existingSearches) : [];
                     
                     // Add the new search to the beginning of the array
@@ -217,7 +217,7 @@ async function handleApiRequest(request, env) {
                     const limitedSearches = searchesArray.slice(0, 50);
                     
                     // Store back to KV
-                    await env.ABOGADO_WILSON_KV.put('searches', JSON.stringify(limitedSearches));
+                    await env.KV.put('searches', JSON.stringify(limitedSearches));
                     
                     // Return the created search
                     return new Response(JSON.stringify({ success: true, search: body }), {
@@ -226,13 +226,13 @@ async function handleApiRequest(request, env) {
                 }
             } else {
                 // Handle other resources
-                if (env.ABOGADO_WILSON_DB) {
+                if (env.DB) {
                     // For other resources, we'll need to implement based on the specific table structure
                     const body = await request.json();
                     
                     // This is a generic insert - in real implementation you'd need to structure based on resource
                     // For now, we'll just store in KV as fallback
-                    const existingData = await env.ABOGADO_WILSON_KV.get(resource);
+                    const existingData = await env.KV.get(resource);
                     const dataArray = existingData ? JSON.parse(existingData) : [];
                     
                     dataArray.push({
@@ -241,7 +241,7 @@ async function handleApiRequest(request, env) {
                         timestamp: new Date().toISOString()
                     });
                     
-                    await env.ABOGADO_WILSON_KV.put(resource, JSON.stringify(dataArray));
+                    await env.KV.put(resource, JSON.stringify(dataArray));
                     
                     return new Response(JSON.stringify({ success: true, data: body }), {
                         headers: { 'Content-Type': 'application/json', ...standardHeaders }
@@ -249,7 +249,7 @@ async function handleApiRequest(request, env) {
                 } else {
                     // Fallback to KV storage
                     const body = await request.json();
-                    const existingData = await env.ABOGADO_WILSON_KV.get(resource);
+                    const existingData = await env.KV.get(resource);
                     const dataArray = existingData ? JSON.parse(existingData) : [];
                     
                     dataArray.push({
@@ -258,7 +258,7 @@ async function handleApiRequest(request, env) {
                         timestamp: new Date().toISOString()
                     });
                     
-                    await env.ABOGADO_WILSON_KV.put(resource, JSON.stringify(dataArray));
+                    await env.KV.put(resource, JSON.stringify(dataArray));
                     
                     return new Response(JSON.stringify({ success: true, data: body }), {
                         headers: { 'Content-Type': 'application/json', ...standardHeaders }
@@ -272,19 +272,19 @@ async function handleApiRequest(request, env) {
             const resource = path.split('/')[3]; // Extract resource name from /api/data/{resource}
             const id = path.split('/')[4]; // Extract ID from /api/data/{resource}/{id}
             
-            if (env.ABOGADO_WILSON_DB) {
+            if (env.DB) {
                 // Update using D1 database
                 const body = await request.json();
                 
                 // This is a simplified implementation - real implementation would build dynamic query
                 // For now, we'll use KV as fallback
-                const existingData = await env.ABOGADO_WILSON_KV.get(resource);
+                const existingData = await env.KV.get(resource);
                 const dataArray = existingData ? JSON.parse(existingData) : [];
                 
                 const itemIndex = dataArray.findIndex(item => item.id === id);
                 if (itemIndex !== -1) {
                     dataArray[itemIndex] = { ...dataArray[itemIndex], ...body };
-                    await env.ABOGADO_WILSON_KV.put(resource, JSON.stringify(dataArray));
+                    await env.KV.put(resource, JSON.stringify(dataArray));
                     
                     return new Response(JSON.stringify({ success: true, data: dataArray[itemIndex] }), {
                         headers: { 'Content-Type': 'application/json', ...standardHeaders }
@@ -293,13 +293,13 @@ async function handleApiRequest(request, env) {
             } else {
                 // Fallback to KV storage
                 const body = await request.json();
-                const existingData = await env.ABOGADO_WILSON_KV.get(resource);
+                const existingData = await env.KV.get(resource);
                 const dataArray = existingData ? JSON.parse(existingData) : [];
                 
                 const itemIndex = dataArray.findIndex(item => item.id === id);
                 if (itemIndex !== -1) {
                     dataArray[itemIndex] = { ...dataArray[itemIndex], ...body };
-                    await env.ABOGADO_WILSON_KV.put(resource, JSON.stringify(dataArray));
+                    await env.KV.put(resource, JSON.stringify(dataArray));
                     
                     return new Response(JSON.stringify({ success: true, data: dataArray[itemIndex] }), {
                         headers: { 'Content-Type': 'application/json', ...standardHeaders }
@@ -318,25 +318,25 @@ async function handleApiRequest(request, env) {
             const resource = path.split('/')[3]; // Extract resource name from /api/data/{resource}
             const id = path.split('/')[4]; // Extract ID from /api/data/{resource}/{id}
             
-            if (env.ABOGADO_WILSON_DB) {
+            if (env.DB) {
                 // Delete using D1 database
                 // For now, we'll use KV as fallback
-                const existingData = await env.ABOGADO_WILSON_KV.get(resource);
+                const existingData = await env.KV.get(resource);
                 const dataArray = existingData ? JSON.parse(existingData) : [];
                 
                 const filteredArray = dataArray.filter(item => item.id !== id);
-                await env.ABOGADO_WILSON_KV.put(resource, JSON.stringify(filteredArray));
+                await env.KV.put(resource, JSON.stringify(filteredArray));
                 
                 return new Response(JSON.stringify({ success: true }), {
                     headers: { 'Content-Type': 'application/json', ...standardHeaders }
                 });
             } else {
                 // Fallback to KV storage
-                const existingData = await env.ABOGADO_WILSON_KV.get(resource);
+                const existingData = await env.KV.get(resource);
                 const dataArray = existingData ? JSON.parse(existingData) : [];
                 
                 const filteredArray = dataArray.filter(item => item.id !== id);
-                await env.ABOGADO_WILSON_KV.put(resource, JSON.stringify(filteredArray));
+                await env.KV.put(resource, JSON.stringify(filteredArray));
                 
                 return new Response(JSON.stringify({ success: true }), {
                     headers: { 'Content-Type': 'application/json', ...standardHeaders }
@@ -359,9 +359,9 @@ async function handleApiRequest(request, env) {
                 }
                 
                 // Use D1 database if available, otherwise use KV storage
-                if (env.ABOGADO_WILSON_DB) {
+                if (env.DB) {
                     // Insert using D1 database
-                    await env.ABOGADO_WILSON_DB.prepare(
+                    await env.DB.prepare(
                         'INSERT INTO usuarios (email, nombre, roles, creado_en) VALUES (?, ?, ?, ?)'
                     ).bind(
                         body.email,
@@ -375,7 +375,7 @@ async function handleApiRequest(request, env) {
                     });
                 } else {
                     // Fallback to KV storage
-                    const existingSubscribers = await env.ABOGADO_WILSON_KV.get('newsletter_subscribers');
+                    const existingSubscribers = await env.KV.get('newsletter_subscribers');
                     const subscribersArray = existingSubscribers ? JSON.parse(existingSubscribers) : [];
                     
                     // Check if email already exists
@@ -395,7 +395,7 @@ async function handleApiRequest(request, env) {
                     });
                     
                     // Store back to KV
-                    await env.ABOGADO_WILSON_KV.put('newsletter_subscribers', JSON.stringify(subscribersArray));
+                    await env.KV.put('newsletter_subscribers', JSON.stringify(subscribersArray));
                     
                     // Return success
                     return new Response(JSON.stringify({ success: true, message: '¡Gracias por suscribirte!' }), {
