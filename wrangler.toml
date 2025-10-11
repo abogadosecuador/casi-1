@@ -4,7 +4,8 @@ main = "cloudflare-worker-clean.js"
 compatibility_date = "2025-04-23"
 # Account ID de producción
 account_id = "70661c46051942965565a5c976219dde"
-workers_dev = true
+# Configuración de ASSETS para servir archivos estáticos
+assets = "./dist"
 
 # Configurar el worker como un módulo ES para soportar bindings D1
 [build]
