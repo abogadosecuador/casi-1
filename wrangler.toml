@@ -27,8 +27,8 @@ preview_id = "1f3d19c7f0a74ff0bec6b1b9abf60ddf"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "abogadosecuador"
-database_id = "029949b9-4266-4060-8bcd-71525b26600c"
+database_name = "sqld1"
+database_id = "c4e5e40d-ade6-4486-ac85-4a0b9a1d7b4f"
 
 # Configuración de entorno
 [env.production]
