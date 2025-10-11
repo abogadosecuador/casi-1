@@ -100,6 +100,7 @@ import CivilConsultationPage from './pages/ConsultationTypes/CivilConsultationPa
 import QuickConsultationPage from './pages/ConsultationTypes/QuickConsultationPage';
 import EmpresarialConsultationPage from './pages/ConsultationTypes/EmpresarialConsultationPage';
 import DigitalConsultationPage from './pages/ConsultationTypes/DigitalConsultationPage';
+import ConsultationsPage from './pages/ConsultationsPage';
 
 // Páginas de error
 import NotFoundPage from './components/Common/NotFoundPage';
@@ -146,6 +147,7 @@ function App() {
                     <Route path="/servicios/cobros" element={<ServicioCobrosPage />} />
                     
                     {/* Rutas de consultas */}
+                    <Route path="/consultas" element={<ConsultationsPage />} />
                     <Route path="/consultas/penal" element={<PenalConsultationPage />} />
                     <Route path="/consultas/civil" element={<CivilConsultationPage />} />
                     <Route path="/consultas/general" element={<QuickConsultationPage />} />

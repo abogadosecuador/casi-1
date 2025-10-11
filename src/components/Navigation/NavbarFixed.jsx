@@ -1,7 +1,7 @@
 import { Fragment, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Disclosure, Menu, Transition, Popover } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon, ChevronDownIcon, UserIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
+import { NexusProIcon, FacebookIcon, InstagramIcon, XIcon, LinkedInIcon, CommentsIcon } from '../icons/InterfaceIcons';
 import { FaUsers, FaHandshake, FaComments, FaGavel, FaBook, FaShieldAlt, FaFileContract, FaFileAlt, FaUserTie, FaWhatsapp, FaPhone, FaEnvelope, FaUserPlus, FaSignInAlt, FaLock, FaShoppingCart, FaBriefcase, FaGlobe, FaCrown } from 'react-icons/fa';
 import CartDrawer from '../Cart/CartDrawer';
 import { useAuth } from '../../context/AuthContext';
@@ -19,6 +19,7 @@ const serviceSubmenu = [
 ];
 
 const consultasSubmenu = [
+  { name: 'Todas las Consultas', href: '/consultas', current: false, icon: <CommentsIcon className="text-blue-500" /> },
   { name: 'Consulta General', href: '/consultas/general', current: false, icon: <FaFileContract className="text-blue-500" /> },
   { name: 'Consulta Penal', href: '/consultas/penal', current: false, icon: <FaGavel className="text-red-500" /> },
   { name: 'Consulta Civil', href: '/consultas/civil', current: false, icon: <FaFileContract className="text-blue-500" /> },

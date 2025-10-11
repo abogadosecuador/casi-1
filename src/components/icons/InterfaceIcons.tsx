@@ -5,7 +5,7 @@ import {
   FaCreditCard, FaPaypal, FaWhatsapp, FaCheckCircle, FaLightbulb, FaQuoteLeft,
   FaBook, FaUsers, FaDollarSign, FaBars, FaEnvelope, FaPhone,
   FaGraduationCap, FaGavel, FaBuilding, FaFileAlt, FaShieldAlt, FaInstagram,
-  FaLinkedin, FaTwitter, FaFacebook
+  FaLinkedin, FaTwitter, FaFacebook, FaComments
 } from 'react-icons/fa';
 import {
   FaGoogle, FaApple
@@ -39,6 +39,7 @@ export const UsersIcon = FaUsers;
 export const FinancialsIcon = FaDollarSign;
 export const ContactIcon = FaEnvelope;
 export const PhoneIcon = FaPhone;
+export const CommentsIcon = FaComments;
 
 // Payment Icons
 export const CreditCardIcon = FaCreditCard;
