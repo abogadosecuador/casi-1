@@ -22,7 +22,7 @@ const BlogReader = () => {
         .from('blog_posts')
         .select('*')
         .eq('status', 'published')
-        .order('published_at', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (selectedCategory !== 'all') {
         query = query.eq('category', selectedCategory);
@@ -149,7 +149,7 @@ const BlogReader = () => {
                   </span>
                   <span className="flex items-center">
                     <FaCalendar className="mr-1" />
-                    {new Date(post.published_at || post.created_at).toLocaleDateString()}
+                    {new Date(post.created_at).toLocaleDateString()}
                   </span>
                 </div>
 

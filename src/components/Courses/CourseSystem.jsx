@@ -4,6 +4,7 @@ import { toast } from 'react-hot-toast';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../../services/supabaseService';
 
 const CourseSystem = () => {
   const navigate = useNavigate();
@@ -15,8 +16,68 @@ const CourseSystem = () => {
   const [progress, setProgress] = useState({});
   const [userProgress, setUserProgress] = useState({});
   const [purchasedCourses, setPurchasedCourses] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const courses = [
+  // Cargar cursos desde Supabase
+  useEffect(() => {
+    loadCourses();
+  }, []);
+
+  const loadCourses = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('courses')
+        .select(`
+          *,
+          modules:course_modules(
+            *,
+            lessons:course_lessons(*)
+          )
+        `)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Transformar datos de Supabase al formato esperado
+      const transformedCourses = data.map(course => ({
+        id: course.id,
+        title: course.title,
+        instructor: course.instructor_name || 'Dr. Wilson Ipiales',
+        description: course.description || course.short_description,
+        duration: `${Math.ceil(course.duration / 60)} semanas`,
+        totalLessons: course.modules?.reduce((acc, mod) => acc + (mod.lessons?.length || 0), 0) || 0,
+        price: course.price,
+        rating: course.rating || 4.5,
+        students: course.enrollment_count || 0,
+        image: course.thumbnail || 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800',
+        category: course.category,
+        level: course.level || 'Intermedio',
+        lessons: course.modules?.flatMap(mod => 
+          mod.lessons?.map(lesson => ({
+            id: lesson.id,
+            title: lesson.title,
+            duration: `${lesson.duration || 15}:00`,
+            videoUrl: lesson.video_url || 'https://example.com/video.mp4',
+            description: lesson.description,
+            completed: false
+          })) || []
+        ) || []
+      }));
+
+      setCourses(transformedCourses);
+    } catch (error) {
+      console.error('Error al cargar cursos:', error);
+      toast.error('Error al cargar cursos');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Resto del código permanece igual
+  const oldCourses = [
     {
       id: 1,
       title: 'Derecho Penal Básico',
@@ -504,6 +565,17 @@ const CourseSystem = () => {
     return <CoursePlayer course={selectedCourse} />;
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando cursos...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="text-center mb-12">
@@ -513,11 +585,17 @@ const CourseSystem = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {courses.map(course => (
-          <CourseCard key={course.id} course={course} />
-        ))}
-      </div>
+      {courses.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500 text-lg">No hay cursos disponibles en este momento</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {courses.map(course => (
+            <CourseCard key={course.id} course={course} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
