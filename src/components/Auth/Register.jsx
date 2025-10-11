@@ -15,10 +15,11 @@ const Register = () => {
   const referralCode = queryParams.get('ref');
   
   const [formData, setFormData] = useState({
-    name: '',
+    fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
+    phone: '',
     referralCode: referralCode || ''
   });
   
@@ -70,13 +71,13 @@ const Register = () => {
     setError(null);
     
     // Validaciones de formulario
-    if (!formData.name.trim()) {
+    if (!formData.fullName.trim()) {
       setError('Por favor, ingrese su nombre completo.');
       setLoading(false);
       return;
     }
     
-    if (formData.name.trim().length < 2) {
+    if (formData.fullName.trim().length < 2) {
       setError('Su nombre debe tener al menos 2 caracteres.');
       setLoading(false);
       return;
@@ -127,9 +128,10 @@ const Register = () => {
     
     try {
       const result = await register({
-        name: formData.name.trim(),
+        fullName: formData.fullName.trim(),
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
+        phone: formData.phone.trim(),
         referralCode: formData.referralCode.trim()
       });
       
@@ -202,14 +204,30 @@ const Register = () => {
                 <FaUser className="h-5 w-5 text-gray-400" />
               </div>
               <input
-                id="name"
-                name="name"
+                id="fullName"
+                name="fullName"
                 type="text"
                 autoComplete="name"
                 required
                 className="appearance-none rounded-md relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Nombre completo"
-                value={formData.name}
+                value={formData.fullName}
+                onChange={handleChange}
+              />
+            </div>
+            
+            <div className="relative mb-4">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FaUser className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                autoComplete="tel"
+                className="appearance-none rounded-md relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="Teléfono (opcional)"
+                value={formData.phone}
                 onChange={handleChange}
               />
             </div>

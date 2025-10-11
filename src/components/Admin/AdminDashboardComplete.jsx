@@ -17,6 +17,10 @@ import adminService from '../../services/adminService';
 import ProductManager from './ProductManager';
 import CourseManager from './CourseManager';
 import BlogManager from './BlogManager';
+import UserManager from './UserManager';
+import SalesManager from './SalesManager';
+import CSVImporter from './CSVImporter';
+import AIContentGenerator from './AIContentGenerator';
 
 const AdminDashboardComplete = () => {
   const { user, logout } = useAuth();
@@ -85,6 +89,8 @@ const AdminDashboardComplete = () => {
     { id: 'products', label: 'Productos', icon: FaShoppingCart },
     { id: 'courses', label: 'Cursos', icon: FaBook },
     { id: 'blog', label: 'Blog', icon: FaNewspaper },
+    { id: 'ai-content', label: 'IA Blog', icon: FaMagic },
+    { id: 'csv-import', label: 'Importar CSV', icon: FaUpload },
     { id: 'orders', label: 'Ventas', icon: FaDollarSign },
     { id: 'appointments', label: 'Citas', icon: FaCalendarAlt },
     { id: 'settings', label: 'Configuración', icon: FaCog }
@@ -369,19 +375,13 @@ const AdminDashboardComplete = () => {
             
             {activeTab === 'blog' && <BlogManager />}
             
-            {activeTab === 'users' && (
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Usuarios</h3>
-                <p className="text-gray-600">Gestión completa de usuarios pendiente de implementación...</p>
-              </div>
-            )}
+            {activeTab === 'users' && <UserManager />}
             
-            {activeTab === 'orders' && (
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Ventas</h3>
-                <p className="text-gray-600">Vista de órdenes y ventas pendiente de implementación...</p>
-              </div>
-            )}
+            {activeTab === 'orders' && <SalesManager />}
+            
+            {activeTab === 'ai-content' && <AIContentGenerator />}
+            
+            {activeTab === 'csv-import' && <CSVImporter />}
             
             {activeTab === 'appointments' && (
               <div className="bg-white rounded-lg shadow-lg p-6">
