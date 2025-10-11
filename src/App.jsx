@@ -72,6 +72,13 @@ import ThankYouPage from './components/Payment/ThankYouPage';
 import AIConsultationSystem from './components/Consultation/AIConsultationSystem';
 import AppointmentScheduler from './components/Appointment/AppointmentScheduler';
 import TestShoppingPage from './components/TestShoppingPage';
+
+// Gamificación
+import LegalTrivia from './components/Gamification/LegalTrivia';
+import LegalTicTacToe from './components/Gamification/LegalTicTacToe';
+
+// Blog Reader
+import BlogReader from './components/Blog/BlogReader';
 // Páginas de comunidad
 import AffiliatePage from './pages/CleanAffiliatePage';
 import ReferralsPage from './pages/CleanReferralsPage';
@@ -147,8 +154,10 @@ function App() {
 
                     <Route path="/sobre-nosotros" element={<AboutPage />} />
                     <Route path="/contacto" element={<Contact />} />
-                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/blog" element={<BlogReader />} />
                     <Route path="/blog/:slug" element={<BlogArticle />} />
+                    <Route path="/entretenimiento/trivia" element={<LegalTrivia />} />
+                    <Route path="/entretenimiento/tres-en-raya" element={<LegalTicTacToe />} />
                     <Route path="/test-shopping" element={<TestShoppingPage />} />
                     <Route path="/cursos" element={<CourseCatalog />} />
                     <Route path="/cursos/:slug" element={<CourseDetail />} />
