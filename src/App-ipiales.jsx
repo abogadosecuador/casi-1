@@ -25,8 +25,9 @@ function LoadingIndicator() {
 
 // Componentes de navegación y estructura - siempre cargar de forma estática
 import Navbar from './components/Navigation/Navbar';
-import Footer from './components/Footer/Footer';
-import { useAuth } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
+import { ModuleProvider, useModules } from './context/ModuleContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 // Componentes principales cargados dinámicamente con React.lazy
 const Hero = lazy(() => import('./components/Hero'));
@@ -107,9 +108,6 @@ const getBaseUrl = () => {
   return 'http://localhost:8787';
 };
 
-import { CartProvider } from './context/CartContext';
-import { ModuleProvider, useModules } from './context/ModuleContext';
-
 function App() {
   const [apiReady, setApiReady] = useState(true); // Optimista por defecto
   const [isLoading, setIsLoading] = useState(true);
@@ -183,9 +181,11 @@ function App() {
   return (
     <Suspense fallback={<LoadingIndicator />}>
       <ModuleProvider>
-        <CartProvider>
-          <AppContent />
-        </CartProvider>
+        <ThemeProvider>
+          <CartProvider>
+            <AppContent />
+          </CartProvider>
+        </ThemeProvider>
       </ModuleProvider>
     </Suspense>
   );
