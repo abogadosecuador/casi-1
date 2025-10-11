@@ -619,9 +619,16 @@ export default {
       if (url.pathname.startsWith('/api/')) {
         response = await handleApiRequest(request, env);
       } 
-      // Handle static assets using Cloudflare Pages default behavior
+      // Handle static assets - let Cloudflare handle them automatically
       else {
-        response = await env.ASSETS.fetch(request);
+        // For static assets, we'll try to fetch from the request directly
+        // Cloudflare Workers with assets config handles this automatically
+        try {
+          response = await fetch(request);
+        } catch (error) {
+          console.error('Error serving static asset:', error);
+          response = new Response('Not Found', { status: 404 });
+        }
       }
     } catch (error) {
       console.error('Critical Worker Error:', error);
