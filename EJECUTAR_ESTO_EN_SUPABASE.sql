@@ -213,7 +213,7 @@ CREATE POLICY "Users can view own orders" ON orders FOR SELECT USING (auth.uid()
 DROP POLICY IF EXISTS "Users can create own orders" ON orders;
 CREATE POLICY "Users can create own orders" ON orders FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-
+DROP POLICY IF EXISTS "Admins can view all orders" ON orders;
 CREATE POLICY "Admins can view all orders" ON orders FOR SELECT 
 USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
 
@@ -221,12 +221,15 @@ DROP POLICY IF EXISTS "Admins can manage orders" ON orders;
 CREATE POLICY "Admins can manage orders" ON orders FOR ALL 
 USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
 
--- Políticas para purchases
+-- Políticas para purchases (PERMISIVO para el sistema de compras)
 DROP POLICY IF EXISTS "Users can view own purchases" ON purchases;
 CREATE POLICY "Users can view own purchases" ON purchases FOR SELECT USING (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS "Users can create own purchases" ON purchases;
-CREATE POLICY "Users can create own purchases" ON purchases FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can create own purchases" ON purchases FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Users can update own purchases" ON purchases;
+CREATE POLICY "Users can update own purchases" ON purchases FOR UPDATE USING (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS "Admins can view all purchases" ON purchases;
 CREATE POLICY "Admins can view all purchases" ON purchases FOR SELECT 
@@ -253,19 +256,29 @@ CREATE POLICY "Users can view own consultations" ON consultations FOR SELECT USI
 DROP POLICY IF EXISTS "Users can create own consultations" ON consultations;
 CREATE POLICY "Users can create own consultations" ON consultations FOR INSERT WITH CHECK (auth.uid() = user_id);
 
--- Políticas para course_enrollments
+-- Políticas para course_enrollments (PERMISIVO para el sistema de compras)
 DROP POLICY IF EXISTS "Users can view own enrollments" ON course_enrollments;
 CREATE POLICY "Users can view own enrollments" ON course_enrollments FOR SELECT USING (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS "Users can create own enrollments" ON course_enrollments;
-CREATE POLICY "Users can create own enrollments" ON course_enrollments FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can create own enrollments" ON course_enrollments FOR INSERT WITH CHECK (true);
 
--- Políticas para user_products
+DROP POLICY IF EXISTS "Users can update own enrollments" ON course_enrollments;
+CREATE POLICY "Users can update own enrollments" ON course_enrollments FOR UPDATE USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Admins can manage enrollments" ON course_enrollments;
+CREATE POLICY "Admins can manage enrollments" ON course_enrollments FOR ALL 
+USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+
+-- Políticas para user_products (PERMISIVO para el sistema de compras)
 DROP POLICY IF EXISTS "Users can view own products" ON user_products;
 CREATE POLICY "Users can view own products" ON user_products FOR SELECT USING (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS "Users can create own products" ON user_products;
-CREATE POLICY "Users can create own products" ON user_products FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can create own products" ON user_products FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Users can update own products" ON user_products;
+CREATE POLICY "Users can update own products" ON user_products FOR UPDATE USING (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS "Admins can view all user products" ON user_products;
 CREATE POLICY "Admins can view all user products" ON user_products FOR SELECT 
@@ -500,17 +513,17 @@ ALTER TABLE affiliates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE free_consultations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contact_messages ENABLE ROW LEVEL SECURITY;
 
--- Productos: todos pueden ver activos, admin puede gestionar
+-- Productos: ACCESO PÚBLICO sin autenticación, admin puede gestionar
 DROP POLICY IF EXISTS "Anyone can view active products" ON products;
-CREATE POLICY "Anyone can view active products" ON products FOR SELECT USING (status = 'active');
+CREATE POLICY "Anyone can view active products" ON products FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "Admins can manage products" ON products;
 CREATE POLICY "Admins can manage products" ON products FOR ALL 
 USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
 
--- Cursos: todos pueden ver activos, admin puede gestionar
+-- Cursos: ACCESO PÚBLICO sin autenticación, admin puede gestionar
 DROP POLICY IF EXISTS "Anyone can view active courses" ON courses;
-CREATE POLICY "Anyone can view active courses" ON courses FOR SELECT USING (status = 'active');
+CREATE POLICY "Anyone can view active courses" ON courses FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "Admins can manage courses" ON courses;
 CREATE POLICY "Admins can manage courses" ON courses FOR ALL 
@@ -531,9 +544,9 @@ DROP POLICY IF EXISTS "Admins can manage lessons" ON course_lessons;
 CREATE POLICY "Admins can manage lessons" ON course_lessons FOR ALL 
 USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
 
--- Blog: todos pueden ver publicados, admin puede gestionar
+-- Blog: ACCESO PÚBLICO sin autenticación, admin puede gestionar
 DROP POLICY IF EXISTS "Anyone can view published posts" ON blog_posts;
-CREATE POLICY "Anyone can view published posts" ON blog_posts FOR SELECT USING (status = 'published');
+CREATE POLICY "Anyone can view published posts" ON blog_posts FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "Admins can manage blog" ON blog_posts;
 CREATE POLICY "Admins can manage blog" ON blog_posts FOR ALL 

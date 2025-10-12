@@ -10,13 +10,12 @@ import toast from 'react-hot-toast';
 import ImageWithFallback from '../Common/ImageWithFallback';
 
 const CartDrawer = () => {
-  const { cartItems = [], removeFromCart, updateQuantity, getCartTotal, itemCount } = useCart();
+  const { cartItems = [], removeFromCart, updateQuantity, getCartTotal, itemCount, isCartVisible, setIsCartVisible } = useCart();
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false);
 
   const handleCheckout = () => {
     if (cartItems.length > 0) {
-      setIsOpen(false);
+      setIsCartVisible(false);
       navigate('/checkout');
     } else {
       toast.error('El carrito está vacío');
@@ -24,7 +23,7 @@ const CartDrawer = () => {
   };
 
   const handleContinueShopping = () => {
-    setIsOpen(false);
+    setIsCartVisible(false);
     navigate('/tienda');
   };
 
@@ -32,7 +31,7 @@ const CartDrawer = () => {
     <>
       {/* Cart Button */}
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={() => setIsCartVisible(true)}
         className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
       >
         <FaShoppingCart className="h-6 w-6 text-gray-700" />
@@ -45,7 +44,7 @@ const CartDrawer = () => {
 
       {/* Cart Drawer */}
       <AnimatePresence>
-        {isOpen && (
+        {isCartVisible && (
           <>
             {/* Backdrop */}
             <motion.div
@@ -53,7 +52,7 @@ const CartDrawer = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 bg-black bg-opacity-50 z-50"
-              onClick={() => setIsOpen(false)}
+              onClick={() => setIsCartVisible(false)}
             />
 
             {/* Drawer */}
@@ -62,17 +61,18 @@ const CartDrawer = () => {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'tween', duration: 0.3 }}
-              className="fixed top-0 right-0 h-full w-full max-w-lg bg-white shadow-xl z-50 overflow-y-auto"
+              className="fixed top-0 right-0 h-full w-full sm:max-w-lg bg-white shadow-xl z-50 overflow-y-auto flex flex-col"
             >
               <div className="p-6">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-bold">Carrito de Compras</h2>
                   <button
-                    onClick={() => setIsOpen(false)}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    onClick={() => setIsCartVisible(false)}
+                    className="p-3 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation"
+                    aria-label="Cerrar carrito"
                   >
-                    <FaTimes className="text-gray-600" />
+                    <FaTimes className="text-gray-600 text-xl" />
                   </button>
                 </div>
 
@@ -80,10 +80,10 @@ const CartDrawer = () => {
                 {cartItems.length === 0 ? (
                   <div className="text-center py-12">
                     <FaShoppingCart className="text-6xl text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500 mb-6">Tu carrito está vacío</p>
+                    <p className="text-gray-500 mb-6 text-lg">Tu carrito está vacío</p>
                     <button
                       onClick={handleContinueShopping}
-                      className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                      className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg text-lg touch-manipulation"
                     >
                       Ir a la Tienda
                     </button>
@@ -116,22 +116,25 @@ const CartDrawer = () => {
                           <div className="flex items-center space-x-2">
                             <button
                               onClick={() => updateQuantity(item.id, item.type || 'product', item.quantity - 1)}
-                              className="p-1 bg-gray-200 hover:bg-gray-300 rounded transition-colors"
+                              className="p-2 bg-gray-200 hover:bg-gray-300 rounded transition-colors touch-manipulation"
+                              aria-label="Disminuir cantidad"
                             >
-                              <FaMinus className="text-xs" />
+                              <FaMinus className="text-sm" />
                             </button>
-                            <span className="px-2 py-1 bg-gray-100 rounded">
+                            <span className="px-3 py-2 bg-gray-100 rounded font-semibold min-w-[40px] text-center">
                               {item.quantity}
                             </span>
                             <button
                               onClick={() => updateQuantity(item.id, item.type || 'product', item.quantity + 1)}
-                              className="p-1 bg-gray-200 hover:bg-gray-300 rounded transition-colors"
+                              className="p-2 bg-gray-200 hover:bg-gray-300 rounded transition-colors touch-manipulation"
+                              aria-label="Aumentar cantidad"
                             >
-                              <FaPlus className="text-xs" />
+                              <FaPlus className="text-sm" />
                             </button>
                             <button
                               onClick={() => removeFromCart(item.id, item.type || 'product')}
-                              className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
+                              className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors touch-manipulation ml-2"
+                              aria-label="Eliminar del carrito"
                             >
                               <FaTrash />
                             </button>
@@ -154,7 +157,7 @@ const CartDrawer = () => {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={handleCheckout}
-                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all flex items-center justify-center"
+                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all flex items-center justify-center text-lg shadow-lg touch-manipulation"
                       >
                         <FaCreditCard className="mr-2" />
                         Proceder al Pago
@@ -163,7 +166,7 @@ const CartDrawer = () => {
 
                       <button
                         onClick={handleContinueShopping}
-                        className="w-full border-2 border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:border-blue-500 hover:text-blue-600 transition-all"
+                        className="w-full border-2 border-gray-300 text-gray-700 py-4 px-6 rounded-lg font-semibold hover:border-blue-500 hover:text-blue-600 transition-all touch-manipulation"
                       >
                         Seguir Comprando
                       </button>
