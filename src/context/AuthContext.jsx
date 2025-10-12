@@ -154,15 +154,16 @@ export const AuthProvider = ({ children }) => {
     authReady,
     // Derivados útiles para UI y permisos
     isAuthenticated: Boolean(user),
-    isAdmin: Array.isArray(user?.roles) ? user.roles.includes('admin') : false,
+    isAdmin: user?.role === 'admin' || (Array.isArray(user?.roles) && user.roles.includes('admin')),
     hasRole: (role) => {
       if (!user) return false;
-      // Check if user has roles array or a roles property
+      // Check single role property first (from Supabase profiles table)
+      if (user.role === role) return true;
+      // Check if user has roles array
       if (user.roles && Array.isArray(user.roles)) {
         return user.roles.includes(role);
       }
-      // Fallback to check if the user object has a specific role property
-      return user.role === role || user.roles === role;
+      return false;
     },
     hasPermission: (permission) => {
       if (!user) return false;
