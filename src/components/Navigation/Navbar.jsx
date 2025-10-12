@@ -91,7 +91,7 @@ function Navbar() {
     <Disclosure as="nav" className="bg-white shadow-lg sticky top-0 z-50">
       {({ open }) => (
         <>
-          <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full max-w-7xl">
+          <div className="mx-auto pl-0 pr-2 sm:pl-1 sm:pr-4 lg:pl-2 lg:pr-6 w-full max-w-7xl">
             <div className="relative flex h-16 items-center justify-between">
               {/* Mobile menu button */}
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden z-50">
@@ -109,9 +109,21 @@ function Navbar() {
               </div>
 
               {/* Desktop navigation */}
-              <div className="flex flex-1 items-center justify-center sm:justify-start">
-                {/* Logo completely removed as requested */}
-                <div className="hidden sm:ml-6 sm:flex sm:space-x-2 md:space-x-4">
+              <div className="flex flex-1 items-center sm:justify-start justify-center">
+                {/* Logo profesional - Esquina izquierda */}
+                <Link to="/" className="hidden sm:flex items-center mr-2 lg:mr-3 xl:mr-5 shrink-0 sm:-ml-1 lg:-ml-2">
+                  <div className="flex items-center space-x-1">
+                    <div className="w-7 h-7 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center shadow-lg">
+                      <FaGavel className="text-white text-sm" />
+                    </div>
+                    <div className="hidden md:flex flex-col">
+                      <span className="text-xs font-bold text-gray-900 leading-tight">Abg. Wilson</span>
+                      <span className="text-[8px] text-gray-600 leading-tight">Asesoría Legal</span>
+                    </div>
+                  </div>
+                </Link>
+                
+                <div className="hidden sm:flex sm:space-x-0 md:space-x-0.5 lg:space-x-1">
                   {allNavigation.map((item) => 
                     item.hasSubmenu ? (
                       <Popover className="relative" key={item.name}>
@@ -120,7 +132,7 @@ function Navbar() {
                             <Popover.Button
                               className={classNames(
                                 item.current ? 'bg-blue-700 text-white' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700',
-                                'rounded-md px-3 py-2 text-sm font-medium flex items-center group transition-colors'
+                                'rounded-md px-1.5 py-1.5 text-[11px] lg:text-xs font-medium flex items-center group transition-colors'
                               )}
                             >
                               <span className="mr-1">{item.icon}</span>
@@ -175,7 +187,7 @@ function Navbar() {
                         to={item.href}
                         className={classNames(
                           item.current ? 'bg-blue-700 text-white' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700',
-                          'rounded-md px-3 py-2 text-sm font-medium flex items-center transition-colors'
+                          'rounded-md px-1.5 py-1.5 text-[11px] lg:text-xs font-medium flex items-center transition-colors'
                         )}
                       >
                         <span className="mr-1">{item.icon}</span>
@@ -187,24 +199,36 @@ function Navbar() {
               </div>
 
               {/* Right side buttons */}
-              <div className="absolute inset-y-0 right-0 flex items-center space-x-1 sm:static sm:space-x-2">
+              <div className="absolute inset-y-0 right-0 flex items-center gap-2 sm:static">
+                {/* Botones de contacto - Solo desktop grande */}
+                <div className="hidden xl:flex items-center gap-1">
+                  <a 
+                    href="tel:+593988835269"
+                    className="inline-flex items-center px-2 py-1.5 text-[11px] font-semibold rounded-md text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-all"
+                  >
+                    <FaPhone className="mr-1 text-xs" /> Llamar
+                  </a>
+                  <Link 
+                    to="/contacto" 
+                    className="inline-flex items-center px-2 py-1.5 text-[11px] font-semibold rounded-md text-white bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 shadow-sm transition-all"
+                  >
+                    <FaEnvelope className="mr-1 text-xs" /> Consulta
+                  </Link>
+                </div>
+
                 {/* Carrito de Compras */}
                 <Link
                   to={itemCount > 0 ? "/checkout" : "/tienda"}
                   className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                  title="Carrito de compras"
                 >
-                  <FaShoppingCart className="h-6 w-6 text-gray-700" />
+                  <FaShoppingCart className="h-5 w-5 text-gray-700" />
                   {itemCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                    <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                       {itemCount}
                     </span>
                   )}
                 </Link>
-
-                {/* Theme Switcher */}
-                <div className="hidden sm:block">
-                  <ThemeSwitcher />
-                </div>
                 
                 {/* Auth buttons */}
                 {isAuthenticated ? (
@@ -256,45 +280,21 @@ function Navbar() {
                     </Transition>
                   </Menu>
                 ) : (
-                  <div className="flex space-x-1">
-                    <Link
-                      to="/register"
-                      className="inline-flex items-center p-1.5 text-xs font-medium rounded text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100"
-                    >
-                      <FaUserPlus className="mr-1" /> Registrarse
-                    </Link>
+                  <div className="hidden sm:flex items-center gap-1">
                     <Link
                       to="/login"
-                      className="inline-flex items-center p-1.5 text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700"
+                      className="inline-flex items-center px-2 py-1.5 text-[11px] font-medium rounded-md text-blue-700 hover:bg-blue-50 transition-colors"
                     >
-                      <FaSignInAlt className="mr-1" /> Iniciar Sesión
+                      <FaSignInAlt className="mr-1 text-xs" /> Ingresar
+                    </Link>
+                    <Link
+                      to="/register"
+                      className="inline-flex items-center px-2 py-1.5 text-[11px] font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                    >
+                      <FaUserPlus className="mr-1 text-xs" /> Registro
                     </Link>
                   </div>
                 )}
-                
-                {/* Contact Action Buttons - Hidden on small screens */}
-                <div className="hidden md:flex md:items-center space-x-1">
-                  <a 
-                    href="tel:+593988835269" 
-                    className="inline-flex items-center p-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-green-600 hover:bg-green-700 transition-colors duration-200"
-                  >
-                    <FaPhone className="mr-1" /> Llamar
-                  </a>
-                  <a 
-                    href="https://wa.me/593988835269" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="inline-flex items-center p-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-green-500 hover:bg-green-600 transition-colors duration-200"
-                  >
-                    <FaWhatsapp className="mr-1" /> WhatsApp
-                  </a>
-                  <Link 
-                    to="/contacto" 
-                    className="inline-flex items-center p-1.5 border border-transparent text-xs font-medium rounded-md text-gray-900 bg-yellow-400 hover:bg-yellow-500 transition-colors duration-200"
-                  >
-                    <FaEnvelope className="mr-1" /> Consulta Gratis
-                  </Link>
-                </div>
               </div>
             </div>
           </div>
