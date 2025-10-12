@@ -16,7 +16,7 @@ const CartDrawer = () => {
   const handleCheckout = () => {
     if (cartItems.length > 0) {
       setIsCartVisible(false);
-      navigate('/checkout');
+      setTimeout(() => navigate('/checkout'), 100);
     } else {
       toast.error('El carrito está vacío');
     }
@@ -24,7 +24,7 @@ const CartDrawer = () => {
 
   const handleContinueShopping = () => {
     setIsCartVisible(false);
-    navigate('/tienda');
+    setTimeout(() => navigate('/tienda'), 100);
   };
 
   return (
