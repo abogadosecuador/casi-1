@@ -10,11 +10,12 @@ export const isProduction = typeof process !== 'undefined' ? process.env?.PROD :
                            (typeof window !== 'undefined' ? window.__ENV__?.PROD : false);
 export const isDevelopment = !isProduction;
 
-// URLs base
+// URLs base - siempre usar el origen actual en producción
 export const getBaseUrl = () => {
   if (typeof window !== 'undefined') {
     return window.location.origin;
   }
+  // Fallback para SSR o contextos sin window
   return 'https://abogados.ecuador.workers.dev';
 };
 
@@ -106,7 +107,9 @@ export const cloudflareConfig = {
   workersEdit: "_ecllBBWXfnkFQyWt6kCg9c-OwN1EvK0WULk4OW6",
   dnsToken: "3jRSE6bdEqud5BVyOsRSZWaZbiNwYitl3d7OEOe2",
   subdomain: "ecuador.workers.dev",
-  workerUrl: "https://abogados.ecuador.workers.dev"
+  workerUrl: "https://abogados.ecuador.workers.dev",
+  // URL alternativa del worker
+  workerUrlAlt: "https://abogado-wilson.anipets12.workers.dev"
 };
 
 // Configuración de Supabase - PRODUCCIÓN

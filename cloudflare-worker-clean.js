@@ -440,6 +440,18 @@ async function handleApiRequest(request, env) {
             });
         }
 
+        // Health check endpoint
+        if (path === '/api/health' && request.method === 'GET') {
+            return new Response(JSON.stringify({ 
+                status: 'ok',
+                message: 'API funcionando correctamente',
+                timestamp: new Date().toISOString(),
+                version: '3.0.0'
+            }), {
+                headers: { 'Content-Type': 'application/json', ...standardHeaders }
+            });
+        }
+
         // --- Add other API routes here ---
 
         // Handle purchase endpoint (placeholder)

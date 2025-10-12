@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { products as allProducts } from '../../data/products.js';
+import ImageWithFallback from '../Common/ImageWithFallback';
 
 const UnifiedStore = () => {
   const navigate = useNavigate();
@@ -229,10 +230,11 @@ const UnifiedStore = () => {
                   >
                     {/* Product Image */}
                     <div className="relative">
-                      <img
-                        src={product.image || `https://images.unsplash.com/photo-${product.id % 10 + 1}000000000000?w=400&h=250&fit=crop`}
+                      <ImageWithFallback
+                        src={product.image}
                         alt={product.name}
                         className="w-full h-48 object-cover"
+                        fallbackType={product.category === 'course' ? 'course' : product.category === 'ebook' ? 'ebook' : product.category === 'service' ? 'service' : 'product'}
                       />
                       {product.featured && (
                         <div className="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 text-xs font-bold rounded">
@@ -350,10 +352,11 @@ const UnifiedStore = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="relative">
-                <img
+                <ImageWithFallback
                   src={selectedProduct.image}
                   alt={selectedProduct.name}
                   className="w-full h-64 object-cover"
+                  fallbackType={selectedProduct.category === 'course' ? 'course' : selectedProduct.category === 'ebook' ? 'ebook' : selectedProduct.category === 'service' ? 'service' : 'product'}
                 />
                 <button
                   onClick={() => setQuickViewOpen(false)}

@@ -36,23 +36,28 @@ const FloatingCart = () => {
   return (
     <>
       {/* Floating Cart Button */}
-      <div className="fixed bottom-6 right-6 z-40">
+      <div className="fixed bottom-8 right-8 z-[9999]">
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-colors relative"
+          className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-full p-5 shadow-2xl transition-all relative group"
+          aria-label="Abrir carrito de compras"
         >
-          <FaShoppingCart className="text-xl" />
+          <FaShoppingCart className="text-2xl" />
           {itemCount > 0 && (
             <motion.span
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center"
+              className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow-lg border-2 border-white"
             >
               {itemCount}
             </motion.span>
           )}
+          {/* Tooltip */}
+          <span className="absolute bottom-full right-0 mb-2 px-3 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            Ver carrito
+          </span>
         </motion.button>
       </div>
 
@@ -65,7 +70,7 @@ const FloatingCart = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 z-50"
+              className="fixed inset-0 bg-black bg-opacity-60 z-[9998]"
               onClick={() => setIsOpen(false)}
             />
 
@@ -74,8 +79,8 @@ const FloatingCart = () => {
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ type: 'tween', duration: 0.3 }}
-              className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-xl z-50 overflow-y-auto"
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[9999] overflow-y-auto"
             >
               <div className="p-6">
                 {/* Header */}

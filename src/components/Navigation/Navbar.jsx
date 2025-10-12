@@ -2,7 +2,7 @@ import { Fragment, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Disclosure, Menu, Transition, Popover } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon, ChevronDownIcon, UserIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
-import { FaUsers, FaHandshake, FaComments, FaGavel, FaBook, FaShieldAlt, FaFileContract, FaFileAlt, FaUserTie, FaWhatsapp, FaPhone, FaEnvelope, FaUserPlus, FaSignInAlt, FaLock, FaShoppingCart, FaBriefcase, FaGlobe, FaCrown } from 'react-icons/fa';
+import { FaUsers, FaHandshake, FaComments, FaGavel, FaBook, FaShieldAlt, FaFileContract, FaFileAlt, FaUserTie, FaWhatsapp, FaPhone, FaEnvelope, FaUserPlus, FaSignInAlt, FaLock, FaShoppingCart, FaBriefcase, FaGlobe, FaCrown, FaGraduationCap } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import ThemeSwitcher from '../ThemeSwitcher';
@@ -13,7 +13,7 @@ const mainNavigation = [
   { name: 'Consultas', href: '#', current: false, hasSubmenu: true, icon: <FaFileAlt className="text-blue-600" /> },
   { name: 'Tienda', href: '/tienda', current: false, icon: <FaShoppingCart className="text-blue-600" /> },
   { name: 'Suscripciones', href: '/suscripciones', current: false, icon: <FaCrown className="text-blue-600" /> },
-  { name: 'Blog', href: '/blog', current: false, icon: <FaBook className="text-blue-600" /> },
+  { name: 'Blog', href: '#', current: false, hasSubmenu: true, icon: <FaBook className="text-blue-600" /> },
   { name: 'Comunidad', href: '#', current: false, hasSubmenu: true, icon: <FaUsers className="text-blue-600" /> },
   { name: 'Contacto', href: '/contacto', current: false, icon: <FaEnvelope className="text-blue-600" /> },
 ];
@@ -36,11 +36,17 @@ const consultasSubmenu = [
   { name: 'Consulta Digital/Online', href: '/consultas/digital', current: false, icon: <FaGlobe className="text-purple-500" /> },
 ];
 
+const blogSubmenu = [
+  { name: 'Todos los Artículos', href: '/blog', current: false, icon: <FaBook className="text-blue-500" /> },
+  { name: 'Noticias Judiciales', href: '/noticias', current: false, icon: <FaBook className="text-red-500" /> },
+  { name: 'Newsletter', href: '/noticias?id=2', current: false, icon: <FaEnvelope className="text-orange-500" /> },
+];
+
 const comunidadSubmenu = [
-  { name: 'Cursos', href: '/cursos', current: false, icon: <FaUsers className="text-blue-500" /> },
+  { name: 'Cursos', href: '/cursos', current: false, icon: <FaGraduationCap className="text-blue-500" /> },
   { name: 'E-Books', href: '/ebooks', current: false, icon: <FaBook className="text-green-500" /> },
-  { name: 'Newsletter', href: '/blog', current: false, icon: <FaEnvelope className="text-yellow-500" /> },
-  { name: 'Programa de Afiliados', href: '/afiliados', current: false, icon: <FaHandshake className="text-purple-500" /> },
+  { name: 'Foro', href: '/foro', current: false, icon: <FaComments className="text-purple-500" /> },
+  { name: 'Programa de Afiliados', href: '/afiliados', current: false, icon: <FaHandshake className="text-orange-500" /> },
   { name: 'Sistema de Referidos', href: '/referidos', current: false, icon: <FaUsers className="text-indigo-500" /> },
 ];
 
@@ -141,6 +147,7 @@ function Navbar() {
                                   <div className="relative grid gap-1 p-2">
                                     {(item.name === 'Servicios' ? serviceSubmenu : 
                                       item.name === 'Consultas' ? consultasSubmenu : 
+                                      item.name === 'Blog' ? blogSubmenu :
                                       item.name === 'Comunidad' ? comunidadSubmenu :
                                       item.name === 'Políticas' ? policySubmenu : []).map((subItem) => (
                                       <Link
@@ -320,6 +327,7 @@ function Navbar() {
                         <Disclosure.Panel className="mt-1 space-y-1">
                           {(item.name === 'Servicios' ? serviceSubmenu : 
                             item.name === 'Consultas' ? consultasSubmenu : 
+                            item.name === 'Blog' ? blogSubmenu :
                             item.name === 'Comunidad' ? comunidadSubmenu :
                             item.name === 'Políticas' ? policySubmenu : []).map((subItem) => (
                             <Link

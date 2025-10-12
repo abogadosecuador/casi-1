@@ -109,11 +109,13 @@ const AILegalChatbot = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-24 right-8 z-[80]">
       {/* Botón del chat */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg flex items-center justify-center"
+        className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110"
+        aria-label="Abrir asistente legal"
+        title="Asistente Legal IA"
       >
         {isOpen ? (
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -128,7 +130,7 @@ const AILegalChatbot = () => {
 
       {/* Ventana del chat */}
       {isOpen && (
-        <div className="absolute bottom-16 right-0 w-80 sm:w-96 h-96 bg-white rounded-lg shadow-xl overflow-hidden flex flex-col">
+        <div className="absolute bottom-20 right-0 w-80 sm:w-96 h-[500px] bg-white rounded-lg shadow-xl overflow-hidden flex flex-col border border-gray-200">
           {/* Encabezado */}
           <div className="bg-blue-600 text-white px-4 py-3 flex justify-between items-center">
             <div className="flex items-center">

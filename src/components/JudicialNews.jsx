@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
 export default function JudicialNews() {
+  const [searchParams] = useSearchParams();
   const [activeCategory, setActiveCategory] = useState('Todos');
   const [visibleNews, setVisibleNews] = useState(6);
+  const [highlightedId, setHighlightedId] = useState(null);
 
   const categories = ['Todos', 'Nacional', 'Local', 'Constitucional', 'Penal', 'Civil'];
 
@@ -84,6 +86,28 @@ export default function JudicialNews() {
     toast.success('Mostrando más noticias...');
   };
 
+  // Manejar el parámetro id de la URL
+  useEffect(() => {
+    const idParam = searchParams.get('id');
+    if (idParam) {
+      const newsId = parseInt(idParam);
+      setHighlightedId(newsId);
+      // Encontrar la noticia y establecer su categoría como activa
+      const newsItem = news.find(n => n.id === newsId);
+      if (newsItem) {
+        setActiveCategory(newsItem.category);
+        // Scroll a la noticia después de un pequeño delay
+        setTimeout(() => {
+          const element = document.getElementById(`news-${newsId}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            toast.success(`Mostrando: ${newsItem.title}`, { duration: 4000 });
+          }
+        }, 300);
+      }
+    }
+  }, [searchParams]);
+
   return (
     <div className="py-12 bg-secondary-50">
       <div className="container-custom">
@@ -112,9 +136,14 @@ export default function JudicialNews() {
           {displayedNews.map(item => (
             <motion.article
               key={item.id}
-              className="card overflow-hidden"
+              id={`news-${item.id}`}
+              className={`card overflow-hidden ${highlightedId === item.id ? 'ring-4 ring-primary-500 shadow-2xl' : ''}`}
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={{ 
+                opacity: 1, 
+                y: 0,
+                scale: highlightedId === item.id ? 1.02 : 1
+              }}
               transition={{ duration: 0.5 }}
             >
               <img

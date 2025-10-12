@@ -68,8 +68,16 @@ export function ModuleProvider({ children }) {
 
   /**
    * Precarga módulos críticos al inicio
+   * DESHABILITADO: Los módulos se cargan bajo demanda
    */
   const preloadCriticalModules = async () => {
+    // Precarga deshabilitada para evitar errores de módulos inexistentes
+    // Los módulos se cargarán cuando sean necesarios
+    console.log('[ModuleContext] Precarga de módulos deshabilitada - carga bajo demanda activada');
+    setIsLoading(false);
+    return;
+    
+    /* 
     const criticalModules = [
       { path: './components/ConsultasPenales', name: 'ConsultasPenales' },
       { path: './components/ConsultasCiviles', name: 'ConsultasCiviles' },
@@ -89,6 +97,7 @@ export function ModuleProvider({ children }) {
       }
     }
     setIsLoading(false);
+    */
   };
 
   // Valor del contexto

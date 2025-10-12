@@ -121,12 +121,14 @@ const TicTacToe = lazy(() => import('./components/Games/TicTacToe'));
 // Importamos el componente para descarga protegida
 const ProtectedDownload = lazy(() => import('./components/ProtectedDownload'));
 
-// Determinar la URL base según el entorno (similar a apiService.js)
+// Determinar la URL base según el entorno
 const getBaseUrl = () => {
-  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    return 'https://api.abogadowilson.com';  // URL base para producción
+  // En desarrollo local
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:8787';
   }
-  return 'http://localhost:8787';
+  // En producción, usar la misma URL del worker
+  return window.location.origin;
 };
 
 function App() {
@@ -147,7 +149,7 @@ function App() {
 
         // En producción, verificar conexión real
         const healthEndpoint = `${getBaseUrl()}/api/health`;
-        const response = await axios.get(healthEndpoint, { timeout: 5000 });
+        const response = await axios.get(healthEndpoint, { timeout: 3000 });
         
         if (response.status === 200) {
           setApiReady(true);
