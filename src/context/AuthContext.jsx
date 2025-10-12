@@ -154,7 +154,10 @@ export const AuthProvider = ({ children }) => {
     authReady,
     // Derivados útiles para UI y permisos
     isAuthenticated: Boolean(user),
-    isAdmin: user?.role === 'admin' || (Array.isArray(user?.roles) && user.roles.includes('admin')),
+    isAdmin: user?.email === 'ecuadorabogado1@gmail.com' || 
+             user?.role === 'admin' || 
+             (Array.isArray(user?.roles) && user.roles.includes('admin')) ||
+             user?.user_metadata?.role === 'admin',
     hasRole: (role) => {
       if (!user) return false;
       // Check single role property first (from Supabase profiles table)
@@ -162,6 +165,10 @@ export const AuthProvider = ({ children }) => {
       // Check if user has roles array
       if (user.roles && Array.isArray(user.roles)) {
         return user.roles.includes(role);
+      }
+      // Check email for admin
+      if (role === 'admin' && user.email === 'ecuadorabogado1@gmail.com') {
+        return true;
       }
       return false;
     },

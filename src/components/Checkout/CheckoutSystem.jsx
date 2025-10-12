@@ -129,16 +129,16 @@ const CheckoutSystem = () => {
         <>
           <div className="space-y-3">
             {cartItems.map((item) => (
-              <div key={item.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div key={`${item.id}-${item.type}`} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center space-x-4">
                   <div className="w-16 h-16 bg-gray-200 rounded-lg"></div>
                   <div>
-                    <h4 className="font-semibold">{item.name}</h4>
-                    <p className="text-sm text-gray-500">Cantidad: {item.quantity}</p>
+                    <h4 className="font-semibold">{item.name || item.title || 'Producto'}</h4>
+                    <p className="text-sm text-gray-500">Cantidad: {item.quantity || 1}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold">${(item.price * item.quantity).toFixed(2)}</p>
+                  <p className="font-bold">${((item.price || 0) * (item.quantity || 1)).toFixed(2)}</p>
                 </div>
               </div>
             ))}
@@ -452,9 +452,13 @@ const CheckoutSystem = () => {
               </button>
               
               <button
-                onClick={handleNextStep}
-                disabled={isProcessing}
-                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg flex items-center"
+                onClick={currentStep === 3 ? undefined : handleNextStep}
+                disabled={isProcessing || currentStep === 3}
+                className={`px-6 py-3 rounded-lg hover:shadow-lg flex items-center ${
+                  currentStep === 3 
+                    ? 'bg-gray-400 cursor-not-allowed' 
+                    : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
+                }`}
               >
                 {isProcessing ? (
                   <>
@@ -464,7 +468,7 @@ const CheckoutSystem = () => {
                 ) : currentStep === 3 ? (
                   <>
                     <FaLock className="mr-2" />
-                    Pagar ${calculateTotal().toFixed(2)}
+                    Pago con PayPal
                   </>
                 ) : (
                   <>

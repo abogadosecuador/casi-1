@@ -256,7 +256,7 @@ function App() {
                     {/* Rutas de administrador */}
                     <Route path="/admin" element={
                       <AdminRoute>
-                        <AdminDashboard />
+                        <AdminDashboardComplete />
                       </AdminRoute>
                     } />
                     <Route path="/admin/usuarios" element={
@@ -266,37 +266,37 @@ function App() {
                     } />
                     <Route path="/admin/productos" element={
                       <AdminRoute>
-                        <AdminDashboard />
+                        <AdminDashboardComplete />
                       </AdminRoute>
                     } />
                     <Route path="/admin/cursos" element={
                       <AdminRoute>
-                        <AdminDashboard />
+                        <AdminDashboardComplete />
                       </AdminRoute>
                     } />
                     <Route path="/admin/blog" element={
                       <AdminRoute>
-                        <AdminDashboard />
+                        <AdminDashboardComplete />
                       </AdminRoute>
                     } />
                     <Route path="/admin/citas" element={
                       <AdminRoute>
-                        <AdminDashboard />
+                        <AdminDashboardComplete />
                       </AdminRoute>
                     } />
                     <Route path="/admin/afiliados" element={
                       <AdminRoute>
-                        <AdminDashboard />
+                        <AdminDashboardComplete />
                       </AdminRoute>
                     } />
                     <Route path="/admin/configuracion" element={
                       <AdminRoute>
-                        <AdminDashboard />
+                        <AdminDashboardComplete />
                       </AdminRoute>
                     } />
                     <Route path="/admin/analiticas" element={
                       <AdminRoute>
-                        <AdminDashboard />
+                        <AdminDashboardComplete />
                       </AdminRoute>
                     } />
                     
