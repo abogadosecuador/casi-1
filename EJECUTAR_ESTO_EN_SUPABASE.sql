@@ -213,12 +213,28 @@ CREATE POLICY "Users can view own orders" ON orders FOR SELECT USING (auth.uid()
 DROP POLICY IF EXISTS "Users can create own orders" ON orders;
 CREATE POLICY "Users can create own orders" ON orders FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+
+CREATE POLICY "Admins can view all orders" ON orders FOR SELECT 
+USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+
+DROP POLICY IF EXISTS "Admins can manage orders" ON orders;
+CREATE POLICY "Admins can manage orders" ON orders FOR ALL 
+USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+
 -- Políticas para purchases
 DROP POLICY IF EXISTS "Users can view own purchases" ON purchases;
 CREATE POLICY "Users can view own purchases" ON purchases FOR SELECT USING (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS "Users can create own purchases" ON purchases;
 CREATE POLICY "Users can create own purchases" ON purchases FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Admins can view all purchases" ON purchases;
+CREATE POLICY "Admins can view all purchases" ON purchases FOR SELECT 
+USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+
+DROP POLICY IF EXISTS "Admins can manage purchases" ON purchases;
+CREATE POLICY "Admins can manage purchases" ON purchases FOR ALL 
+USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
 
 -- Políticas para appointments
 DROP POLICY IF EXISTS "Users can view own appointments" ON appointments;
@@ -250,6 +266,14 @@ CREATE POLICY "Users can view own products" ON user_products FOR SELECT USING (a
 
 DROP POLICY IF EXISTS "Users can create own products" ON user_products;
 CREATE POLICY "Users can create own products" ON user_products FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Admins can view all user products" ON user_products;
+CREATE POLICY "Admins can view all user products" ON user_products FOR SELECT 
+USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+
+DROP POLICY IF EXISTS "Admins can manage user products" ON user_products;
+CREATE POLICY "Admins can manage user products" ON user_products FOR ALL 
+USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
 
 -- ===============================================
 -- FUNCIÓN PARA AUTO-CREAR PERFIL
@@ -430,6 +454,25 @@ CREATE TABLE IF NOT EXISTS public.free_consultations (
 );
 
 -- ===============================================
+-- TABLA: contact_messages (Mensajes de Contacto)
+-- ===============================================
+CREATE TABLE IF NOT EXISTS public.contact_messages (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  subject TEXT,
+  message TEXT NOT NULL,
+  status TEXT DEFAULT 'pending',
+  user_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  responded_at TIMESTAMP WITH TIME ZONE,
+  responded_by UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  notes TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ===============================================
 -- ÍNDICES ADICIONALES
 -- ===============================================
 CREATE INDEX IF NOT EXISTS idx_products_status ON products(status);
@@ -440,6 +483,9 @@ CREATE INDEX IF NOT EXISTS idx_blog_posts_status ON blog_posts(status);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON subscriptions(user_id);
 CREATE INDEX IF NOT EXISTS idx_affiliates_user_id ON affiliates(user_id);
 CREATE INDEX IF NOT EXISTS idx_free_consultations_email ON free_consultations(email);
+CREATE INDEX IF NOT EXISTS idx_contact_messages_status ON contact_messages(status);
+CREATE INDEX IF NOT EXISTS idx_contact_messages_email ON contact_messages(email);
+CREATE INDEX IF NOT EXISTS idx_contact_messages_created ON contact_messages(created_at DESC);
 
 -- ===============================================
 -- POLÍTICAS RLS ADICIONALES
@@ -452,6 +498,7 @@ ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE affiliates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE free_consultations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE contact_messages ENABLE ROW LEVEL SECURITY;
 
 -- Productos: todos pueden ver activos, admin puede gestionar
 DROP POLICY IF EXISTS "Anyone can view active products" ON products;
@@ -500,6 +547,41 @@ DROP POLICY IF EXISTS "Admins can manage subscriptions" ON subscriptions;
 CREATE POLICY "Admins can manage subscriptions" ON subscriptions FOR ALL 
 USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
 
+-- Afiliados: usuarios ven su propia info, admins ven todo
+DROP POLICY IF EXISTS "Users can view own affiliate" ON affiliates;
+CREATE POLICY "Users can view own affiliate" ON affiliates FOR SELECT USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can create affiliate" ON affiliates;
+CREATE POLICY "Users can create affiliate" ON affiliates FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Admins can manage affiliates" ON affiliates;
+CREATE POLICY "Admins can manage affiliates" ON affiliates FOR ALL 
+USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+
+-- Consultas gratuitas: cualquiera puede crear, solo admin puede ver
+DROP POLICY IF EXISTS "Anyone can create free consultation" ON free_consultations;
+CREATE POLICY "Anyone can create free consultation" ON free_consultations FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Admins can view consultations" ON free_consultations;
+CREATE POLICY "Admins can view consultations" ON free_consultations FOR SELECT 
+USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+
+-- Mensajes de contacto: cualquiera puede crear, usuarios ven los suyos, admins ven todos
+DROP POLICY IF EXISTS "Anyone can create contact message" ON contact_messages;
+CREATE POLICY "Anyone can create contact message" ON contact_messages FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Users can view own contact messages" ON contact_messages;
+CREATE POLICY "Users can view own contact messages" ON contact_messages FOR SELECT 
+USING (auth.uid() = user_id OR email = (SELECT email FROM auth.users WHERE id = auth.uid()));
+
+DROP POLICY IF EXISTS "Admins can view all contact messages" ON contact_messages;
+CREATE POLICY "Admins can view all contact messages" ON contact_messages FOR SELECT 
+USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+
+DROP POLICY IF EXISTS "Admins can manage contact messages" ON contact_messages;
+CREATE POLICY "Admins can manage contact messages" ON contact_messages FOR ALL 
+USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+
 -- ===============================================
 -- MENSAJE DE CONFIRMACIÓN
 -- ===============================================
@@ -508,8 +590,16 @@ BEGIN
   RAISE NOTICE '✅ Base de datos completa creada exitosamente!';
   RAISE NOTICE '✅ Tablas básicas: profiles, orders, purchases, appointments, consultations, course_enrollments, user_products';
   RAISE NOTICE '✅ Tablas avanzadas: products, courses, course_modules, course_lessons, blog_posts, subscriptions, affiliates';
-  RAISE NOTICE '✅ RLS habilitado en todas las tablas';
+  RAISE NOTICE '✅ Tablas de comunicación: contact_messages, free_consultations';
+  RAISE NOTICE '✅ RLS habilitado en todas las tablas con políticas profesionales';
   RAISE NOTICE '✅ Trigger de auto-creación de perfil configurado';
+  RAISE NOTICE '';
+  RAISE NOTICE '📋 PERMISOS CONFIGURADOS:';
+  RAISE NOTICE '   • Productos/Cursos: Públicos (cualquiera puede ver)';
+  RAISE NOTICE '   • Compras/Órdenes: Autenticación requerida';
+  RAISE NOTICE '   • Contacto/Consultas: Público (sin autenticación)';
+  RAISE NOTICE '   • Administración: Solo usuarios con role=admin';
+  RAISE NOTICE '';
   RAISE NOTICE '⚠️ IMPORTANTE: Crea un usuario en Authentication y luego actualiza su rol a admin';
   RAISE NOTICE '⚠️ Ejecuta: UPDATE profiles SET role = ''admin'' WHERE email = ''tu_email@admin.com'';';
 END $$;
