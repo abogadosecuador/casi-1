@@ -3,7 +3,7 @@ import { BlogPost } from '../types';
 export const blogPosts: BlogPost[] = [
   {
     id: '1',
-    slug: 'ia-futuro-del-derecho',
+    slug: 'noticia-judicial-1',
     title: 'La Inteligencia Artificial y el Futuro del Derecho en Ecuador',
     excerpt: 'Exploramos cómo la IA está transformando la práctica legal, desde la automatización de documentos hasta el análisis predictivo de sentencias.',
     content: `## Introducción: Una Nueva Era para la Justicia
@@ -29,7 +29,7 @@ La IA no reemplazará a los abogados, pero sí potenciará sus capacidades. Aque
   },
   {
     id: '2',
-    slug: 'reformas-codigo-trabajo',
+    slug: 'noticia-judicial-2',
     title: 'Nuevas Reformas al Código de Trabajo: Lo que Debes Saber',
     excerpt: 'Un resumen claro y conciso de las últimas modificaciones al Código de Trabajo y cómo afectan a empleadores y trabajadores en el país.',
     content: `## Cambios Clave en la Legislación Laboral
@@ -47,7 +47,7 @@ Es crucial que las empresas revisen sus políticas internas y contratos para ase
   },
   {
     id: '3',
-    slug: 'proceso-de-mediacion',
+    slug: 'noticia-judicial-3',
     title: 'El Proceso de Mediación: Una Alternativa Eficiente al Litigio',
     excerpt: 'La mediación se presenta como una herramienta poderosa para resolver disputas de manera más rápida y económica. Conoce sus ventajas.',
     content: `## ¿Por qué considerar la mediación?

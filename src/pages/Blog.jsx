@@ -2,54 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import HelmetWrapper from '../components/Common/HelmetWrapper';
+import { blogPosts } from '../data/blogData';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale/es';
 
 const Blog = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    // Simular carga de artículos
+    // Cargar artículos desde blogData
     setTimeout(() => {
-      setArticles([
-        {
-          id: 1,
-          title: 'Reformas al Código Penal Ecuatoriano 2025',
-          excerpt: 'Análisis detallado de las últimas reformas al COIP y cómo afectan a los procesos penales actuales.',
-          date: '15 de abril, 2025',
-          author: 'Dr. Wilson Ipiales',
-          category: 'Derecho Penal',
-          imageUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=1000',
-        },
-        {
-          id: 2,
-          title: 'Mediación vs. Litigio: ¿Cuál es mejor para su caso?',
-          excerpt: 'Comparativa entre los procesos de mediación y litigio para resolver conflictos legales en Ecuador.',
-          date: '10 de abril, 2025',
-          author: 'Dr. Wilson Ipiales',
-          category: 'Consejos Legales',
-          imageUrl: 'https://images.unsplash.com/photo-1521791055366-0d553872125f?q=80&w=1000',
-        },
-        {
-          id: 3,
-          title: 'Implicaciones legales del uso de IA en procesos judiciales',
-          excerpt: 'Cómo la inteligencia artificial está transformando el sistema judicial y qué consideraciones legales debemos tener.',
-          date: '5 de abril, 2025',
-          author: 'Dr. Wilson Ipiales',
-          category: 'Tecnología Legal',
-          imageUrl: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=1000',
-        },
-        {
-          id: 4,
-          title: 'Guía para enfrentar un juicio de tránsito',
-          excerpt: 'Pasos a seguir cuando enfrenta un proceso legal por infracciones de tránsito en Ecuador.',
-          date: '1 de abril, 2025',
-          author: 'Dr. Wilson Ipiales',
-          category: 'Tránsito',
-          imageUrl: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000',
-        },
-      ]);
+      setArticles(blogPosts.map(post => ({
+        id: post.slug, // Usar slug como ID para la ruta
+        title: post.title,
+        excerpt: post.excerpt,
+        date: format(new Date(post.publishDate), 'd MMMM, yyyy', { locale: es }),
+        author: 'Dr. Wilson Ipiales',
+        category: post.category,
+        imageUrl: post.imageUrl,
+      })));
       setLoading(false);
-    }, 1000);
+    }, 500);
   }, []);
 
   return (

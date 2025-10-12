@@ -5,7 +5,6 @@ import { Helmet } from 'react-helmet-async';
 import { FaPlay, FaPlayCircle, FaClock, FaUser, FaChevronDown, FaChevronUp, FaShoppingCart, FaLock } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 
-import Footer from '../components/Footer/Footer';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { dataService } from '../services/supabaseService';

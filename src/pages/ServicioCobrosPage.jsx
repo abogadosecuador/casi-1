@@ -16,7 +16,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import Footer from '../components/Footer/Footer';
 
 const ServicioCobrosPage = () => {
   const navigate = useNavigate();

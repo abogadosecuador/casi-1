@@ -1,17 +1,12 @@
 import React from 'react';
-import { Page, PublicRoute } from '../types';
+import { useParams, useNavigate } from 'react-router-dom';
 import { blogPosts } from '../data/blogData';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale/es';
 
-interface BlogPostPageProps {
-  slug: string;
-  onNavigate: (page: Page | PublicRoute | string) => void;
-}
-
-const MarkdownRenderer = ({ content }) => {
+const MarkdownRenderer = ({ content }: { content: string }) => {
     const renderContent = () => {
-        return content.split('\n').map((line, index) => {
+        return content.split('\n').map((line: string, index: number) => {
             if (line.startsWith('### ')) {
                 return <h3 key={index} className="text-xl font-bold mt-6 mb-2">{line.substring(4)}</h3>;
             }
@@ -30,15 +25,17 @@ const MarkdownRenderer = ({ content }) => {
     return <>{renderContent()}</>;
 };
 
-const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onNavigate }) => {
-    const post = blogPosts.find(p => p.slug === slug);
+const BlogPostPage: React.FC = () => {
+    const { id } = useParams<{ id: string }>();
+    const navigate = useNavigate();
+    const post = blogPosts.find(p => p.slug === id || p.id === id);
 
     if (!post) {
         return (
             <div className="text-center py-20">
                 <h1 className="text-2xl font-bold">Artículo no encontrado</h1>
                 <p className="text-[var(--muted-foreground)] mt-2">El artículo que buscas no existe o ha sido movido.</p>
-                <button onClick={() => onNavigate('blog')} className="mt-6 px-4 py-2 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-md">
+                <button onClick={() => navigate('/blog')} className="mt-6 px-4 py-2 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-md">
                     Volver al Blog
                 </button>
             </div>
@@ -61,7 +58,7 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onNavigate }) => {
                 </div>
             </article>
              <div className="mt-12 text-center">
-                <button onClick={() => onNavigate('blog')} className="text-[var(--accent-color)] font-semibold hover:underline">
+                <button onClick={() => navigate('/blog')} className="text-[var(--accent-color)] font-semibold hover:underline">
                     &larr; Volver a todos los artículos
                 </button>
             </div>

@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { FaShoppingCart, FaLock, FaCreditCard, FaInfoCircle } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 
-import Footer from '../components/Footer/Footer';
 import PayPalButton from '../components/Payment/PayPalButton';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -180,13 +179,27 @@ const CheckoutPage = () => {
       
       <main className="bg-gray-100 py-12 mt-16">
         <div className="container mx-auto px-4">
-          <motion.h1 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-3xl font-bold text-center text-gray-900 mb-8"
-          >
-            Finalizar Compra
-          </motion.h1>
+          <div className="flex items-center justify-between mb-8">
+            <button
+              onClick={() => navigate('/tienda')}
+              className="flex items-center text-blue-600 hover:text-blue-700 font-medium transition-colors"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Seguir Comprando
+            </button>
+            
+            <motion.h1 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-3xl font-bold text-gray-900"
+            >
+              Finalizar Compra
+            </motion.h1>
+            
+            <div className="w-32"></div>
+          </div>
           
           <div className="flex flex-col md:flex-row gap-8">
             {/* Formulario de Checkout */}
@@ -278,41 +291,38 @@ const CheckoutPage = () => {
               <div className="mt-8">
                 <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center">
                   <FaCreditCard className="mr-2 text-blue-600" />
-                  Método de Pago
+                  Método de Pago - Solo PayPal
                 </h2>
                 
                 <div className="space-y-4">
                   <div className="flex items-center p-4 bg-blue-50 rounded-lg border-2 border-blue-600">
-                    <input
-                      id="paypal"
-                      name="payment-method"
-                      type="radio"
-                      checked={paymentMethod === 'paypal'}
-                      onChange={() => setPaymentMethod('paypal')}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                    />
-                    <label htmlFor="paypal" className="ml-3 block text-sm font-medium text-gray-900">
-                      PayPal (Tarjeta de crédito/débito)
-                    </label>
-                    <div className="ml-auto flex items-center gap-2">
-                      <svg className="h-6 w-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.77.77 0 0 1 .76-.633h8.14c2.97 0 4.968 1.238 5.156 3.195.087.904-.008 1.637-.283 2.256.278.63.425 1.332.425 2.117 0 3.257-2.606 5.682-6.63 5.682H9.647a.77.77 0 0 0-.76.633l-.54 3.438a.641.641 0 0 1-.633.633h-.038z"/>
+                    <label className="flex items-center text-sm font-medium text-gray-900 w-full">
+                      <svg className="h-8 w-8 text-blue-600 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.773.773 0 0 1 .762-.64h8.789c2.769 0 4.626 1.273 5.058 3.477.356 1.82-.063 3.24-.987 4.368-1.054 1.287-2.695 1.943-4.879 1.943H10.17l-.81 5.128a.642.642 0 0 1-.633.641H7.076zm8.41-12.957c-.906 0-1.518.068-1.862.204-.344.136-.576.34-.69.61a1.01 1.01 0 0 0-.04.54l.394 2.508h1.36c.906 0 1.57-.204 1.973-.609.404-.406.606-.997.606-1.774 0-.777-.242-1.478-.93-1.478z"/>
                       </svg>
-                      <span className="text-xs text-gray-600">Pago Seguro</span>
-                    </div>
+                      <div>
+                        <div className="font-semibold">PayPal</div>
+                        <div className="text-xs text-gray-600">Pago seguro con tarjeta de crédito/débito</div>
+                      </div>
+                    </label>
                   </div>
                   
-                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <p className="text-sm text-gray-600 mb-2">
-                      <strong>Nota:</strong> La transferencia bancaria requiere validación manual del administrador.
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Por favor, use PayPal para recibir acceso inmediato a sus productos.
-                    </p>
+                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <div className="flex items-start">
+                      <FaLock className="text-green-600 mt-1 mr-2 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-green-800 mb-1">
+                          Pago 100% Seguro
+                        </p>
+                        <p className="text-sm text-green-700">
+                          Acceso inmediato a tus productos después del pago. Procesamiento seguro garantizado por PayPal.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 
-                {paymentMethod === 'paypal' && (
+                {(
                   <PayPalButton 
                     amount={(getCartTotal() * 1.12).toFixed(2)}
                     onSuccess={async (details) => {
@@ -395,7 +405,6 @@ const CheckoutPage = () => {
         </div>
       </main>
       
-      <Footer />
     </>
   );
 };

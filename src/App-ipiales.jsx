@@ -3,6 +3,15 @@ import { Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 
+// Componentes de navegación y estructura - siempre cargar de forma estática
+import Navbar from './components/Navigation/Navbar';
+import Footer from './components/Footer';
+import FloatingCart from './components/Cart/FloatingCart';
+import { CartProvider } from './context/CartContext';
+import { ModuleProvider, useModules } from './context/ModuleContext';
+import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
+
 // Componente de carga para usar con React.lazy
 function LoadingIndicator() {
   return (
@@ -22,14 +31,6 @@ function LoadingIndicator() {
     </div>
   );
 }
-
-// Componentes de navegación y estructura - siempre cargar de forma estática
-import Navbar from './components/Navigation/Navbar';
-import Footer from './components/Footer';
-import { CartProvider } from './context/CartContext';
-import { ModuleProvider, useModules } from './context/ModuleContext';
-import { ThemeProvider } from './context/ThemeContext';
-import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Componentes principales cargados dinámicamente con React.lazy
 const Hero = lazy(() => import('./components/Hero'));
@@ -97,6 +98,8 @@ const ResetPassword = lazy(() => import('./components/Auth/ResetPassword'));
 // Páginas principales
 const ServicesLandingPage = lazy(() => import('./pages/ServicesLandingPage'));
 const CoursesPage = lazy(() => import('./pages/CoursesPage.jsx'));
+const CourseDetailPage = lazy(() => import('./pages/CourseDetailPage'));
+const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
 const TiendaStore = lazy(() => import('./components/Store/ProfessionalStore'));
 const SubscriptionsPage = lazy(() => import('./pages/SubscriptionsPage'));
 
@@ -237,6 +240,7 @@ function AppContent() {
   return (
     <>
       <Navbar />
+      <FloatingCart />
       
       <main className="flex-grow">
         <Routes>
@@ -256,6 +260,7 @@ function AppContent() {
           <Route path="/servicios" element={<ServicesLandingPage />} />
           <Route path="/tienda" element={<TiendaStore />} />
           <Route path="/cursos" element={<CoursesPage />} />
+          <Route path="/cursos/:id" element={<CourseDetailPage />} />
           <Route path="/suscripciones" element={<SubscriptionsPage />} />
           
           {/* Servicios específicos - Páginas completas */}
@@ -298,6 +303,7 @@ function AppContent() {
           <Route path="/terminos" element={<TermsOfServicePage />} />
           <Route path="/seguridad" element={<Seguridad />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:id" element={<BlogPostPage />} />
           <Route path="/consulta-general" element={<ConsultaGeneral />} />
           <Route path="/consulta-ia" element={<ConsultaIA />} />
           

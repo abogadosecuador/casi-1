@@ -1,8 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import FreeConsultation from '../components/FreeTrial/FreeConsultation';
-import Header from '../components/Header/Header';
-import Footer from '../components/Footer/Footer';
 import { motion } from 'framer-motion';
 import { FaBalanceScale, FaFileAlt, FaUserCheck } from 'react-icons/fa';
 
@@ -13,8 +11,6 @@ const FreeConsultationPage = () => {
         <title>Consulta Legal Gratuita | Abg. Wilson Ipiales</title>
         <meta name="description" content="Obtenga un documento legal gratuito generado por nuestra IA especializada en derecho ecuatoriano." />
       </Helmet>
-      
-      <Header />
       
       <main className="bg-gray-100 py-12">
         <div className="container mx-auto px-4">
@@ -104,8 +100,6 @@ const FreeConsultationPage = () => {
           </div>
         </div>
       </main>
-      
-      <Footer />
     </>
   );
 };

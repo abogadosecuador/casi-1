@@ -4,7 +4,6 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaCheckCircle, FaDownload, FaUser, FaCalendarAlt } from 'react-icons/fa';
 
-import Footer from '../components/Footer/Footer';
 import { useAuth } from '../context/AuthContext';
 import { dataService } from '../services/supabaseService';
 

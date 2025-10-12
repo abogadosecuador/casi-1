@@ -5,8 +5,6 @@ import { motion } from 'framer-motion';
 import { FaFilePdf, FaWhatsapp, FaHome, FaCopy } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 
-import Footer from '../components/Footer/Footer';
-
 const BankTransferPage = () => {
   const location = useLocation();
   const navigate = useNavigate();

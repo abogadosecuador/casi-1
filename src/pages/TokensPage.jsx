@@ -5,7 +5,6 @@ import { FaCoins, FaArrowRight, FaCreditCard, FaShieldAlt, FaCheck } from 'react
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-import Footer from '../components/Footer/Footer';
 import PayPalButton from '../components/Payment/PayPalButton';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';

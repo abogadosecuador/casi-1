@@ -71,8 +71,14 @@ const Login = () => {
       if (result.success) {
         toast.success('¡Bienvenido de vuelta!');
         
-        // Redirect based on user role
-        if (result.user?.role === 'admin') {
+        // Redirect based on user role - check multiple formats
+        const user = result.data?.user || result.user;
+        const isAdmin = user?.email === 'ecuadorabogado1@gmail.com' ||
+                       user?.role === 'admin' ||
+                       (Array.isArray(user?.roles) && user.roles.includes('admin')) ||
+                       user?.user_metadata?.role === 'admin';
+        
+        if (isAdmin) {
           navigate('/admin');
         } else {
           navigate('/dashboard');
