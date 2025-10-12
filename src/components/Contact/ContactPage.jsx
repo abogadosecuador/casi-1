@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaWhatsapp, FaClock, FaGavel } from 'react-icons/fa';
+import { toast } from 'react-hot-toast';
+import { supabase } from '../../services/supabaseService';
+import { useAuth } from '../../context/AuthContext';
 import AppointmentCalendar from '../Appointment/AppointmentCalendar';
 import Newsletter from '../Newsletter/Newsletter';
 
 const ContactPage = () => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -75,8 +79,28 @@ const ContactPage = () => {
       return;
     }
 
-    // Simular envío (se implementará con Supabase)
-    setTimeout(() => {
+    // Enviar a Supabase
+    try {
+      const messageData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || null,
+        subject: formData.subject || null,
+        message: formData.message,
+        status: 'pending',
+        user_id: user?.id || null,
+        created_at: new Date().toISOString()
+      };
+
+      const { data, error } = await supabase
+        .from('contact_messages')
+        .insert([messageData])
+        .select();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
       setIsSubmitting(false);
       setSubmitStatus({
         type: 'success',
@@ -89,7 +113,16 @@ const ContactPage = () => {
         subject: '',
         message: ''
       });
-    }, 1500);
+      toast.success('¡Mensaje enviado correctamente!');
+    } catch (error) {
+      setIsSubmitting(false);
+      setSubmitStatus({
+        type: 'error',
+        message: 'Error al enviar el mensaje. Por favor intente nuevamente.'
+      });
+      toast.error('Error al enviar el mensaje');
+      console.error('Error:', error);
+    }
   };
 
   const contactItems = [

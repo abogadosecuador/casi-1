@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import TurnstileWidget from '../TurnstileWidget';
 import { useAuth } from '../../context/AuthContext';
+import { supabase } from '../../services/supabaseService';
 
 /**
  * Componente para programar citas con el abogado
@@ -162,32 +163,44 @@ const AppointmentScheduler = () => {
     try {
       setIsSubmitting(true);
       
-      // Preparar datos para API
-      const appointmentData = {
-        ...appointmentDetails,
-        date: selectedDate,
-        time: selectedTime,
-        dateTime: `${selectedDate}T${selectedTime}:00`,
-        status: 'pending'
-      };
-      
-      // Enviar datos a la API
-      const response = await fetch('/api/appointments/schedule', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(appointmentData)
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Error al programar la cita');
+      // Validar que el usuario esté autenticado o crear datos de usuario
+      if (!user) {
+        toast.error('Debe iniciar sesión para agendar una cita');
+        setIsSubmitting(false);
+        return;
       }
       
-      // Mostrar mensaje de u00e9xito
-      toast.success('Cita programada correctamente. Recibiru00e1 una confirmacion por correo electru00f3nico.');
+      // Crear fecha y hora combinadas
+      const startDateTime = new Date(`${selectedDate}T${selectedTime}:00`);
+      const endDateTime = new Date(startDateTime);
+      endDateTime.setHours(endDateTime.getHours() + 1); // Duración de 1 hora
+      
+      // Preparar datos para Supabase
+      const appointmentData = {
+        user_id: user.id,
+        title: `Consulta ${appointmentDetails.area}`,
+        description: appointmentDetails.reason,
+        start_time: startDateTime.toISOString(),
+        end_time: endDateTime.toISOString(),
+        location: 'Oficina principal',
+        type: appointmentDetails.area,
+        status: 'scheduled',
+        reminder_sent: false,
+        notes: `Teléfono: ${appointmentDetails.phone}`
+      };
+      
+      // Insertar en Supabase
+      const { data, error } = await supabase
+        .from('appointments')
+        .insert([appointmentData])
+        .select();
+      
+      if (error) {
+        throw new Error(error.message || 'Error al programar la cita');
+      }
+      
+      // Mostrar mensaje de éxito
+      toast.success('Cita programada correctamente. Recibirá una confirmación por correo electrónico.');
       
       // Resetear formulario
       setSelectedDate('');

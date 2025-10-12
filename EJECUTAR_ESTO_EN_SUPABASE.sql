@@ -412,6 +412,18 @@ CREATE TABLE IF NOT EXISTS public.affiliates (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- TABLA: free_consultations (Consultas Gratuitas)
+CREATE TABLE IF NOT EXISTS public.free_consultations (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  type TEXT NOT NULL,
+  description TEXT NOT NULL,
+  document_generated BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- ===============================================
 -- ÍNDICES ADICIONALES
 -- ===============================================
@@ -422,6 +434,7 @@ CREATE INDEX IF NOT EXISTS idx_courses_category ON courses(category);
 CREATE INDEX IF NOT EXISTS idx_blog_posts_status ON blog_posts(status);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON subscriptions(user_id);
 CREATE INDEX IF NOT EXISTS idx_affiliates_user_id ON affiliates(user_id);
+CREATE INDEX IF NOT EXISTS idx_free_consultations_email ON free_consultations(email);
 
 -- ===============================================
 -- POLÍTICAS RLS ADICIONALES
@@ -433,6 +446,7 @@ ALTER TABLE course_lessons ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE affiliates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE free_consultations ENABLE ROW LEVEL SECURITY;
 
 -- Productos: todos pueden ver activos, admin puede gestionar
 DROP POLICY IF EXISTS "Anyone can view active products" ON products;

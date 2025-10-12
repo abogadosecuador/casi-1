@@ -5,13 +5,15 @@ import {
   FaSpinner, FaExclamationCircle
 } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
-import apiBackend from '../../services/apiBackend';
+import { supabase } from '../../services/supabaseService';
+import { useAuth } from '../../context/AuthContext';
 
 /**
  * Formulario de Contacto con Backend Real
  * Guarda mensajes en base de datos Supabase
  */
 const ContactFormReal = () => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -78,29 +80,45 @@ const ContactFormReal = () => {
     setLoading(true);
 
     try {
-      // Enviar al backend real
-      const result = await apiBackend.contact.sendMessage(formData);
+      // Preparar datos para insertar en Supabase
+      const messageData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || null,
+        subject: formData.subject || null,
+        message: formData.message,
+        status: 'pending',
+        user_id: user?.id || null,
+        created_at: new Date().toISOString()
+      };
 
-      if (result.success) {
-        toast.success('¡Mensaje enviado exitosamente! Nos pondremos en contacto pronto.');
-        setSubmitted(true);
+      // Insertar en tabla contact_messages
+      const { data, error } = await supabase
+        .from('contact_messages')
+        .insert([messageData])
+        .select();
 
-        // Limpiar formulario
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          subject: '',
-          message: ''
-        });
-
-        // Resetear estado después de 5 segundos
-        setTimeout(() => {
-          setSubmitted(false);
-        }, 5000);
-      } else {
-        throw new Error(result.error || 'Error al enviar mensaje');
+      if (error) {
+        throw new Error(error.message || 'Error al enviar mensaje');
       }
+
+      toast.success('¡Mensaje enviado exitosamente! Nos pondremos en contacto pronto.');
+      setSubmitted(true);
+
+      // Limpiar formulario
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: ''
+      });
+
+      // Resetear estado después de 5 segundos
+      setTimeout(() => {
+        setSubmitted(false);
+      }, 5000);
+
     } catch (error) {
       console.error('Error sending contact message:', error);
       toast.error(error.message || 'Error al enviar el mensaje. Por favor intenta nuevamente.');
