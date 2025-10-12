@@ -4,7 +4,7 @@ import {
   FaShoppingCart, FaBook, FaGraduationCap, FaGavel, FaFileContract,
   FaSearch, FaFilter, FaStar, FaHeart, FaShare, FaTag,
   FaShoppingBag, FaPlus, FaMinus, FaCheck, FaClock,
-  FaBolt, FaFire, FaPercent, FaTruck, FaCreditCard
+  FaBolt, FaFire, FaPercent, FaTruck, FaCreditCard, FaTimes
 } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
