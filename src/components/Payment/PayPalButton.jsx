@@ -123,7 +123,7 @@ const PayPalButton = ({ amount, onSuccess, onError, onBeforeOrder }) => {
           onCancel={(data) => {
             console.log('PayPal payment cancelled by user:', data);
             setLoading(false);
-            toast.info('Pago cancelado');
+            toast('Pago cancelado', { icon: 'ℹ️' });
             onError({ message: 'Payment cancelled by user' });
           }}
           onInit={(data, actions) => {

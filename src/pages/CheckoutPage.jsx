@@ -36,16 +36,44 @@ const CheckoutPage = () => {
           const { data, error } = await dataService.getById('profiles', user.id);
           
           if (data && !error) {
+            console.log('✅ Perfil de usuario cargado:', data);
             setBillingInfo({
               name: data.full_name || '',
               email: user.email || '',
               phone: data.phone || '',
-              identificacion: data.identification || '',
+              identificacion: '',
               direccion: data.address || ''
             });
+          } else if (error) {
+            // Si el perfil no existe, crearlo automáticamente
+            console.log('ℹ️ Perfil no existe, creando uno nuevo...');
+            const newProfile = {
+              id: user.id,
+              full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || '',
+              email: user.email || '',
+              phone: '',
+              address: '',
+              role: 'client',
+              created_at: new Date().toISOString()
+            };
+            
+            const { error: createError } = await dataService.create('profiles', newProfile);
+            
+            if (!createError) {
+              console.log('✅ Perfil creado exitosamente');
+              setBillingInfo({
+                name: newProfile.full_name,
+                email: newProfile.email,
+                phone: '',
+                identificacion: '',
+                direccion: ''
+              });
+            } else {
+              console.error('❌ Error al crear perfil:', createError);
+            }
           }
         } catch (error) {
-          console.error('Error al obtener perfil de usuario:', error);
+          console.error('❌ Error al obtener/crear perfil de usuario:', error);
         }
       };
       
@@ -82,22 +110,29 @@ const CheckoutPage = () => {
   };
   
   const validateForm = () => {
+    console.log('🔍 Validando formulario de checkout...');
+    console.log('📋 Datos actuales:', billingInfo);
+    
     // Validar campos obligatorios
     if (!billingInfo.name.trim()) {
+      console.log('❌ Validación falló: Nombre vacío');
       toast.error('Por favor ingrese su nombre completo');
       return false;
     }
     
     if (!billingInfo.email.trim() || !/^\S+@\S+\.\S+$/.test(billingInfo.email)) {
+      console.log('❌ Validación falló: Email inválido');
       toast.error('Por favor ingrese un correo electrónico válido');
       return false;
     }
     
     if (!billingInfo.phone.trim()) {
+      console.log('❌ Validación falló: Teléfono vacío');
       toast.error('Por favor ingrese su número telefónico');
       return false;
     }
     
+    console.log('✅ Validación de formulario exitosa');
     return true;
   };
   
