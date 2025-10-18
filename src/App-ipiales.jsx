@@ -65,6 +65,8 @@ const ContactPage = lazy(() => import('./components/Contact/ContactPage'));
 const DashboardPage = lazy(() => import('./components/Dashboard/DashboardPage'));
 const ClientDashboard = lazy(() => import('./components/Dashboard/ClientDashboard'));
 const AppointmentCalendar = lazy(() => import('./components/Appointment/AppointmentCalendar'));
+const AdminDashboardComplete = lazy(() => import('./components/Admin/AdminDashboardComplete'));
+const DataExporter = lazy(() => import('./components/Admin/DataExporter'));
 
 // Componentes comunes y complementarios
 const CookieConsent = lazy(() => import('./components/Common/CookieConsent'));
@@ -73,8 +75,8 @@ const Ebooks = lazy(() => import('./components/Ebooks'));
 
 // Componentes de pagos y transacciones
 const PaymentForm = lazy(() => import('./components/Payment/PaymentForm'));
-const ThankYouPage = lazy(() => import('./components/Payment/ThankYouPage'));
-const CheckoutForm = lazy(() => import('./components/Payment/CheckoutForm'));
+const ThankYouPage = lazy(() => import('./pages/ThankYouPage'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 
 // Consultas - Páginas profesionales con formularios completos y BD
 const PenalConsultationPage = lazy(() => import('./pages/PenalConsultationPage'));
@@ -353,11 +355,59 @@ function AppContent() {
           } />
           <Route path="/checkout" element={
             <RequireAuth>
-              <CheckoutForm />
+              <CheckoutPage />
             </RequireAuth>
           } />
           <Route path="/gracias" element={<ThankYouPage />} />
+          <Route path="/payment/success" element={<ThankYouPage />} />
           <Route path="/ebooks/download/:id" element={<ProtectedDownload />} />
+          
+          {/* Rutas de administrador */}
+          <Route path="/admin" element={
+            <RequireAuth requireAdmin={true}>
+              <AdminDashboardComplete />
+            </RequireAuth>
+          } />
+          <Route path="/admin/usuarios" element={
+            <RequireAuth requireAdmin={true}>
+              <DataExporter />
+            </RequireAuth>
+          } />
+          <Route path="/admin/productos" element={
+            <RequireAuth requireAdmin={true}>
+              <AdminDashboardComplete />
+            </RequireAuth>
+          } />
+          <Route path="/admin/cursos" element={
+            <RequireAuth requireAdmin={true}>
+              <AdminDashboardComplete />
+            </RequireAuth>
+          } />
+          <Route path="/admin/blog" element={
+            <RequireAuth requireAdmin={true}>
+              <AdminDashboardComplete />
+            </RequireAuth>
+          } />
+          <Route path="/admin/citas" element={
+            <RequireAuth requireAdmin={true}>
+              <AdminDashboardComplete />
+            </RequireAuth>
+          } />
+          <Route path="/admin/afiliados" element={
+            <RequireAuth requireAdmin={true}>
+              <AdminDashboardComplete />
+            </RequireAuth>
+          } />
+          <Route path="/admin/configuracion" element={
+            <RequireAuth requireAdmin={true}>
+              <AdminDashboardComplete />
+            </RequireAuth>
+          } />
+          <Route path="/admin/analiticas" element={
+            <RequireAuth requireAdmin={true}>
+              <AdminDashboardComplete />
+            </RequireAuth>
+          } />
           
           {/* Ruta de fallback */}
           <Route path="*" element={
@@ -390,9 +440,9 @@ function AppContent() {
 }
 
 // Componente para proteger rutas que requieren autenticación
-function RequireAuth({ children }) {
+function RequireAuth({ children, requireAdmin = false }) {
   const authContext = useAuth() || {};
-  const { isAuthenticated, loading } = authContext;
+  const { isAuthenticated, loading, user } = authContext;
   const location = useLocation();
 
   if (loading) {
@@ -406,6 +456,19 @@ function RequireAuth({ children }) {
   if (!isAuthenticated) {
     // Redireccionar al login, guardando la ubicación actual
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // Verificar si se requiere rol de admin
+  if (requireAdmin) {
+    const isAdmin = user?.email === 'ecuadorabogado1@gmail.com' || 
+                    user?.role === 'admin' || 
+                    (Array.isArray(user?.roles) && user.roles.includes('admin')) ||
+                    user?.user_metadata?.role === 'admin';
+    
+    if (!isAdmin) {
+      toast.error('No tienes permisos para acceder a esta página');
+      return <Navigate to="/dashboard" replace />;
+    }
   }
 
   return children;

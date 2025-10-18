@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import HelmetWrapper from '../components/Common/HelmetWrapper';
 import { blogPosts } from '../data/blogData';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale/es';
+import { es } from 'date-fns/locale';
 
 const Blog = () => {
   const [articles, setArticles] = useState([]);

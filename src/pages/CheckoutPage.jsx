@@ -25,6 +25,7 @@ const CheckoutPage = () => {
   
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('paypal');
+  const [hasCheckedCart, setHasCheckedCart] = useState(false);
   
   // Cargar datos del usuario si está autenticado
   useEffect(() => {
@@ -52,13 +53,25 @@ const CheckoutPage = () => {
     }
   }, [user]);
   
-  // Verificar que hay productos en el carrito
+  // Verificar usuario autenticado primero
   useEffect(() => {
+    if (!user) {
+      toast.error('Debes iniciar sesión para realizar una compra');
+      navigate('/login', { state: { from: '/checkout' } });
+    }
+  }, [user, navigate]);
+  
+  // Verificar que hay productos en el carrito (solo una vez)
+  useEffect(() => {
+    if (hasCheckedCart) return;
+    
     if (!cart || cart.length === 0) {
       toast.error('No hay productos en el carrito');
       navigate('/tienda');
+    } else {
+      setHasCheckedCart(true);
     }
-  }, [cart, navigate]);
+  }, [cart, navigate, hasCheckedCart]);
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -322,34 +335,76 @@ const CheckoutPage = () => {
                   </div>
                 </div>
                 
-                {(
+                {user && cart && cart.length > 0 && getCartTotal() > 0 ? (
                   <PayPalButton 
-                    amount={(getCartTotal() * 1.12).toFixed(2)}
+                    amount={(() => {
+                      const total = getCartTotal();
+                      const withTax = total * 1.12;
+                      const formatted = withTax.toFixed(2);
+                      console.log('💰 Cálculo de monto para PayPal:');
+                      console.log('- Total del carrito:', total);
+                      console.log('- Con IVA (12%):', withTax);
+                      console.log('- Formateado:', formatted);
+                      return formatted;
+                    })()}
+                    onBeforeOrder={() => {
+                      if (!validateForm()) {
+                        toast.error('Por favor completa todos los campos de facturación antes de pagar');
+                        return false;
+                      }
+                      return true;
+                    }}
                     onSuccess={async (details) => {
                       console.log('PayPal payment successful:', details);
+                      
+                      // Validar que tenemos la información necesaria
+                      if (!validateForm()) {
+                        toast.error('Por favor completa toda la información de facturación');
+                        return;
+                      }
+                      
                       setLoading(true);
                       
-                      const result = await checkout('paypal', details);
-                      
-                      setLoading(false);
-                      
-                      if (result.success) {
-                        toast.success('¡Compra realizada con éxito!');
-                        navigate('/payment/success', {
-                          state: {
-                            orderId: result.orderId,
-                            amount: getCartTotal() * 1.12,
-                            billingInfo,
-                            paymentMethod: 'paypal'
-                          }
-                        });
+                      try {
+                        const result = await checkout('paypal', details);
+                        
+                        if (result.success) {
+                          toast.success('¡Compra realizada con éxito!');
+                          // Pequeño delay para asegurar que el checkout se completó
+                          setTimeout(() => {
+                            navigate('/payment/success', {
+                              state: {
+                                orderId: result.orderId,
+                                amount: getCartTotal() * 1.12,
+                                billingInfo,
+                                paymentMethod: 'paypal',
+                                transactionId: result.transactionId
+                              },
+                              replace: true
+                            });
+                          }, 500);
+                        } else {
+                          throw new Error(result.error || 'Error procesando la compra');
+                        }
+                      } catch (error) {
+                        console.error('Checkout error:', error);
+                        toast.error('Error al procesar la compra. Por favor intenta nuevamente.');
+                      } finally {
+                        setLoading(false);
                       }
                     }}
                     onError={(err) => {
                       console.error('PayPal payment error:', err);
+                      setLoading(false);
                       toast.error('Ocurrió un error durante el pago con PayPal.');
                     }}
                   />
+                ) : (
+                  <div className="bg-red-50 p-4 rounded-lg border border-red-200 text-center">
+                    <p className="text-red-600 text-sm">
+                      {!user ? 'Debes iniciar sesión para continuar' : 'El carrito está vacío o el monto es inválido'}
+                    </p>
+                  </div>
                 )}
               </div>
             </motion.div>
