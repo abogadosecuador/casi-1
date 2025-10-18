@@ -94,7 +94,7 @@ const QuickConsultationPage = lazy(() => import('./pages/ConsultationTypes/Quick
 // Componentes de autenticación
 const Login = lazy(() => import('./components/Auth/Login'));
 const Register = lazy(() => import('./components/Auth/Register'));
-const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage.jsx'));
 const ForgotPassword = lazy(() => import('./components/Auth/ForgotPassword'));
 const ResetPassword = lazy(() => import('./components/Auth/ResetPassword'));
 

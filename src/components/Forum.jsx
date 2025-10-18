@@ -40,25 +40,10 @@ export default function Forum() {
     const loadTopics = async () => {
       try {
         setLoading(true);
-        let haveData = false;
         
-        // Verificar si dataService tiene el método fetchData
-        if (dataService && typeof dataService.fetchData === 'function') {
-          try {
-            const { data, success } = await dataService.fetchData('topics');
-            if (success && data && data.length > 0) {
-              setTopics(data);
-              haveData = true;
-            }
-          } catch (serviceError) {
-            console.log('Error al usar dataService:', serviceError);
-          }
-        }
-
-        // Si no tenemos datos, usar datos de ejemplo
-        if (!haveData) {
-          console.log('Usando datos simulados para el foro');
-          setTopics([
+        // Usar datos de ejemplo por ahora
+        console.log('Cargando datos del foro...');
+        setTopics([
             {
               id: 1,
               title: 'Reforma al Código Penal: Implicaciones prácticas',
@@ -110,7 +95,6 @@ export default function Forum() {
               excerpt: 'Información sobre los requisitos actualizados para constituir una compañía limitada.'
             }
           ]);
-        }
       } catch (error) {
         console.error('Error al cargar temas:', error);
         setError('Error al cargar los temas del foro');
