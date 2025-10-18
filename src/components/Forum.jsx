@@ -1,12 +1,24 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { dataService, authService } from '../services/apiService';
-import { formatDistanceToNow } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { useAuth } from '../context/AuthContext';
+
+// Función para calcular tiempo relativo sin dependencias
+const formatTimeAgo = (dateString) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const seconds = Math.floor((now - date) / 1000);
+  
+  if (seconds < 60) return 'hace unos segundos';
+  if (seconds < 3600) return `hace ${Math.floor(seconds / 60)} minutos`;
+  if (seconds < 86400) return `hace ${Math.floor(seconds / 3600)} horas`;
+  if (seconds < 2592000) return `hace ${Math.floor(seconds / 86400)} días`;
+  return `hace ${Math.floor(seconds / 2592000)} meses`;
+};
 
 export default function Forum() {
   const navigate = useNavigate();
+  const { user: currentUser } = useAuth(); // Usar contexto de autenticación
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([
@@ -22,7 +34,6 @@ export default function Forum() {
   const [showNewTopicForm, setShowNewTopicForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const [currentUser, setCurrentUser] = useState(null);
 
   // Cargar temas desde Supabase
   useEffect(() => {
@@ -108,13 +119,7 @@ export default function Forum() {
       }
     };
 
-    const checkCurrentUser = async () => {
-      const { user } = await authService.getCurrentUser();
-      setCurrentUser(user);
-    };
-
     loadTopics();
-    checkCurrentUser();
   }, []);
 
   const filteredTopics = selectedCategory === 'Todos'
@@ -362,10 +367,7 @@ export default function Forum() {
                         {topic.views || 0}
                       </td>
                       <td className="px-6 py-4 text-sm text-secondary-500">
-                        {topic.date ? formatDistanceToNow(new Date(topic.date), {
-                          addSuffix: true,
-                          locale: es
-                        }) : 'Desconocido'}
+                        {topic.date ? formatTimeAgo(topic.date) : 'Desconocido'}
                       </td>
                     </motion.tr>
                   ))}

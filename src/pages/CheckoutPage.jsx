@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -372,16 +372,13 @@ const CheckoutPage = () => {
                 
                 {user && cart && cart.length > 0 && getCartTotal() > 0 ? (
                   <PayPalButton 
-                    amount={(() => {
+                    amount={useMemo(() => {
                       const total = getCartTotal();
                       const withTax = total * 1.12;
                       const formatted = withTax.toFixed(2);
-                      console.log('💰 Cálculo de monto para PayPal:');
-                      console.log('- Total del carrito:', total);
-                      console.log('- Con IVA (12%):', withTax);
-                      console.log('- Formateado:', formatted);
+                      console.log('💰 Cálculo de monto para PayPal:', formatted);
                       return formatted;
-                    })()}
+                    }, [cart, getCartTotal])}
                     onBeforeOrder={() => {
                       if (!validateForm()) {
                         toast.error('Por favor completa todos los campos de facturación antes de pagar');

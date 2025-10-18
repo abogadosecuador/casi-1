@@ -77,6 +77,7 @@ const Ebooks = lazy(() => import('./components/Ebooks'));
 const PaymentForm = lazy(() => import('./components/Payment/PaymentForm'));
 const ThankYouPage = lazy(() => import('./pages/ThankYouPage'));
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const AppointmentsPage = lazy(() => import('./pages/AppointmentsPage'));
 
 // Consultas - Páginas profesionales con formularios completos y BD
 const PenalConsultationPage = lazy(() => import('./pages/PenalConsultationPage'));
@@ -348,6 +349,8 @@ function AppContent() {
               <AppointmentCalendar />
             </RequireAuth>
           } />
+          <Route path="/citas" element={<AppointmentsPage />} />
+          <Route path="/agendar-cita" element={<AppointmentsPage />} />
           <Route path="/pago" element={
             <RequireAuth>
               <PaymentForm />
