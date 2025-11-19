@@ -13,6 +13,16 @@ import { useCart } from '../../context/CartContext';
 import { products as allProducts } from '../../data/products.js';
 import ImageWithFallback from '../Common/ImageWithFallback';
 
+const normalizeCategory = (category) => {
+  if (!category) return 'other';
+  const c = String(category).toLowerCase();
+  if (c === 'services' || c === 'service') return 'service';
+  if (c === 'consultations' || c === 'consultation') return 'consultation';
+  if (c === 'courses' || c === 'course' || c === 'masterclass') return 'course';
+  if (c === 'ebooks' || c === 'ebook') return 'ebook';
+  return c;
+};
+
 const UnifiedStore = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -41,7 +51,7 @@ const UnifiedStore = () => {
         // setProducts(data);
 
         // Using the new products.js data file
-        setProducts(allProducts);
+        setProducts(allProducts.map(product => ({ ...product, category: normalizeCategory(product.category) })));
       } catch (error) {
         console.error('Error fetching products:', error);
         setError(error.message);
@@ -55,7 +65,8 @@ const UnifiedStore = () => {
   }, []);
 
   const filteredProducts = products.filter(product => {
-    const matchCategory = activeCategory === 'all' || product.category === activeCategory;
+    const productCategory = normalizeCategory(product.category);
+    const matchCategory = activeCategory === 'all' || productCategory === activeCategory;
     const matchSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                         product.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
@@ -106,16 +117,18 @@ const UnifiedStore = () => {
       {/* Header Hero */}
       <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white">
         <div className="container mx-auto px-4 py-12">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-bold mb-4"
-          >
-            {view === 'store' ? 'Tienda Legal Completa' : 'Mi Biblioteca'}
-          </motion.h1>
-          <p className="text-xl text-blue-100">
-            {view === 'store' ? 'Servicios, Consultas, Cursos, E-books y más' : 'Tus productos adquiridos'}
-          </p>
+          <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_minmax(0,1fr)] gap-10 items-center">
+            <div>
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-4xl md:text-5xl font-bold mb-4"
+              >
+                {view === 'store' ? 'Tienda Legal Completa' : 'Mi Biblioteca'}
+              </motion.h1>
+              <p className="text-xl text-blue-100">
+                {view === 'store' ? 'Servicios, Consultas, Cursos, E-books y más' : 'Tus productos adquiridos'}
+              </p>
 
           {/* View Switcher */}
           {user && (
@@ -152,6 +165,31 @@ const UnifiedStore = () => {
                 <p className="text-sm text-blue-100">{stat.label}</p>
               </div>
             ))}
+          </div>
+            </div>
+
+            {/* Icono 3D de libro en el hero, solo en pantallas grandes */}
+            <div className="hidden lg:flex justify-end">
+              <div className="relative w-full max-w-md">
+                <div className="pointer-events-none absolute -top-6 -right-4 h-40 w-40 rounded-full bg-white/20 blur-3xl" />
+                <div className="pointer-events-none absolute bottom-0 -left-6 h-40 w-40 rounded-full bg-blue-400/30 blur-3xl" />
+
+                <div className="relative overflow-hidden rounded-3xl border border-white/20 bg-black/20 shadow-2xl backdrop-blur-md">
+                  <model-viewer
+                    src="/models/libro-legal.glb"
+                    alt="Libro legal en 3D"
+                    camera-controls
+                    auto-rotate
+                    auto-rotate-delay="1500"
+                    exposure="0.9"
+                    shadow-intensity="1"
+                    interaction-prompt="none"
+                    className="w-full h-64"
+                    style={{ background: 'radial-gradient(circle at top, rgba(255,255,255,0.22), transparent 65%)' }}
+                  ></model-viewer>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

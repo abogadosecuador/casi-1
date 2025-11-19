@@ -273,6 +273,7 @@ function AppContent() {
           <Route path="/servicios/civil" element={<ServicioCivilPage />} />
           <Route path="/servicios/comercial" element={<ServicioComercialPage />} />
           <Route path="/servicios/transito" element={<ServicioTransitoPage />} />
+          <Route path="/servicios/familia" element={<ServicioCivilPage />} />
           <Route path="/servicios/aduanas" element={<ServicioAduaneroPage />} />
           <Route path="/servicios/aduanero" element={<ServicioAduaneroPage />} />
           <Route path="/servicios/laboral" element={<ServicioLaboralPage />} />

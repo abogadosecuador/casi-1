@@ -95,6 +95,26 @@ const ServicesLandingPage: React.FC = () => {
       slug: 'derecho-comercial'
     },
     {
+      id: 'aduanero',
+      title: 'Derecho Aduanero',
+      category: 'aduanero',
+      description: 'Asesoría y patrocinio en procesos aduaneros y de comercio exterior.',
+      details: [
+        'Trámites y litigios aduaneros',
+        'Regularización de mercancías',
+        'Defensa en infracciones aduaneras',
+        'Asesoría en importaciones y exportaciones',
+        'Gestión frente a autoridades de control',
+        'Optimización de riesgos aduaneros'
+      ],
+      icon: '🚢',
+      price: 200,
+      duration: '1-6 meses',
+      successRate: '90%',
+      featured: false,
+      slug: 'derecho-aduanero'
+    },
+    {
       id: 'laboral',
       title: 'Derecho Laboral',
       category: 'labor',
@@ -141,7 +161,8 @@ const ServicesLandingPage: React.FC = () => {
     { id: 'criminal', name: 'Penal' },
     { id: 'civil', name: 'Civil' },
     { id: 'traffic', name: 'Tránsito' },
-    { id: 'business', name: 'Empresarial' },
+    { id: 'business', name: 'Comercial' },
+    { id: 'aduanero', name: 'Aduanero' },
     { id: 'labor', name: 'Laboral' },
     { id: 'family', name: 'Familia' }
   ];
@@ -177,26 +198,51 @@ const ServicesLandingPage: React.FC = () => {
       <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white py-20">
         <div className="absolute inset-0 bg-black opacity-20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              Servicios Legales
-              <span className="block text-blue-300">Profesionales</span>
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
-              Defendemos sus derechos con excelencia, experiencia y resultados comprobados
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-6 py-3">
-                <span className="mr-2">🏆</span>
-                <span>+15 años de experiencia</span>
+          <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_minmax(0,1fr)] gap-10 items-center">
+            <div className="text-center lg:text-left">
+              <h1 className="text-5xl md:text-6xl font-bold mb-6">
+                Servicios Legales
+                <span className="block text-blue-300">Profesionales</span>
+              </h1>
+              <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto lg:mx-0">
+                Defendemos sus derechos con excelencia, experiencia y resultados comprobados
+              </p>
+              <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+                <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-6 py-3">
+                  <span className="mr-2">🏆</span>
+                  <span>+15 años de experiencia</span>
+                </div>
+                <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-6 py-3">
+                  <span className="mr-2">👥</span>
+                  <span>+500 casos exitosos</span>
+                </div>
+                <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-6 py-3">
+                  <span className="mr-2">⭐</span>
+                  <span>92% tasa de éxito</span>
+                </div>
               </div>
-              <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-6 py-3">
-                <span className="mr-2">👥</span>
-                <span>+500 casos exitosos</span>
-              </div>
-              <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-6 py-3">
-                <span className="mr-2">⭐</span>
-                <span>92% tasa de éxito</span>
+            </div>
+
+            {/* Icono 3D de martillo de juez en el hero, solo en pantallas grandes */}
+            <div className="hidden lg:flex justify-end">
+              <div className="relative w-full max-w-md">
+                <div className="pointer-events-none absolute -top-8 -right-4 h-40 w-40 rounded-full bg-yellow-400/30 blur-3xl" />
+                <div className="pointer-events-none absolute bottom-0 -left-6 h-40 w-40 rounded-full bg-blue-500/40 blur-3xl" />
+
+                <div className="relative overflow-hidden rounded-3xl border border-white/20 bg-black/25 shadow-2xl backdrop-blur-md">
+                  <model-viewer
+                    src="/models/martillo-legal.glb"
+                    alt="Martillo de juez representando decisiones judiciales"
+                    camera-controls
+                    auto-rotate
+                    auto-rotate-delay="1500"
+                    exposure="0.9"
+                    shadow-intensity="1"
+                    interaction-prompt="none"
+                    className="w-full h-64"
+                    style={{ background: 'radial-gradient(circle at top, rgba(255,255,255,0.18), transparent 65%)' }}
+                  ></model-viewer>
+                </div>
               </div>
             </div>
           </div>

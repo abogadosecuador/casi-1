@@ -164,6 +164,41 @@ const Hero = () => {
                   </motion.div>
                 ))}
 
+                {/* Tarjeta con modelo 3D de balanza, integrada como servicio visual */}
+                <motion.div
+                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 md:p-5 hover:bg-white/20 transition-all group"
+                  variants={itemVariants}
+                  whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                >
+                  <div className="mb-3 flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-bold text-white">Justicia Equilibrada</h3>
+                      <p className="text-sm text-blue-100">Símbolo de equilibrio en todos nuestros servicios</p>
+                    </div>
+                    <div className="hidden md:flex items-center justify-center rounded-full bg-primary-700/80 w-10 h-10">
+                      <FaUserTie className="text-white text-lg" />
+                    </div>
+                  </div>
+                  <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/30 shadow-inner mb-3">
+                    <model-viewer
+                      src="/models/balanza-lujo.glb"
+                      alt="Balanza de lujo representando la justicia"
+                      camera-controls
+                      auto-rotate
+                      auto-rotate-delay="1500"
+                      exposure="0.9"
+                      shadow-intensity="1"
+                      interaction-prompt="none"
+                      className="w-full h-56 sm:h-64"
+                      style={{ background: 'radial-gradient(circle at top, rgba(255,255,255,0.16), transparent 60%)' }}
+                    ></model-viewer>
+                  </div>
+                  <div className="flex justify-between items-center text-xs text-blue-200">
+                    <span>Defensa penal, civil y tránsito</span>
+                    <span>Documentos revisados y contratos</span>
+                  </div>
+                </motion.div>
+
                 {/* Tarjeta de estadísticas */}
                 <motion.div 
                   className="md:col-span-2 bg-gradient-to-r from-primary-700 to-primary-800 border border-primary-600 rounded-xl p-5"

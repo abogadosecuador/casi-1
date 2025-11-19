@@ -151,12 +151,10 @@ const Register = () => {
   };
   
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" style={{
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-    }}>
-      <div className="max-w-md w-full space-y-6 bg-white p-10 rounded-2xl shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary-900 via-primary-800 to-blue-900">
+      <div className="max-w-md w-full space-y-6 bg-white rounded-3xl shadow-2xl border border-blue-50/80 p-8 sm:p-10">
         <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mb-4">
+          <div className="mx-auto h-16 w-16 bg-gradient-to-r from-blue-600 to-indigo-500 rounded-full flex items-center justify-center mb-4">
             <FaUser className="h-8 w-8 text-white" />
           </div>
           <h2 className="text-4xl font-bold text-gray-900 mb-2">
@@ -340,8 +338,8 @@ const Register = () => {
               disabled={loading}
               className={`group relative w-full flex justify-center py-4 px-4 border border-transparent text-base font-semibold rounded-lg text-white ${
                 loading 
-                  ? 'bg-gradient-to-r from-blue-400 to-purple-400 cursor-not-allowed' 
-                  : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transform hover:scale-[1.02]'
+                  ? 'bg-gradient-to-r from-blue-300 to-indigo-400 cursor-not-allowed' 
+                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transform hover:scale-[1.02]'
               } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-lg`}
             >
               {loading ? (

@@ -44,3 +44,9 @@ declare type User = {
   roles?: string[];
   token?: string;
 };
+
+declare namespace JSX {
+  interface IntrinsicElements {
+    'model-viewer': any;
+  }
+}
