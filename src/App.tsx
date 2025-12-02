@@ -68,6 +68,10 @@ import EbooksPage from './pages/EbooksPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import SalesPage from './pages/SalesPage';
 import ProjectsPage from './pages/ProjectsPage';
+import IntegratedProjectsPage from './pages/IntegratedProjectsPage';
+import AbogadosOSPage from './pages/AbogadosOSPage';
+import WilexGameStationPage from './pages/WilexGameStationPage';
+import CryptoBankingPage from './pages/CryptoBankingPage';
 import UsersPage from './pages/UsersPage';
 import ConsultationsPage from './pages/ConsultationsPage';
 import ServiceDetailPage from './pages/ServiceDetailPage';
@@ -198,6 +202,15 @@ function App() {
           <Route path="site" element={<div>Editor de Sitio</div>} />
           <Route path="content" element={<div>Editor de Contenido</div>} />
         </Route>
+
+        {/* Rutas de Proyectos Integrados */}
+        <Route path="/proyectos" element={<IntegratedProjectsPage />} />
+        <Route path="/projects" element={<IntegratedProjectsPage />} />
+        
+        {/* Rutas de Sistemas Integrados */}
+        <Route path="/abogados-os" element={<AbogadosOSPage />} />
+        <Route path="/games" element={<WilexGameStationPage />} />
+        <Route path="/crypto-banking" element={<CryptoBankingPage />} />
 
         {/* Ruta por defecto */}
         <Route path="*" element={<Navigate to="/" replace />} />
