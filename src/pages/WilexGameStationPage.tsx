@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 
 // Lazy load the Wilex Game Station app
 const WilexGameApp = React.lazy(() => 
-  import('../../../introwilexgamestation/App').catch(() => ({
+  import('../../introwilexgamestation/App').catch(() => ({
     default: () => (
       <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="text-center">

@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 
 // Lazy load the Abogados OS app
 const AbogadosOSApp = React.lazy(() => 
-  import('../../../abogados-os/App').catch(() => ({
+  import('../../abogados-os/App').catch(() => ({
     default: () => (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
         <div className="text-center">

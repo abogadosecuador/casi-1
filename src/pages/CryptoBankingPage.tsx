@@ -2,7 +2,7 @@ import React, { Suspense, lazy } from 'react';
 
 // Lazy load the Crypto Banking app - Plataforma profesional de trading
 const CryptoBankingApp = lazy(() => 
-  import('../../../wiglobalbanking&cryptoecosystem/App').then(module => ({
+  import('../../wiglobalbanking&cryptoecosystem/App').then(module => ({
     default: module.default
   })).catch(error => {
     console.error('Error loading crypto banking platform:', error);
