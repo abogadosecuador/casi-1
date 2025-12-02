@@ -23,7 +23,7 @@ const LawyerHeroOverlay: React.FC<LawyerHeroOverlayProps> = ({
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    let timeout: NodeJS.Timeout;
+    let timeout: ReturnType<typeof setTimeout>;
 
     // Esperar antes de empezar
     if (!isTyping && !isDeleting && displayedName === '') {
@@ -71,9 +71,21 @@ const LawyerHeroOverlay: React.FC<LawyerHeroOverlayProps> = ({
   }, [displayedName, isTyping, isDeleting, lawyerName]);
 
   return (
-    <div className="absolute inset-0 z-20 pointer-events-none flex flex-col items-center justify-center">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center pointer-events-none">
+      {/* Header overlay con botón Proyectos */}
+      <div className="absolute top-0 left-0 right-0 px-4 sm:px-8 py-4 flex items-center justify-between pointer-events-auto">
+        <div className="text-white/80 text-sm sm:text-base font-semibold tracking-wide">
+          Abg. W. Ipiales
+        </div>
+        <a
+          href="https://abogados.ecuador.workers.dev/proyectos"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm sm:text-base font-semibold shadow-lg hover:from-purple-500 hover:to-indigo-500 transition-colors"
+        >
+          Proyectos
+        </a>
+      </div>
       {/* Fondo semi-transparente degradado */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/40 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/20 pointer-events-none" />
 
       {/* Contenedor de contenido */}
       <div className="relative z-10 text-center px-4 max-w-4xl mx-auto pointer-events-auto">
@@ -114,11 +126,14 @@ const LawyerHeroOverlay: React.FC<LawyerHeroOverlayProps> = ({
         </div>
       </div>
 
-      {/* Indicador de scroll */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
+      {/* Footer overlay con CTA a Proyectos */}
+      <div className="absolute bottom-6 left-0 right-0 flex justify-center pointer-events-auto">
+        <a
+          href="https://abogados.ecuador.workers.dev/proyectos"
+          className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-semibold backdrop-blur-md border border-white/20 transition-colors"
+        >
+          Ver Proyectos Integrados
+        </a>
       </div>
     </div>
   );
