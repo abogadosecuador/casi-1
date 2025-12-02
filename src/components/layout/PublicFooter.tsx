@@ -47,6 +47,7 @@ const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
                             <li><a href="#/privacy-policy" onClick={(e) => {e.preventDefault(); onNavigate('privacy-policy')}} className="text-base text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Política de Privacidad</a></li>
                             <li><a href="#/terms-of-service" onClick={(e) => {e.preventDefault(); onNavigate('terms-of-service')}} className="text-base text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Términos de Servicio</a></li>
                             <li><a href="#/contact" onClick={(e) => {e.preventDefault(); onNavigate('contact')}} className="text-base text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Contacto</a></li>
+                            <li><a href="#/proyectos" onClick={(e) => {e.preventDefault(); onNavigate('proyectos')}} className="text-base text-[var(--muted-foreground)] hover:text-[var(--foreground)] font-semibold">Proyectos</a></li>
                         </ul>
                     </div>
                      <div>

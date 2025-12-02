@@ -70,6 +70,7 @@ const PublicHeader: React.FC<PublicHeaderProps> = ({ onNavigate, isLoggedIn, onL
         <NavLink page="courses">Cursos</NavLink>
         <NavLink page="ebooks">Ebooks</NavLink>
         <NavLink page="blog">Blog</NavLink>
+        <NavLink page="proyectos" className="px-3 py-1 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-500 hover:to-indigo-500 transition-all">Proyectos</NavLink>
         <NavLink page="contact">Contacto</NavLink>
     </nav>
   );
@@ -105,6 +106,7 @@ const PublicHeader: React.FC<PublicHeaderProps> = ({ onNavigate, isLoggedIn, onL
                 <NavLink page="courses" className="py-2">Cursos</NavLink>
                 <NavLink page="ebooks" className="py-2">Ebooks</NavLink>
                 <NavLink page="blog" className="py-2">Blog</NavLink>
+                <NavLink page="proyectos" className="py-2 px-3 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white">Proyectos</NavLink>
                 <NavLink page="contact" className="py-2">Contacto</NavLink>
                  <div className="border-t border-[var(--border)] pt-4">
                      {isLoggedIn ? (
