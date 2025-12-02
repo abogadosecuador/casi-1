@@ -69,6 +69,7 @@ import AnalyticsPage from './pages/AnalyticsPage';
 import SalesPage from './pages/SalesPage';
 import ProjectsPage from './pages/ProjectsPage';
 import IntegratedProjectsPage from './pages/IntegratedProjectsPage';
+import ProjectsHubPage from './pages/ProjectsHubPage';
 import AbogadosOSPage from './pages/AbogadosOSPage';
 import WilexGameStationPage from './pages/WilexGameStationPage';
 import CryptoBankingPage from './pages/CryptoBankingPage';
@@ -204,8 +205,9 @@ function App() {
         </Route>
 
         {/* Rutas de Proyectos Integrados */}
-        <Route path="/proyectos" element={<IntegratedProjectsPage />} />
-        <Route path="/projects" element={<IntegratedProjectsPage />} />
+        <Route path="/proyectos" element={<ProjectsHubPage />} />
+        <Route path="/projects" element={<ProjectsHubPage />} />
+        <Route path="/proyectos-integrados" element={<IntegratedProjectsPage />} />
         
         {/* Rutas de Sistemas Integrados */}
         <Route path="/abogados-os" element={<AbogadosOSPage />} />
