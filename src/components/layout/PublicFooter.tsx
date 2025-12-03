@@ -83,16 +83,24 @@ const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
                             ))}
                         </ul>
                     </div>
-                     <div>
+                    <div>
+                        <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Proyectos</h3>
+                        <ul className="mt-4 space-y-2">
+                            <li><a href="#/proyectos" onClick={(e) => {e.preventDefault(); onNavigate('proyectos')}} className="text-base font-semibold text-[var(--accent-color)] hover:text-[var(--foreground)]">Ver Proyectos</a></li>
+                            <li><a href="#/abogados-os" onClick={(e) => {e.preventDefault(); onNavigate('abogados-os')}} className="text-base text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Abogados OS</a></li>
+                            <li><a href="#/games" onClick={(e) => {e.preventDefault(); onNavigate('games')}} className="text-base text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Wilex Game Station</a></li>
+                            <li><a href="#/crypto-banking" onClick={(e) => {e.preventDefault(); onNavigate('crypto-banking')}} className="text-base text-[var(--muted-foreground)] hover:text-[var(--foreground)]">WI Global Banking</a></li>
+                        </ul>
+                    </div>
+                    <div>
                         <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Legal</h3>
                         <ul className="mt-4 space-y-2">
                             <li><a href="#/privacy-policy" onClick={(e) => {e.preventDefault(); onNavigate('privacy-policy')}} className="text-base text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Política de Privacidad</a></li>
                             <li><a href="#/terms-of-service" onClick={(e) => {e.preventDefault(); onNavigate('terms-of-service')}} className="text-base text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Términos de Servicio</a></li>
                             <li><a href="#/contact" onClick={(e) => {e.preventDefault(); onNavigate('contact')}} className="text-base text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Contacto</a></li>
-                            <li><a href="#/proyectos" onClick={(e) => {e.preventDefault(); onNavigate('proyectos')}} className="text-base text-[var(--muted-foreground)] hover:text-[var(--foreground)] font-semibold">Proyectos</a></li>
                         </ul>
                     </div>
-                     <div>
+                    <div>
                         <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Suscríbete</h3>
                         <p className="mt-4 text-base text-[var(--muted-foreground)]">Recibe recursos y noticias legales.</p>
                         <form className="mt-4 sm:flex sm:max-w-md" onSubmit={handleSubscribe}>
