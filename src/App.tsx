@@ -93,7 +93,26 @@ function App() {
     
     // Inicializar datos del catálogo
     initializeCatalogData();
-  }, [theme]);
+
+    // Bridge: Sincronizar usuario autenticado con localStorage para subproyectos
+    if (user && isAuthenticated) {
+      const userData = {
+        id: user.id || 'user-' + Date.now(),
+        email: user.email || '',
+        name: user.user_metadata?.name || user.email?.split('@')[0] || 'Usuario',
+        tier: 'STANDARD',
+        isVerified: true,
+        joinedAt: new Date().toISOString(),
+        language: 'ES',
+        theme: theme === 'dark' ? 'NEXUS' : 'ROYAL',
+        xp: 1200,
+        level: 3,
+        streak: 5
+      };
+      localStorage.setItem('wi_user', JSON.stringify(userData));
+      localStorage.setItem('nexuspro_user', JSON.stringify(userData));
+    }
+  }, [theme, user, isAuthenticated]);
 
   // Función para determinar el tipo de usuario
   const getUserType = () => {

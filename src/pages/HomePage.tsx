@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TypeAnimation } from 'react-type-animation';
 import { blogPosts } from '../data/blogData';
@@ -8,6 +8,9 @@ import TestimonialsSection from '../components/Testimonials/TestimonialsSection'
 import NewsletterSignup from '../components/Newsletter/NewsletterSignup';
 import { CatalogItem } from '../types';
 import { ShieldCheckIcon, CrmIcon, UsersIcon, FinancialsIcon } from '../components/icons/InterfaceIcons';
+
+// Lazy load 3D component
+const LegalAtomScene = lazy(() => import('../../legal-atom-3d/components/LegalAtomScene').catch(() => ({ default: () => null })));
 
 const CATALOG_KEY = 'nexuspro_catalog';
 
@@ -56,10 +59,17 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="text-[var(--foreground)]">
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-32 text-center bg-[var(--background)] overflow-hidden">
+      {/* Hero Section with 3D */}
+      <section className="relative pt-32 pb-32 text-center bg-[var(--background)] overflow-hidden min-h-screen flex items-center justify-center">
+        {/* 3D Background */}
+        <div className="absolute inset-0 z-0">
+          <Suspense fallback={<div className="w-full h-full bg-[radial-gradient(ellipse_50%_50%_at_50%_-20%,var(--accent-color)/0.1,rgba(255,255,255,0))]"></div>}>
+            <LegalAtomScene />
+          </Suspense>
+        </div>
+        
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_50%_-20%,var(--accent-color)/0.1,rgba(255,255,255,0))]"></div>
-        <div className="relative max-w-4xl mx-auto px-4">
+        <div className="relative max-w-4xl mx-auto px-4 z-10">
           <h1 className="text-4xl md:text-6xl font-black tracking-tighter font-serif">
             Soluciones Legales para 
             <TypeAnimation
@@ -173,4 +183,4 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage;
+export default HomePage;

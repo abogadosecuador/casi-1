@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NexusProIcon, FacebookIcon, InstagramIcon, XIcon, LinkedInIcon } from '../icons/InterfaceIcons';
 import { legalServices } from '../../data/servicesData';
 
@@ -7,6 +7,48 @@ interface PublicFooterProps {
 }
 
 const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
+    const [displayedText, setDisplayedText] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const lawyerName = 'Abg. Wilson Alexander Ipiales';
+
+    useEffect(() => {
+        let timeout: ReturnType<typeof setTimeout>;
+
+        if (!isTyping && !isDeleting && displayedText === '') {
+            timeout = setTimeout(() => setIsTyping(true), 1000);
+            return () => clearTimeout(timeout);
+        }
+
+        if (isTyping && displayedText.length < lawyerName.length) {
+            timeout = setTimeout(() => {
+                setDisplayedText(lawyerName.slice(0, displayedText.length + 1));
+            }, 60);
+            return () => clearTimeout(timeout);
+        }
+
+        if (isTyping && displayedText.length === lawyerName.length) {
+            setIsTyping(false);
+            timeout = setTimeout(() => setIsDeleting(true), 3000);
+            return () => clearTimeout(timeout);
+        }
+
+        if (isDeleting && displayedText.length > 0) {
+            timeout = setTimeout(() => {
+                setDisplayedText(displayedText.slice(0, -1));
+            }, 40);
+            return () => clearTimeout(timeout);
+        }
+
+        if (isDeleting && displayedText.length === 0) {
+            setIsDeleting(false);
+            timeout = setTimeout(() => setIsTyping(true), 500);
+            return () => clearTimeout(timeout);
+        }
+
+        return () => clearTimeout(timeout);
+    }, [displayedText, isTyping, isDeleting]);
+
     const handleSubscribe = (e: React.FormEvent) => {
         e.preventDefault();
         const email = (e.target as HTMLFormElement).elements.namedItem('email') as HTMLInputElement;
@@ -63,7 +105,7 @@ const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
                     </div>
                 </div>
                 <div className="mt-8 border-t border-[var(--border)] pt-8 text-center text-sm text-[var(--muted-foreground)]">
-                    <p>&copy; {new Date().getFullYear()} Abg. Wilson Alexander Ipiales. Todos los derechos reservados.</p>
+                    <p>&copy; {new Date().getFullYear()} <span className="font-semibold text-[var(--accent-color)]">{displayedText}</span>{(isTyping || isDeleting) && <span className="ml-1 inline-block w-1 h-4 bg-[var(--accent-color)] animate-pulse" />}. Todos los derechos reservados.</p>
                 </div>
             </div>
         </footer>
