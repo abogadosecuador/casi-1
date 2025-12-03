@@ -537,6 +537,7 @@ function renderMaintenancePage(env) {
 
 /**
  * Maneja las solicitudes a recursos estáticos usando ASSETS binding
+ * Optimizado para SPA - sirve index.html para cualquier ruta sin extensión
  */
 async function handleStaticRequest(request, url, env) {
   // Verificar si tenemos el binding ASSETS disponible
@@ -549,37 +550,45 @@ async function handleStaticRequest(request, url, env) {
   }
 
   try {
-    // Intentar servir el recurso a través de ASSETS
-    const assetResponse = await env.ASSETS.fetch(request);
-    
-    // Si el recurso existe, devolverlo
-    if (assetResponse.status !== 404) {
-      return assetResponse;
-    }
-    
-    // Para una SPA, si no se encuentra el recurso y no es un archivo con extensión,
-    // servir index.html
+    // Determinar si la ruta tiene extensión de archivo
     const hasFileExtension = /\.[a-zA-Z0-9]+$/.test(url.pathname);
-    if (!hasFileExtension && url.pathname !== '/') {
-      const indexUrl = new URL(request.url);
-      indexUrl.pathname = '/index.html';
-      const indexRequest = new Request(indexUrl.toString(), request);
-      return await env.ASSETS.fetch(indexRequest);
+    
+    // Si tiene extensión, intentar servir como archivo estático
+    if (hasFileExtension) {
+      const assetResponse = await env.ASSETS.fetch(request);
+      if (assetResponse.status === 200) {
+        return assetResponse;
+      }
     }
     
-    return assetResponse;
+    // Para rutas sin extensión (SPA routes), servir index.html
+    const indexUrl = new URL(request.url);
+    indexUrl.pathname = '/index.html';
+    const indexRequest = new Request(indexUrl.toString(), request);
+    const indexResponse = await env.ASSETS.fetch(indexRequest);
+    
+    if (indexResponse.status === 200) {
+      return indexResponse;
+    }
+    
+    // Si index.html no existe, devolver error
+    return new Response('Recurso no encontrado', {
+      status: 404,
+      headers: { 'Content-Type': 'text/plain' }
+    });
   } catch (error) {
     console.error('Error al servir archivo estático:', error);
     
-    // Intentar servir index.html como fallback para SPA
+    // Último intento: servir index.html
     try {
       const indexUrl = new URL(request.url);
       indexUrl.pathname = '/index.html';
       const indexRequest = new Request(indexUrl.toString(), request);
       return await env.ASSETS.fetch(indexRequest);
     } catch (indexError) {
-      return new Response('Recurso no encontrado', {
-        status: 404,
+      console.error('Error al servir index.html:', indexError);
+      return new Response('Error interno del servidor', {
+        status: 500,
         headers: { 'Content-Type': 'text/plain' }
       });
     }
@@ -654,7 +663,22 @@ export default {
       } 
       // Handle static assets using ASSETS binding
       else {
-        response = await handleStaticRequest(request, url, env);
+                // Primero, intenta servir como un activo estático. Si falla, sirve el index.html para las rutas de la SPA.
+        try {
+          const assetResponse = await env.ASSETS.fetch(request);
+          if (assetResponse.status === 404) {
+            const indexPath = new URL(url);
+            indexPath.pathname = 'index.html';
+            response = await env.ASSETS.fetch(indexPath);
+          } else {
+            response = assetResponse;
+          }
+        } catch (err) {
+          // Si ASSETS.fetch falla por otra razón, intenta servir index.html como último recurso.
+          const indexPath = new URL(url);
+          indexPath.pathname = 'index.html';
+          response = await env.ASSETS.fetch(indexPath);
+        }
       }
     } catch (error) {
       console.error('Critical Worker Error:', error);

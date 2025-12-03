@@ -12,6 +12,11 @@ binding = "ASSETS"
 html_handling = "auto-trailing-slash"
 not_found_handling = "single-page-application"
 
+# Configuración de rutas para SPA
+[[routes]]
+pattern = "abogado-wilson.anipets12.workers.dev/*"
+zone_name = "anipets12.workers.dev"
+
 # Configurar el worker como un módulo ES para soportar bindings D1
 [build]
 command = "npm run build"
