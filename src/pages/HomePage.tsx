@@ -9,8 +9,12 @@ import NewsletterSignup from '../components/Newsletter/NewsletterSignup';
 import { CatalogItem } from '../types';
 import { ShieldCheckIcon, CrmIcon, UsersIcon, FinancialsIcon } from '../components/icons/InterfaceIcons';
 
-// Lazy load 3D component
-const LegalAtomScene = lazy(() => import('../../legal-atom-3d/components/LegalAtomScene').catch(() => ({ default: () => null })));
+// Lazy load 3D component with error boundary
+const LegalAtomScene = lazy(() => 
+  import('../../legal-atom-3d/components/LegalAtomScene').catch(() => ({ 
+    default: () => <div className="w-full h-full" /> 
+  }))
+);
 
 const CATALOG_KEY = 'nexuspro_catalog';
 
@@ -59,16 +63,19 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="text-[var(--foreground)]">
-      {/* Hero Section with 3D */}
-      <section className="relative pt-32 pb-32 text-center bg-[var(--background)] overflow-hidden min-h-screen flex items-center justify-center">
-        {/* 3D Background */}
-        <div className="absolute inset-0 z-0">
-          <Suspense fallback={<div className="w-full h-full bg-[radial-gradient(ellipse_50%_50%_at_50%_-20%,var(--accent-color)/0.1,rgba(255,255,255,0))]"></div>}>
+      {/* Hero Section with 3D Background */}
+      <section className="relative pt-32 pb-32 text-center bg-[var(--background)] overflow-hidden">
+        {/* 3D Background Layer - Transparent */}
+        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
+          <Suspense fallback={null}>
             <LegalAtomScene />
           </Suspense>
         </div>
         
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_50%_-20%,var(--accent-color)/0.1,rgba(255,255,255,0))]"></div>
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_50%_-20%,var(--accent-color)/0.1,rgba(255,255,255,0))] z-5"></div>
+        
+        {/* Content */}
         <div className="relative max-w-4xl mx-auto px-4 z-10">
           <h1 className="text-4xl md:text-6xl font-black tracking-tighter font-serif">
             Soluciones Legales para 
