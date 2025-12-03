@@ -12,10 +12,6 @@ binding = "ASSETS"
 html_handling = "auto-trailing-slash"
 not_found_handling = "single-page-application"
 
-# Configuración de rutas para SPA
-[[routes]]
-pattern = "abogado-wilson.anipets12.workers.dev/*"
-zone_name = "anipets12.workers.dev"
 
 # Configurar el worker como un módulo ES para soportar bindings D1
 [build]
@@ -41,9 +37,6 @@ database_id = "c4e5e40d-ade6-4486-ac85-4a0b9a1d7b4f"
 # Configuración de entorno
 [env.production]
 name = "abogado-wilson"
-routes = [
-  "abogado-wilson.anipets12.workers.dev/*"
-]
 
 # Variables de entorno - NOTA: Las claves sensibles deben configurarse mediante la UI de Cloudflare o CLI
 [vars]
