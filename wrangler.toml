@@ -16,10 +16,6 @@ not_found_handling = "single-page-application"
 # Configurar el worker como un módulo ES para soportar bindings D1
 [build]
 command = "npm run build"
-[build.upload]
-format = "modules"
-dir = "."
-main = "./cloudflare-worker-clean.js"
 
 # Configuración simplificada para máxima compatibilidad
 
