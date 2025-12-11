@@ -41,7 +41,7 @@ const Testimonials = lazy(() => import('./components/Testimonials'));
 const Newsletter = lazy(() => import('./components/Newsletter/Newsletter'));
 
 // Módulos integrados
-const AbogadosOSModule = lazy(() => import('./modules/abogados-os/App'));
+const AbogadosOSPage = lazy(() => import('./pages/AbogadosOSPage'));
 const GamesPlatform = lazy(() => import('./pages/GamesPlatform'));
 const CryptoBankingModule = lazy(() => import('./modules/crypto-banking/App'));
 const ProyectosHub = lazy(() => import('./pages/ProyectosHub'));
@@ -425,7 +425,7 @@ function AppContent() {
           <Route path="/proyectos" element={<Suspense fallback={<LoadingIndicator />}><ProyectosHub /></Suspense>} />
           
           {/* Módulos integrados */}
-          <Route path="/abogados-os/*" element={<Suspense fallback={<LoadingIndicator />}><AbogadosOSModule /></Suspense>} />
+          <Route path="/abogados-os" element={<Suspense fallback={<LoadingIndicator />}><AbogadosOSPage /></Suspense>} />
           <Route path="/juegos/*" element={<Suspense fallback={<LoadingIndicator />}><GamesPlatform /></Suspense>} />
           <Route path="/games/*" element={<Suspense fallback={<LoadingIndicator />}><GamesPlatform /></Suspense>} />
           <Route path="/cripto/*" element={<Suspense fallback={<LoadingIndicator />}><CryptoBankingModule /></Suspense>} />

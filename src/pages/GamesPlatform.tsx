@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Gamepad2, Play, ShoppingCart, Menu, X, User, ChevronLeft, Star, Lock } from 'lucide-react';
+import JuegosCompletos from '../components/games/JuegosCompletos';
 
-type Vista = 'hub' | 'juego' | 'tienda' | 'personaje' | 'planes';
+type Vista = 'hub' | 'juego' | 'tienda' | 'personaje' | 'planes' | 'accesorios' | 'habilidades';
 
 interface Juego {
   id: string;
@@ -33,25 +34,66 @@ interface Plan {
   destacado: boolean;
 }
 
+interface Accesorio {
+  id: string;
+  nombre: string;
+  icono: string;
+  precio: number;
+  bonus: number;
+  descripcion: string;
+}
+
+interface Habilidad {
+  id: string;
+  nombre: string;
+  icono: string;
+  precio: number;
+  efecto: string;
+}
+
 const JUEGOS: Juego[] = [
-  { id: 'trivia', nombre: 'Trivia Legal', icono: '🎓', categoria: 'legal', dificultad: 'media', precio: 10, recompensa: 50, niveles: 10, descripcion: 'Preguntas sobre derecho ecuatoriano', desbloqueado: true },
-  { id: 'memoria', nombre: 'Memoria Legal', icono: '🧠', categoria: 'puzzle', dificultad: 'fácil', precio: 5, recompensa: 30, niveles: 8, descripcion: 'Juego de memoria con conceptos legales', desbloqueado: true },
-  { id: 'sopa', nombre: 'Sopa de Letras', icono: '🔤', categoria: 'puzzle', dificultad: 'media', precio: 8, recompensa: 40, niveles: 12, descripcion: 'Busca palabras legales', desbloqueado: true },
-  { id: 'ladrillos', nombre: 'Rompe Ladrillos', icono: '🧱', categoria: 'arcade', dificultad: 'media', precio: 10, recompensa: 45, niveles: 15, descripcion: 'Clásico arcade con mecánicas legales', desbloqueado: true },
-  { id: 'naves', nombre: 'Defensor Espacial', icono: '🛸', categoria: 'arcade', dificultad: 'difícil', precio: 15, recompensa: 60, niveles: 20, descripcion: 'Defensa de naves contra enemigos', desbloqueado: true },
-  { id: 'ajedrez', nombre: 'Ajedrez Legal', icono: '♟️', categoria: 'estrategia', dificultad: 'difícil', precio: 20, recompensa: 80, niveles: 10, descripcion: 'Ajedrez estratégico profesional', desbloqueado: true },
-  { id: 'crucigrama', nombre: 'Crucigrama Legal', icono: '📝', categoria: 'puzzle', dificultad: 'media', precio: 12, recompensa: 50, niveles: 15, descripcion: 'Crucigramas con términos legales', desbloqueado: false },
-  { id: 'tenis', nombre: 'Tenis Legal', icono: '🎾', categoria: 'arcade', dificultad: 'media', precio: 10, recompensa: 45, niveles: 12, descripcion: 'Tenis profesional con controles', desbloqueado: false },
-  { id: 'tanques', nombre: 'Tanques Legales', icono: '🛢️', categoria: 'arcade', dificultad: 'difícil', precio: 15, recompensa: 60, niveles: 18, descripcion: 'Batalla de tanques estratégica', desbloqueado: false },
-  { id: 'snake', nombre: 'Snake Legal', icono: '🐍', categoria: 'arcade', dificultad: 'media', precio: 8, recompensa: 40, niveles: 10, descripcion: 'Clásico Snake con contexto legal', desbloqueado: false },
-  { id: 'flappy', nombre: 'Flappy Bird Legal', icono: '🦅', categoria: 'arcade', dificultad: 'fácil', precio: 5, recompensa: 25, niveles: 8, descripcion: 'Vuela entre obstáculos legales', desbloqueado: false },
-  { id: 'pacman', nombre: 'Pac-Man Legal', icono: '👾', categoria: 'arcade', dificultad: 'media', precio: 10, recompensa: 45, niveles: 15, descripcion: 'Laberinto con contexto legal', desbloqueado: false },
+  { id: 'trivia', nombre: 'Trivia Legal', icono: '🎓', categoria: 'legal', dificultad: 'media', precio: 10, recompensa: 50, niveles: 20, descripcion: 'Preguntas sobre derecho ecuatoriano con 20 niveles', desbloqueado: true },
+  { id: 'memoria', nombre: 'Memoria Legal', icono: '🧠', categoria: 'puzzle', dificultad: 'fácil', precio: 5, recompensa: 30, niveles: 15, descripcion: 'Juego de memoria con conceptos legales', desbloqueado: true },
+  { id: 'poker', nombre: 'Poker Legal', icono: '🃏', categoria: 'cartas', dificultad: 'difícil', precio: 20, recompensa: 100, niveles: 25, descripcion: 'Poker profesional con IA y estrategia avanzada', desbloqueado: true },
+  { id: 'solitario', nombre: 'Solitario Legal', icono: '🎴', categoria: 'cartas', dificultad: 'media', precio: 8, recompensa: 40, niveles: 30, descripcion: 'Solitario clásico con variantes legales', desbloqueado: true },
+  { id: 'candy', nombre: 'Candy Crush Legal', icono: '🍬', categoria: 'puzzle', dificultad: 'media', precio: 12, recompensa: 55, niveles: 40, descripcion: 'Combina caramelos legales con poder-ups', desbloqueado: true },
+  { id: 'ajedrez', nombre: 'Ajedrez Legal', icono: '♟️', categoria: 'estrategia', dificultad: 'difícil', precio: 20, recompensa: 80, niveles: 15, descripcion: 'Ajedrez estratégico profesional con IA', desbloqueado: true },
+  { id: 'tetris', nombre: 'Tetris Legal', icono: '⬜', categoria: 'puzzle', dificultad: 'media', precio: 12, recompensa: 55, niveles: 30, descripcion: 'Tetris profesional con lógica avanzada y obstáculos', desbloqueado: true },
+  { id: 'carros', nombre: 'Carros Legales', icono: '🏎️', categoria: 'arcade', dificultad: 'media', precio: 15, recompensa: 65, niveles: 25, descripcion: 'Carreras de carros con física realista', desbloqueado: true },
+  { id: 'peleas', nombre: 'Peleas Legales', icono: '🥊', categoria: 'arcade', dificultad: 'difícil', precio: 18, recompensa: 75, niveles: 20, descripcion: 'Combates de boxeo profesional con combos', desbloqueado: true },
+  { id: 'crucigrama', nombre: 'Crucigrama Legal', icono: '📝', categoria: 'puzzle', dificultad: 'media', precio: 12, recompensa: 50, niveles: 25, descripcion: 'Crucigramas con términos legales y contexto', desbloqueado: false },
+  { id: 'tenis', nombre: 'Tenis Legal', icono: '🎾', categoria: 'arcade', dificultad: 'media', precio: 10, recompensa: 45, niveles: 20, descripcion: 'Tenis profesional con controles avanzados', desbloqueado: false },
+  { id: 'tanques', nombre: 'Tanques Legales', icono: '🛢️', categoria: 'arcade', dificultad: 'difícil', precio: 15, recompensa: 60, niveles: 25, descripcion: 'Batalla de tanques estratégica con power-ups', desbloqueado: false },
+  { id: 'snake', nombre: 'Snake Legal', icono: '🐍', categoria: 'arcade', dificultad: 'media', precio: 8, recompensa: 40, niveles: 20, descripcion: 'Clásico Snake con obstáculos y contexto legal', desbloqueado: false },
+  { id: 'flappy', nombre: 'Flappy Bird Legal', icono: '🦅', categoria: 'arcade', dificultad: 'fácil', precio: 5, recompensa: 25, niveles: 15, descripcion: 'Vuela entre obstáculos legales con dificultad progresiva', desbloqueado: false },
+  { id: 'pacman', nombre: 'Pac-Man Legal', icono: '👾', categoria: 'arcade', dificultad: 'media', precio: 10, recompensa: 45, niveles: 20, descripcion: 'Laberinto con contexto legal y enemigos inteligentes', desbloqueado: false },
+  { id: 'dino', nombre: 'Dino Runner Legal', icono: '🦕', categoria: 'arcade', dificultad: 'media', precio: 10, recompensa: 45, niveles: 25, descripcion: 'Corre y salta sobre obstáculos legales', desbloqueado: false },
+  { id: 'match3', nombre: 'Match 3 Legal', icono: '💎', categoria: 'puzzle', dificultad: 'media', precio: 12, recompensa: 50, niveles: 30, descripcion: 'Combina gemas legales con estrategia', desbloqueado: false },
+  { id: 'blackjack', nombre: 'BlackJack Legal', icono: '🎰', categoria: 'cartas', dificultad: 'media', precio: 15, recompensa: 70, niveles: 20, descripcion: 'BlackJack profesional con estrategia básica', desbloqueado: false },
+  { id: 'parchis', nombre: 'Parchís Legal', icono: '🎲', categoria: 'cartas', dificultad: 'media', precio: 12, recompensa: 60, niveles: 15, descripcion: 'Parchís clásico con dados y estrategia', desbloqueado: true },
+  { id: 'ruleta', nombre: 'Ruleta Legal', icono: '🎡', categoria: 'cartas', dificultad: 'media', precio: 18, recompensa: 85, niveles: 20, descripcion: 'Ruleta profesional con apuestas', desbloqueado: true },
+  { id: 'cartas', nombre: 'Cartas Avanzado', icono: '🃏', categoria: 'cartas', dificultad: 'difícil', precio: 20, recompensa: 90, niveles: 25, descripcion: 'Juego de cartas avanzado con estrategia', desbloqueado: true },
 ];
 
 const PERSONAJES: Personaje[] = [
   { id: 'abogado', nombre: 'Abogado Profesional', icono: '👨‍⚖️', precio: 100, bonus: 10 },
   { id: 'juez', nombre: 'Juez Supremo', icono: '👨‍⚖️', precio: 150, bonus: 15 },
   { id: 'notario', nombre: 'Notario Experto', icono: '📝', precio: 120, bonus: 12 },
+];
+
+const ACCESORIOS: Accesorio[] = [
+  { id: 'escudo', nombre: 'Escudo Protector', icono: '🛡️', precio: 50, bonus: 5, descripcion: 'Reduce daño en 5%' },
+  { id: 'espada', nombre: 'Espada Dorada', icono: '⚔️', precio: 75, bonus: 10, descripcion: 'Aumenta ataque en 10%' },
+  { id: 'pocion', nombre: 'Poción de Vida', icono: '🧪', precio: 30, bonus: 3, descripcion: 'Restaura 30% de vida' },
+  { id: 'corona', nombre: 'Corona Real', icono: '👑', precio: 100, bonus: 15, descripcion: 'Bonus de 15% en todas las recompensas' },
+  { id: 'gafas', nombre: 'Gafas de Visión', icono: '👓', precio: 40, bonus: 8, descripcion: 'Mejora precisión en 8%' },
+];
+
+const HABILIDADES: Habilidad[] = [
+  { id: 'velocidad', nombre: 'Velocidad Aumentada', icono: '⚡', precio: 60, efecto: '+20% velocidad' },
+  { id: 'precision', nombre: 'Precisión Mejorada', icono: '🎯', precio: 50, efecto: '+15% precisión' },
+  { id: 'resistencia', nombre: 'Resistencia Extrema', icono: '💪', precio: 70, efecto: '+25% resistencia' },
+  { id: 'regeneracion', nombre: 'Regeneración Rápida', icono: '🌿', precio: 80, efecto: 'Regenera 5% vida/segundo' },
 ];
 
 const PLANES: Plan[] = [
@@ -86,7 +128,13 @@ const GamesPlatform: React.FC = () => {
   const [nivelActual, setNivelActual] = useState(1);
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [personajeSeleccionado, setPersonajeSeleccionado] = useState('abogado');
-  const [juegosDesbloqueados, setJuegosDesbloqueados] = useState(new Set(['trivia', 'memoria', 'sopa', 'ladrillos', 'naves', 'ajedrez']));
+  const [juegosDesbloqueados, setJuegosDesbloqueados] = useState(new Set(['trivia', 'memoria', 'sopa', 'ladrillos', 'naves', 'ajedrez', 'tetris']));
+  const [accesoriosComprados, setAccesoriosComprados] = useState(new Set<string>());
+  const [habilidadesCompradas, setHabilidadesCompradas] = useState(new Set<string>());
+  
+  useEffect(() => {
+    document.title = 'Plataforma de Juegos - Abogados OS';
+  }, []);
 
   const jugarJuego = (juego: Juego) => {
     if (!juegosDesbloqueados.has(juego.id) && tokens < juego.precio) {
@@ -102,13 +150,25 @@ const GamesPlatform: React.FC = () => {
     setVistaActual('juego');
   };
 
-  const finalizarJuego = (gano: boolean) => {
-    if (gano && juegoSeleccionado) {
-      const recompensa = juegoSeleccionado.recompensa;
+  const avanzarNivel = () => {
+    if (juegoSeleccionado && nivelActual < juegoSeleccionado.niveles) {
+      const recompensa = Math.floor(juegoSeleccionado.recompensa * (1 + nivelActual * 0.1));
       setTokens(tokens + recompensa);
+      setNivelActual(nivelActual + 1);
+    } else if (juegoSeleccionado && nivelActual === juegoSeleccionado.niveles) {
+      const recompensaFinal = juegoSeleccionado.recompensa * 2;
+      setTokens(tokens + recompensaFinal);
       setNivel(nivel + 1);
+      setVistaActual('hub');
     }
-    setVistaActual('hub');
+  };
+
+  const perderNivel = () => {
+    if (nivelActual > 1) {
+      setNivelActual(nivelActual - 1);
+    } else {
+      setVistaActual('hub');
+    }
   };
 
   const comprarPersonaje = (personaje: Personaje) => {
@@ -120,25 +180,68 @@ const GamesPlatform: React.FC = () => {
     setPersonajeSeleccionado(personaje.id);
   };
 
+  const comprarAccesorio = (accesorio: Accesorio) => {
+    if (tokens < accesorio.precio) {
+      alert('No tienes suficientes tokens');
+      return;
+    }
+    if (accesoriosComprados.has(accesorio.id)) {
+      alert('Ya tienes este accesorio');
+      return;
+    }
+    setTokens(tokens - accesorio.precio);
+    setAccesoriosComprados(new Set([...accesoriosComprados, accesorio.id]));
+  };
+
+  const comprarHabilidad = (habilidad: Habilidad) => {
+    if (tokens < habilidad.precio) {
+      alert('No tienes suficientes tokens');
+      return;
+    }
+    if (habilidadesCompradas.has(habilidad.id)) {
+      alert('Ya tienes esta habilidad');
+      return;
+    }
+    setTokens(tokens - habilidad.precio);
+    setHabilidadesCompradas(new Set([...habilidadesCompradas, habilidad.id]));
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950">
-      {/* Header */}
-      <motion.header className="backdrop-blur-xl bg-white/10 border-b border-white/20 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <Gamepad2 className="w-8 h-8 text-blue-400" />
-            <h1 className="text-2xl font-bold text-white">Plataforma de Juegos</h1>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-950">
+      {/* Header Profesional Mac-like Cristal */}
+      <motion.header className="backdrop-blur-3xl bg-white/8 border-b border-white/10 sticky top-0 z-40 shadow-2xl shadow-black/20">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-5 flex justify-between items-center">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-4"
+          >
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-400 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <Gamepad2 className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Plataforma de Juegos</h1>
+              <p className="text-xs text-slate-400">Centro de Entretenimiento Profesional</p>
+            </div>
+          </motion.div>
           
           <div className="hidden md:flex items-center gap-6">
-            <div className="backdrop-blur-md bg-blue-500/20 border border-blue-400/30 rounded-lg px-4 py-2">
-              <p className="text-sm text-slate-300">Tokens</p>
-              <p className="text-2xl font-bold text-yellow-400">{tokens}</p>
-            </div>
-            <div className="backdrop-blur-md bg-purple-500/20 border border-purple-400/30 rounded-lg px-4 py-2">
-              <p className="text-sm text-slate-300">Nivel</p>
-              <p className="text-2xl font-bold text-purple-400">{nivel}</p>
-            </div>
+            <motion.div 
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="backdrop-blur-3xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-400/20 rounded-xl px-5 py-3 shadow-lg"
+            >
+              <p className="text-xs text-slate-300 font-semibold">TOKENS</p>
+              <p className="text-3xl font-bold text-yellow-400">{tokens} 🪙</p>
+            </motion.div>
+            <motion.div 
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 0.2 }}
+              className="backdrop-blur-3xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-400/20 rounded-xl px-5 py-3 shadow-lg"
+            >
+              <p className="text-xs text-slate-300 font-semibold">NIVEL</p>
+              <p className="text-3xl font-bold text-purple-400">{nivel} ⭐</p>
+            </motion.div>
           </div>
 
           <button onClick={() => setMenuAbierto(!menuAbierto)} className="md:hidden p-2 rounded-lg bg-white/10 hover:bg-white/20">
@@ -151,40 +254,64 @@ const GamesPlatform: React.FC = () => {
       <AnimatePresence mode="wait">
         {vistaActual === 'hub' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-            {/* Navegación */}
-            <div className="flex flex-wrap gap-4 mb-8">
+            {/* Navegación Profesional */}
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-wrap gap-3 mb-8 p-4 backdrop-blur-2xl bg-white/5 border border-white/10 rounded-2xl"
+            >
               {[
-                { id: 'hub', label: 'Juegos', icon: Gamepad2 },
-                { id: 'tienda', label: 'Tienda', icon: ShoppingCart },
-                { id: 'planes', label: 'Planes', icon: Star },
-                { id: 'personaje', label: 'Personajes', icon: User }
+                { id: 'hub', label: '🎮 Juegos', icon: Gamepad2 },
+                { id: 'tienda', label: '🛍️ Tienda', icon: ShoppingCart },
+                { id: 'planes', label: '💎 Planes', icon: Star },
+                { id: 'personaje', label: '👤 Personajes', icon: User },
+                { id: 'accesorios', label: '⚔️ Accesorios', icon: ShoppingCart },
+                { id: 'habilidades', label: '⚡ Habilidades', icon: Star }
               ].map(nav => (
-                <button
+                <motion.button
                   key={nav.id}
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.92 }}
                   onClick={() => setVistaActual(nav.id as Vista)}
-                  className={`px-6 py-3 rounded-lg font-bold transition-all flex items-center gap-2 ${
+                  className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${
                     vistaActual === nav.id
-                      ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/50'
-                      : 'backdrop-blur-md bg-white/10 border border-white/20 text-slate-300 hover:bg-white/20'
+                      ? 'backdrop-blur-md bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white shadow-lg shadow-blue-500/50 border border-white/30'
+                      : 'backdrop-blur-md bg-white/10 border border-white/10 text-slate-300 hover:bg-white/20 hover:border-white/30'
                   }`}
                 >
-                  <nav.icon className="w-5 h-5" />
                   {nav.label}
-                </button>
+                </motion.button>
               ))}
-            </div>
+            </motion.div>
+
+            {/* Grid de Juegos - Título */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8"
+            >
+              <h2 className="text-4xl font-bold text-white mb-2">
+                🎮 Todos los Juegos Disponibles
+              </h2>
+              <div className="flex items-center gap-4">
+                <p className="text-slate-400">Total: <span className="text-yellow-400 font-bold text-lg">{JUEGOS.length} juegos</span></p>
+                <p className="text-slate-400">Desbloqueados: <span className="text-green-400 font-bold text-lg">{juegosDesbloqueados.size}</span></p>
+              </div>
+            </motion.div>
 
             {/* Grid de Juegos */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {JUEGOS.map(juego => (
+              {JUEGOS.map((juego, i) => (
                 <motion.div
                   key={juego.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`backdrop-blur-xl border rounded-2xl p-6 transition-all group cursor-pointer ${
+                  initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: i * 0.06, duration: 0.5 }}
+                  whileHover={{ y: -10, scale: 1.03 }}
+                  className={`backdrop-blur-3xl border rounded-3xl p-7 transition-all group cursor-pointer ${
                     juegosDesbloqueados.has(juego.id)
-                      ? 'bg-gradient-to-br from-blue-500/20 to-purple-500/20 border-white/20 hover:border-blue-400/50'
-                      : 'bg-gradient-to-br from-slate-500/10 to-slate-600/10 border-slate-500/20 hover:border-slate-400/30'
+                      ? 'bg-gradient-to-br from-blue-500/15 via-purple-400/10 to-pink-500/15 border-white/10 shadow-2xl hover:shadow-blue-400/40'
+                      : 'bg-gradient-to-br from-slate-500/10 via-slate-600/5 to-slate-700/10 border-white/5 shadow-lg hover:shadow-slate-400/30'
                   }`}
                   onClick={() => jugarJuego(juego)}
                 >
@@ -194,16 +321,31 @@ const GamesPlatform: React.FC = () => {
                   </div>
                   <h3 className="text-xl font-bold text-white mb-2">{juego.nombre}</h3>
                   <p className="text-slate-300 text-sm mb-4">{juego.descripcion}</p>
-                  <div className="space-y-2 mb-4">
-                    <p className="text-sm text-slate-300">📊 {juego.niveles} niveles</p>
-                    <p className="text-sm text-slate-300">⚡ Dificultad: {juego.dificultad}</p>
+                  <div className="space-y-2 mb-4 backdrop-blur-md bg-white/5 rounded-lg p-3 border border-white/5">
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm text-slate-300">📊 {juego.niveles} niveles</p>
+                      <p className="text-xs bg-blue-500/30 text-blue-300 px-2 py-1 rounded-full">{juego.categoria}</p>
+                    </div>
+                    <p className="text-sm text-slate-300">⚡ Dificultad: <span className="text-amber-400 font-bold">{juego.dificultad}</span></p>
+                    <p className="text-sm text-yellow-400 font-bold">💰 Recompensa: {juego.recompensa} tokens</p>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-yellow-400 font-bold">{juego.precio} tokens</span>
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all flex items-center gap-2">
+                  <div className="flex justify-between items-center gap-3">
+                    <div className="flex flex-col">
+                      <span className="text-xs text-slate-400 font-semibold">COSTO</span>
+                      <span className="text-yellow-400 font-bold text-xl">{juego.precio} 🪙</span>
+                    </div>
+                    <motion.button 
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.92 }}
+                      className={`flex-1 px-4 py-3 rounded-lg transition-all flex items-center justify-center gap-2 font-bold ${
+                        juegosDesbloqueados.has(juego.id)
+                          ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-lg hover:shadow-green-500/50'
+                          : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:shadow-lg hover:shadow-blue-500/50'
+                      }`}
+                    >
                       <Play className="w-4 h-4" />
                       {juegosDesbloqueados.has(juego.id) ? 'Jugar' : 'Desbloquear'}
-                    </button>
+                    </motion.button>
                   </div>
                 </motion.div>
               ))}
@@ -213,11 +355,21 @@ const GamesPlatform: React.FC = () => {
 
         {vistaActual === 'tienda' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-            <button onClick={() => setVistaActual('hub')} className="flex items-center gap-2 text-blue-400 mb-8 hover:text-blue-300">
+            <motion.button 
+              whileHover={{ x: -5 }}
+              onClick={() => setVistaActual('hub')} 
+              className="flex items-center gap-2 text-blue-400 mb-8 hover:text-blue-300 transition-all"
+            >
               <ChevronLeft className="w-5 h-5" />
               Volver a Juegos
-            </button>
-            <h2 className="text-3xl font-bold text-white mb-8">Tienda de Tokens</h2>
+            </motion.button>
+            <motion.h2 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-4xl font-bold text-white mb-8"
+            >
+              🛍️ Tienda de Tokens
+            </motion.h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
                 { tokens: 100, precio: 4.99, desc: 0 },
@@ -227,18 +379,23 @@ const GamesPlatform: React.FC = () => {
               ].map((paquete, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ delay: i * 0.1 }}
-                  className="backdrop-blur-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-white/20 rounded-2xl p-6 text-center"
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  className="backdrop-blur-3xl bg-gradient-to-br from-emerald-500/15 via-teal-400/10 to-cyan-500/15 border border-white/10 rounded-3xl p-8 text-center shadow-2xl hover:shadow-emerald-400/30 transition-all"
                 >
-                  <p className="text-4xl font-bold text-white mb-2">{paquete.tokens}</p>
-                  <p className="text-slate-300 mb-4">Tokens</p>
-                  <p className="text-2xl font-bold text-yellow-400 mb-4">${paquete.precio}</p>
-                  {paquete.desc > 0 && <p className="text-green-400 text-sm mb-4">Ahorra {paquete.desc}%</p>}
-                  <button className="w-full px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all">
+                  <p className="text-5xl font-bold text-white mb-3">{paquete.tokens}</p>
+                  <p className="text-slate-300 mb-4 text-lg">Tokens</p>
+                  <p className="text-3xl font-bold text-yellow-400 mb-4">${paquete.precio}</p>
+                  {paquete.desc > 0 && <p className="text-green-400 text-sm mb-4 font-bold">💰 Ahorra {paquete.desc}%</p>}
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="w-full px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:shadow-lg hover:shadow-emerald-500/50 transition-all font-bold"
+                  >
                     Comprar
-                  </button>
+                  </motion.button>
                 </motion.div>
               ))}
             </div>
@@ -247,27 +404,46 @@ const GamesPlatform: React.FC = () => {
 
         {vistaActual === 'planes' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-            <button onClick={() => setVistaActual('hub')} className="flex items-center gap-2 text-blue-400 mb-8 hover:text-blue-300">
+            <motion.button 
+              whileHover={{ x: -5 }}
+              onClick={() => setVistaActual('hub')} 
+              className="flex items-center gap-2 text-blue-400 mb-8 hover:text-blue-300 transition-all"
+            >
               <ChevronLeft className="w-5 h-5" />
               Volver a Juegos
-            </button>
-            <h2 className="text-3xl font-bold text-white mb-8">Planes de Suscripción</h2>
+            </motion.button>
+            <motion.h2 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-4xl font-bold text-white mb-8"
+            >
+              💎 Planes de Suscripción
+            </motion.h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {PLANES.map((plan, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ delay: i * 0.1 }}
-                  className={`backdrop-blur-xl border rounded-2xl p-8 ${
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  className={`backdrop-blur-3xl border rounded-3xl p-8 transition-all ${
                     plan.destacado
-                      ? 'bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-yellow-400/50 ring-2 ring-yellow-400/30'
-                      : 'bg-gradient-to-br from-blue-500/20 to-purple-500/20 border-white/20'
+                      ? 'bg-gradient-to-br from-yellow-500/15 via-orange-400/10 to-yellow-600/15 border-yellow-400/30 ring-2 ring-yellow-400/20 shadow-2xl shadow-yellow-500/20'
+                      : 'bg-gradient-to-br from-blue-500/15 via-purple-400/10 to-blue-600/15 border-white/10 shadow-2xl'
                   }`}
                 >
-                  {plan.destacado && <div className="text-yellow-400 text-sm font-bold mb-4">⭐ RECOMENDADO</div>}
+                  {plan.destacado && (
+                    <motion.div 
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="text-yellow-400 text-sm font-bold mb-4 inline-block"
+                    >
+                      ⭐ RECOMENDADO
+                    </motion.div>
+                  )}
                   <h3 className="text-2xl font-bold text-white mb-2">{plan.nombre}</h3>
-                  <p className="text-3xl font-bold text-yellow-400 mb-6">${plan.precio}/mes</p>
+                  <p className="text-4xl font-bold text-yellow-400 mb-6">${plan.precio}/mes</p>
                   <ul className="space-y-3 mb-6">
                     {plan.beneficios.map((beneficio, j) => (
                       <li key={j} className="text-slate-300 text-sm flex items-center gap-2">
@@ -275,13 +451,17 @@ const GamesPlatform: React.FC = () => {
                       </li>
                     ))}
                   </ul>
-                  <button className={`w-full px-4 py-2 rounded-lg font-bold transition-all ${
-                    plan.destacado
-                      ? 'bg-yellow-500 text-black hover:bg-yellow-600'
-                      : 'bg-blue-500 text-white hover:bg-blue-600'
-                  }`}>
-                    {plan.precio === 0 ? 'Actual' : 'Suscribirse'}
-                  </button>
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`w-full px-4 py-3 rounded-xl font-bold transition-all ${
+                      plan.destacado
+                        ? 'bg-gradient-to-r from-yellow-500 to-orange-600 text-black hover:shadow-lg hover:shadow-yellow-500/50'
+                        : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:shadow-lg hover:shadow-blue-500/50'
+                    }`}
+                  >
+                    {plan.precio === 0 ? 'Plan Actual' : 'Suscribirse'}
+                  </motion.button>
                 </motion.div>
               ))}
             </div>
@@ -290,37 +470,164 @@ const GamesPlatform: React.FC = () => {
 
         {vistaActual === 'personaje' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-            <button onClick={() => setVistaActual('hub')} className="flex items-center gap-2 text-blue-400 mb-8 hover:text-blue-300">
+            <motion.button 
+              whileHover={{ x: -5 }}
+              onClick={() => setVistaActual('hub')} 
+              className="flex items-center gap-2 text-blue-400 mb-8 hover:text-blue-300 transition-all"
+            >
               <ChevronLeft className="w-5 h-5" />
               Volver a Juegos
-            </button>
-            <h2 className="text-3xl font-bold text-white mb-8">Personajes</h2>
+            </motion.button>
+            <motion.h2 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-4xl font-bold text-white mb-8"
+            >
+              👤 Personajes Disponibles
+            </motion.h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {PERSONAJES.map(personaje => (
+              {PERSONAJES.map((personaje, i) => (
                 <motion.div
                   key={personaje.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`backdrop-blur-xl border rounded-2xl p-6 text-center transition-all ${
+                  initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  className={`backdrop-blur-3xl border rounded-3xl p-8 text-center transition-all ${
                     personajeSeleccionado === personaje.id
-                      ? 'bg-gradient-to-br from-yellow-500/30 to-orange-500/30 border-yellow-400/50'
-                      : 'bg-gradient-to-br from-blue-500/20 to-purple-500/20 border-white/20'
+                      ? 'bg-gradient-to-br from-yellow-500/15 via-orange-400/10 to-yellow-600/15 border-yellow-400/30 shadow-2xl shadow-yellow-500/20'
+                      : 'bg-gradient-to-br from-blue-500/15 via-purple-400/10 to-blue-600/15 border-white/10 shadow-2xl'
                   }`}
                 >
-                  <div className="text-6xl mb-4">{personaje.icono}</div>
-                  <h3 className="text-xl font-bold text-white mb-2">{personaje.nombre}</h3>
-                  <p className="text-sm text-slate-300 mb-4">+{personaje.bonus}% Bonus</p>
+                  <motion.div 
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="text-7xl mb-4"
+                  >
+                    {personaje.icono}
+                  </motion.div>
+                  <h3 className="text-2xl font-bold text-white mb-2">{personaje.nombre}</h3>
+                  <p className="text-sm text-slate-300 mb-6">+{personaje.bonus}% Bonus en Recompensas</p>
                   {personajeSeleccionado === personaje.id ? (
-                    <button className="w-full px-4 py-2 bg-green-500 text-white rounded-lg font-bold">
-                      Seleccionado
-                    </button>
+                    <motion.button 
+                      className="w-full px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-bold shadow-lg shadow-green-500/50"
+                    >
+                      ✓ Seleccionado
+                    </motion.button>
                   ) : (
-                    <button
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => comprarPersonaje(personaje)}
-                      className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
+                      className="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:shadow-lg hover:shadow-blue-500/50 transition-all font-bold"
                     >
                       {personaje.precio} Tokens
-                    </button>
+                    </motion.button>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {vistaActual === 'accesorios' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+            <motion.button 
+              whileHover={{ x: -5 }}
+              onClick={() => setVistaActual('hub')} 
+              className="flex items-center gap-2 text-blue-400 mb-8 hover:text-blue-300 transition-all"
+            >
+              <ChevronLeft className="w-5 h-5" />
+              Volver a Juegos
+            </motion.button>
+            <motion.h2 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-4xl font-bold text-white mb-8"
+            >
+              ⚔️ Accesorios Disponibles
+            </motion.h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {ACCESORIOS.map((accesorio, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  className="backdrop-blur-3xl bg-gradient-to-br from-orange-500/15 via-red-400/10 to-orange-600/15 border border-white/10 rounded-3xl p-8 text-center shadow-2xl hover:shadow-orange-400/30 transition-all"
+                >
+                  <p className="text-6xl mb-4">{accesorio.icono}</p>
+                  <h3 className="text-2xl font-bold text-white mb-2">{accesorio.nombre}</h3>
+                  <p className="text-sm text-slate-300 mb-4">{accesorio.descripcion}</p>
+                  <p className="text-sm text-slate-300 mb-4">Bonus: +{accesorio.bonus}%</p>
+                  {accesoriosComprados.has(accesorio.id) ? (
+                    <motion.button 
+                      className="w-full px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-bold shadow-lg shadow-green-500/50"
+                    >
+                      ✓ Poseído
+                    </motion.button>
+                  ) : (
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => comprarAccesorio(accesorio)}
+                      className="w-full px-4 py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-xl hover:shadow-lg hover:shadow-orange-500/50 transition-all font-bold"
+                    >
+                      {accesorio.precio} Tokens
+                    </motion.button>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {vistaActual === 'habilidades' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+            <motion.button 
+              whileHover={{ x: -5 }}
+              onClick={() => setVistaActual('hub')} 
+              className="flex items-center gap-2 text-blue-400 mb-8 hover:text-blue-300 transition-all"
+            >
+              <ChevronLeft className="w-5 h-5" />
+              Volver a Juegos
+            </motion.button>
+            <motion.h2 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-4xl font-bold text-white mb-8"
+            >
+              ⚡ Habilidades Disponibles
+            </motion.h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {HABILIDADES.map((habilidad, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  className="backdrop-blur-3xl bg-gradient-to-br from-yellow-500/15 via-amber-400/10 to-yellow-600/15 border border-white/10 rounded-3xl p-8 text-center shadow-2xl hover:shadow-yellow-400/30 transition-all"
+                >
+                  <p className="text-6xl mb-4">{habilidad.icono}</p>
+                  <h3 className="text-2xl font-bold text-white mb-2">{habilidad.nombre}</h3>
+                  <p className="text-sm text-slate-300 mb-4">{habilidad.efecto}</p>
+                  {habilidadesCompradas.has(habilidad.id) ? (
+                    <motion.button 
+                      className="w-full px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-bold shadow-lg shadow-green-500/50"
+                    >
+                      ✓ Adquirida
+                    </motion.button>
+                  ) : (
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => comprarHabilidad(habilidad)}
+                      className="w-full px-4 py-3 bg-gradient-to-r from-yellow-500 to-amber-600 text-white rounded-xl hover:shadow-lg hover:shadow-yellow-500/50 transition-all font-bold"
+                    >
+                      {habilidad.precio} Tokens
+                    </motion.button>
                   )}
                 </motion.div>
               ))}
@@ -330,42 +637,18 @@ const GamesPlatform: React.FC = () => {
 
         {vistaActual === 'juego' && juegoSeleccionado && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-4xl mx-auto px-4 md:px-8 py-8">
-            <button onClick={() => setVistaActual('hub')} className="flex items-center gap-2 text-blue-400 mb-8 hover:text-blue-300">
-              <ChevronLeft className="w-5 h-5" />
-              Volver a Juegos
-            </button>
-            <div className="backdrop-blur-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-white/20 rounded-2xl p-8">
-              <div className="text-center mb-8">
-                <div className="text-6xl mb-4">{juegoSeleccionado.icono}</div>
-                <h2 className="text-3xl font-bold text-white mb-2">{juegoSeleccionado.nombre}</h2>
-                <p className="text-slate-300">Nivel {nivelActual} de {juegoSeleccionado.niveles}</p>
-              </div>
-
-              <div className="bg-gradient-to-b from-slate-900 to-black rounded-lg p-8 mb-8 h-64 flex items-center justify-center">
-                <p className="text-white text-center text-lg">Área de Juego - {juegoSeleccionado.nombre}</p>
-              </div>
-
-              <div className="flex gap-4 justify-center">
-                <button
-                  onClick={() => finalizarJuego(true)}
-                  className="px-8 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition-all"
-                >
-                  ✓ Ganaste
-                </button>
-                <button
-                  onClick={() => finalizarJuego(false)}
-                  className="px-8 py-3 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition-all"
-                >
-                  ✗ Perdiste
-                </button>
-                <button
-                  onClick={() => setVistaActual('hub')}
-                  className="px-8 py-3 bg-slate-600 text-white font-bold rounded-lg hover:bg-slate-700 transition-all"
-                >
-                  Salir
-                </button>
-              </div>
-            </div>
+            <JuegosCompletos
+              juegoId={juegoSeleccionado.id}
+              nombre={juegoSeleccionado.nombre}
+              icono={juegoSeleccionado.icono}
+              nivelActual={nivelActual}
+              totalNiveles={juegoSeleccionado.niveles}
+              onAvanzarNivel={avanzarNivel}
+              onPerder={perderNivel}
+              onVolver={() => setVistaActual('hub')}
+              tokens={tokens}
+              onTokensChange={setTokens}
+            />
           </motion.div>
         )}
       </AnimatePresence>
