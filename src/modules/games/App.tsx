@@ -1,130 +1,156 @@
-
-import React, { useState, useEffect, useRef } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { SequenceState } from './types';
-import { Scene1Balance } from './components/Scene1Balance';
-import { Scene2Tunnel } from './components/Scene2Tunnel';
-import { Scene3Hub } from './components/Scene3Hub';
-import { Scene4Logo } from './components/Scene4Logo';
-import { Scene5Entry } from './components/Scene5Entry';
-import { Scene6Outro } from './components/Scene6Outro';
-import { GameHubEnhanced } from './components/GameHubEnhanced';
+import React, { useState, Suspense, lazy } from 'react';
+import { motion } from 'framer-motion';
 import { Play } from 'lucide-react';
-import { initAudio, playRetroSound } from './utils/audio';
+
+// Lazy load game hub
+const GameHubProfessional = lazy(() => import('./components/GameHubProfessional').then(m => ({ default: m.GameHubProfessional })));
+
+// Lazy load individual games
+const GameWhoWantsToBeALawyer = lazy(() => import('./components/GameWhoWantsToBeALawyer').then(m => ({ default: m.GameWhoWantsToBeALawyer })));
+const GameLegalTetris = lazy(() => import('./components/GameLegalTetris').then(m => ({ default: m.GameLegalTetris })));
+const GameContractBuilder = lazy(() => import('./components/GameContractBuilder').then(m => ({ default: m.GameContractBuilder })));
+const GameCaseManager = lazy(() => import('./components/GameCaseManager').then(m => ({ default: m.GameCaseManager })));
+const GameLegalMemory = lazy(() => import('./components/GameLegalMemory').then(m => ({ default: m.GameLegalMemory })));
+const GameLegalChess = lazy(() => import('./components/GameLegalChess').then(m => ({ default: m.GameLegalChess })));
+const GameLegalCheckers = lazy(() => import('./components/GameLegalCheckers').then(m => ({ default: m.GameLegalCheckers })));
+const GameLegalDomino = lazy(() => import('./components/GameLegalDomino').then(m => ({ default: m.GameLegalDomino })));
+
+// Loading component
+const LoadingScreen = () => (
+  <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-slate-900 to-black">
+    <div className="text-center">
+      <div className="mb-4 text-4xl">🎮</div>
+      <p className="text-cyan-400 font-bold text-lg">Cargando Juego...</p>
+      <div className="mt-4 flex gap-2 justify-center">
+        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
+        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+      </div>
+    </div>
+  </div>
+);
+
+type GameState = 'hub' | 'lawyer-trivia' | 'legal-tetris' | 'contract-builder' | 'case-manager' | 'legal-memory' | 'legal-chess' | 'legal-checkers' | 'legal-domino' | 'intro';
+
+interface GameSelection {
+  gameId: string;
+  level: number;
+}
 
 const App: React.FC = () => {
-  const [sequenceState, setSequenceState] = useState<SequenceState>(SequenceState.IDLE);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  
-  // Check if user is authenticated from localStorage (synced from main app)
-  useEffect(() => {
-    const nexusUser = localStorage.getItem('nexuspro_user');
-    if (nexusUser) {
-      try {
-        JSON.parse(nexusUser);
-        setIsAuthenticated(true);
-        // Auto-start sequence if authenticated
-        initAudio();
-        playRetroSound('START');
-        setSequenceState(SequenceState.SCENE_1_BALANCE);
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-      }
-    }
-  }, []);
-  
-  const startSequence = () => {
-    initAudio();
-    playRetroSound('START'); // Subtle beep
-    setSequenceState(SequenceState.SCENE_1_BALANCE);
+  const [gameState, setGameState] = useState<GameState>('intro');
+  const [selectedGame, setSelectedGame] = useState<GameSelection | null>(null);
+  const [language] = useState<'es' | 'en'>('es');
+
+  const handleSelectGame = (gameId: string, level: number) => {
+    setSelectedGame({ gameId, level });
+    setGameState(gameId as GameState);
   };
 
-  useEffect(() => {
-    let timer: any;
+  const handleExit = () => {
+    setGameState('hub');
+    setSelectedGame(null);
+  };
 
-    if (sequenceState === SequenceState.SCENE_1_BALANCE) {
-      // 0-1s: Balance
-      // Sound: Gentle chime? Handled in component or just ambient.
-      timer = setTimeout(() => setSequenceState(SequenceState.SCENE_2_TUNNEL), 1500); 
-    } else if (sequenceState === SequenceState.SCENE_2_TUNNEL) {
-      // 1-3s: Tunnel (Duration 2.5s)
-      timer = setTimeout(() => setSequenceState(SequenceState.SCENE_3_REVEAL), 2500);
-    } else if (sequenceState === SequenceState.SCENE_3_REVEAL) {
-      // 3-5s: Hub Reveal (Duration 2s)
-      // Sound: Swoosh is good here
-      timer = setTimeout(() => setSequenceState(SequenceState.SCENE_4_LOGO), 2000);
-    } else if (sequenceState === SequenceState.SCENE_4_LOGO) {
-      // 5-7s: Logo Full (Duration 2.5s)
-      playRetroSound('POWERON'); // Deep synth
-      timer = setTimeout(() => setSequenceState(SequenceState.SCENE_5_ENTRY), 2500);
-    } else if (sequenceState === SequenceState.SCENE_5_ENTRY) {
-      // 7-9s: Entry (Duration 2.5s)
-      timer = setTimeout(() => setSequenceState(SequenceState.SCENE_6_OUTRO), 2500);
-    } else if (sequenceState === SequenceState.SCENE_6_OUTRO) {
-      // 9-10s: Outro (Duration 1s + fade out)
-      playRetroSound('SUCCESS');
-      timer = setTimeout(() => setSequenceState(SequenceState.FINISHED), 3000);
-    }
-
-    return () => clearTimeout(timer);
-  }, [sequenceState]);
-
-  const showHub = sequenceState === SequenceState.SCENE_3_REVEAL || 
-                  sequenceState === SequenceState.SCENE_4_LOGO ||
-                  sequenceState === SequenceState.SCENE_5_ENTRY;
+  const handleStartIntro = () => {
+    setGameState('hub');
+  };
 
   return (
     <div className="w-full h-screen bg-black text-white overflow-hidden relative font-['Orbitron']">
-      
-      {/* Background Ambience (Persistent) */}
+      {/* Background */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-900 via-black to-black opacity-80 z-0" />
-      
-      {/* Main Stage */}
-      <AnimatePresence mode="wait">
-        {sequenceState === SequenceState.IDLE && (
-          <motion.div
-            key="start"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.5, filter: 'blur(10px)' }}
-            className="absolute inset-0 flex items-center justify-center z-50 cursor-pointer"
-            onClick={startSequence}
-          >
-            <div className="group relative">
-               <div className="absolute -inset-1 bg-gradient-to-r from-cyan-400 to-purple-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
-               <button className="relative px-8 py-4 bg-black rounded-lg border border-cyan-500/50 text-cyan-400 flex items-center gap-3 text-xl font-bold tracking-widest uppercase hover:text-white transition-colors">
-                  <Play className="w-6 h-6 fill-current" /> Initialize System
-               </button>
-            </div>
-          </motion.div>
-        )}
 
-        {sequenceState === SequenceState.SCENE_1_BALANCE && <Scene1Balance key="scene1" />}
-        {sequenceState === SequenceState.SCENE_2_TUNNEL && <Scene2Tunnel key="scene2" />}
-        
-        {showHub && (
-            <div className="absolute inset-0 z-10">
-               <Scene3Hub showFullLogo={sequenceState === SequenceState.SCENE_4_LOGO || sequenceState === SequenceState.SCENE_5_ENTRY} 
-                          enterPortal={sequenceState === SequenceState.SCENE_5_ENTRY} />
-               
-               {sequenceState === SequenceState.SCENE_4_LOGO && <Scene4Logo />}
-               {sequenceState === SequenceState.SCENE_5_ENTRY && <Scene5Entry />}
-            </div>
-        )}
-        
-        {sequenceState === SequenceState.SCENE_6_OUTRO && <Scene6Outro key="scene6" />}
+      {/* Main Content */}
+      <div className="relative w-full h-full z-10">
+        <Suspense fallback={<LoadingScreen />}>
+          {gameState === 'intro' && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 flex items-center justify-center z-50 cursor-pointer"
+              onClick={handleStartIntro}
+            >
+              <div className="group relative">
+                <div className="absolute -inset-1 bg-gradient-to-r from-cyan-400 to-purple-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
+                <button className="relative px-8 py-4 bg-black rounded-lg border border-cyan-500/50 text-cyan-400 flex items-center gap-3 text-xl font-bold tracking-widest uppercase hover:text-white transition-colors">
+                  <Play className="w-6 h-6 fill-current" /> Iniciar Sistema
+                </button>
+              </div>
+            </motion.div>
+          )}
 
-        {sequenceState === SequenceState.FINISHED && (
-          <motion.div
-            key="finished"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="absolute inset-0"
-          >
-            <GameHubEnhanced onRestartIntro={() => setSequenceState(SequenceState.IDLE)} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+          {gameState === 'hub' && (
+            <GameHubProfessional 
+              onSelectGame={handleSelectGame}
+              language={language}
+            />
+          )}
+
+          {gameState === 'lawyer-trivia' && selectedGame && (
+            <GameWhoWantsToBeALawyer
+              onExit={handleExit}
+              language={language}
+            />
+          )}
+
+          {gameState === 'legal-tetris' && selectedGame && (
+            <GameLegalTetris
+              onExit={handleExit}
+              language={language}
+            />
+          )}
+
+          {gameState === 'contract-builder' && selectedGame && (
+            <GameContractBuilder
+              onExit={handleExit}
+              language={language}
+              level={selectedGame.level}
+            />
+          )}
+
+          {gameState === 'case-manager' && selectedGame && (
+            <GameCaseManager
+              onExit={handleExit}
+              language={language}
+              level={selectedGame.level}
+            />
+          )}
+
+          {gameState === 'legal-memory' && selectedGame && (
+            <GameLegalMemory
+              onExit={handleExit}
+              language={language}
+              level={selectedGame.level}
+            />
+          )}
+
+          {gameState === 'legal-chess' && selectedGame && (
+            <GameLegalChess
+              onExit={handleExit}
+              language={language}
+              level={selectedGame.level}
+            />
+          )}
+
+          {gameState === 'legal-checkers' && selectedGame && (
+            <GameLegalCheckers
+              onExit={handleExit}
+              language={language}
+              level={selectedGame.level}
+            />
+          )}
+
+          {gameState === 'legal-domino' && selectedGame && (
+            <GameLegalDomino
+              onExit={handleExit}
+              language={language}
+              level={selectedGame.level}
+            />
+          )}
+        </Suspense>
+      </div>
 
       {/* Global Vignette/Scanlines */}
       <div className="absolute inset-0 pointer-events-none z-[100] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] opacity-20" />

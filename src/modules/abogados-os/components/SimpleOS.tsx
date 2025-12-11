@@ -1,16 +1,17 @@
 import { useState } from 'react';
-import { Scale, Folder, Globe, Calculator, Gamepad2, Settings, User } from 'lucide-react';
+import { Scale, Folder, Globe, Calculator, Gamepad2, Settings, User, X, Minus, Square } from 'lucide-react';
 
 const SimpleOS = () => {
   const [activeApp, setActiveApp] = useState<string>('desktop');
+  const [language, setLanguage] = useState<'es' | 'en'>('es');
 
   const apps = [
-    { id: 'legal', name: 'Abg. Wilson', icon: <Scale className="w-8 h-8 text-indigo-600" />, color: 'bg-indigo-600' },
-    { id: 'files', name: 'Archivos', icon: <Folder className="w-8 h-8 text-blue-600" />, color: 'bg-blue-600' },
-    { id: 'browser', name: 'Navegador', icon: <Globe className="w-8 h-8 text-green-600" />, color: 'bg-green-600' },
-    { id: 'calculator', name: 'Calculadora', icon: <Calculator className="w-8 h-8 text-orange-600" />, color: 'bg-orange-600' },
-    { id: 'games', name: 'Juegos', icon: <Gamepad2 className="w-8 h-8 text-purple-600" />, color: 'bg-purple-600' },
-    { id: 'settings', name: 'Ajustes', icon: <Settings className="w-8 h-8 text-gray-600" />, color: 'bg-gray-600' }
+    { id: 'legal', nameEs: 'Abg. Wilson', nameEn: 'Abg. Wilson', icon: <Scale className="w-8 h-8 text-indigo-600" />, color: 'bg-indigo-100' },
+    { id: 'files', nameEs: 'Archivos', nameEn: 'Files', icon: <Folder className="w-8 h-8 text-blue-600" />, color: 'bg-blue-100' },
+    { id: 'browser', nameEs: 'Navegador', nameEn: 'Browser', icon: <Globe className="w-8 h-8 text-green-600" />, color: 'bg-green-100' },
+    { id: 'calculator', nameEs: 'Calculadora', nameEn: 'Calculator', icon: <Calculator className="w-8 h-8 text-orange-600" />, color: 'bg-orange-100' },
+    { id: 'games', nameEs: 'Juegos', nameEn: 'Games', icon: <Gamepad2 className="w-8 h-8 text-purple-600" />, color: 'bg-purple-100' },
+    { id: 'settings', nameEs: 'Ajustes', nameEn: 'Settings', icon: <Settings className="w-8 h-8 text-gray-600" />, color: 'bg-gray-100' }
   ];
 
   const renderAppContent = () => {

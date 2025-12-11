@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { X, Minus, Square, Maximize2 } from 'lucide-react';
-import { WindowState } from '../types';
+import type { WindowState } from '../types';
 
 interface WindowProps {
   window: WindowState;
