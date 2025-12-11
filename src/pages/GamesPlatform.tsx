@@ -73,6 +73,11 @@ const JUEGOS: Juego[] = [
   { id: 'parchis', nombre: 'Parchís Legal', icono: '🎲', categoria: 'cartas', dificultad: 'media', precio: 12, recompensa: 60, niveles: 15, descripcion: 'Parchís clásico con dados y estrategia', desbloqueado: true },
   { id: 'ruleta', nombre: 'Ruleta Legal', icono: '🎡', categoria: 'cartas', dificultad: 'media', precio: 18, recompensa: 85, niveles: 20, descripcion: 'Ruleta profesional con apuestas', desbloqueado: true },
   { id: 'cartas', nombre: 'Cartas Avanzado', icono: '🃏', categoria: 'cartas', dificultad: 'difícil', precio: 20, recompensa: 90, niveles: 25, descripcion: 'Juego de cartas avanzado con estrategia', desbloqueado: true },
+  { id: 'naves', nombre: 'Space Invaders', icono: '👾', categoria: 'arcade', dificultad: 'media', precio: 15, recompensa: 75, niveles: 20, descripcion: 'Clásico Space Invaders con muchos niveles', desbloqueado: true },
+  { id: 'snake', nombre: 'Snake Profesional', icono: '🐍', categoria: 'arcade', dificultad: 'media', precio: 10, recompensa: 60, niveles: 30, descripcion: 'Snake clásico con 30 niveles y dificultad progresiva', desbloqueado: true },
+  { id: 'breakout', nombre: 'Breakout', icono: '🧱', categoria: 'arcade', dificultad: 'media', precio: 12, recompensa: 65, niveles: 25, descripcion: 'Breakout clásico rompe bloques con física realista', desbloqueado: true },
+  { id: 'ladrillos', nombre: 'Brick Breaker Pro', icono: '🎯', categoria: 'arcade', dificultad: 'media', precio: 14, recompensa: 80, niveles: 30, descripcion: 'Rompe ladrillos con rebote realista, 30 niveles progresivos', desbloqueado: true },
+  { id: 'pong', nombre: 'Pong Profesional', icono: '🏓', categoria: 'arcade', dificultad: 'media', precio: 13, recompensa: 75, niveles: 25, descripcion: 'Pong clásico contra IA inteligente con 25 niveles', desbloqueado: true },
 ];
 
 const PERSONAJES: Personaje[] = [
