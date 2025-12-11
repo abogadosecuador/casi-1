@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Gamepad2, Coins, Play, ShoppingCart, Trophy, Zap } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || '',
-  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
-);
 
 interface Juego {
   id: string;
@@ -133,7 +126,6 @@ const JUEGOS_DISPONIBLES: Juego[] = [
 type Filtro = 'todos' | 'legal' | 'arcade' | 'puzzle' | 'estrategia' | 'propiedad';
 
 export const GamesHubProfessional: React.FC = () => {
-  const { user } = useAuth();
   const [juegos, setJuegos] = useState<Juego[]>(JUEGOS_DISPONIBLES);
   const [tokensUsuario, setTokensUsuario] = useState(0);
   const [filtroActual, setFiltroActual] = useState<Filtro>('todos');
@@ -142,45 +134,14 @@ export const GamesHubProfessional: React.FC = () => {
 
   useEffect(() => {
     cargarDatos();
-  }, [user]);
+  }, []);
 
   const cargarDatos = async () => {
-    if (!user) {
-      setCargando(false);
-      return;
-    }
-
     try {
-      // Cargar tokens del usuario
-      const { data: datosTokens } = await supabase
-        .from('user_tokens')
-        .select('balance')
-        .eq('user_id', user.id)
-        .single();
-
-      setTokensUsuario(datosTokens?.balance || 0);
-
-      // Cargar nivel del usuario
-      const { data: datosNivel } = await supabase
-        .from('user_profiles')
-        .select('level')
-        .eq('id', user.id)
-        .single();
-
-      setNivelUsuario(datosNivel?.level || 1);
-
-      // Cargar juegos que posee el usuario
-      const { data: juegosPropiedad } = await supabase
-        .from('user_games')
-        .select('game_id')
-        .eq('user_id', user.id);
-
-      const idsPropiedad = new Set((juegosPropiedad || []).map((j: any) => j.game_id));
-
-      setJuegos(JUEGOS_DISPONIBLES.map(juego => ({
-        ...juego,
-        esPropiedad: idsPropiedad.has(juego.id)
-      })));
+      // Cargar datos de demostración
+      setTokensUsuario(1000);
+      setNivelUsuario(5);
+      setJuegos(JUEGOS_DISPONIBLES);
     } catch (error) {
       console.error('Error cargando datos:', error);
     } finally {
@@ -195,36 +156,12 @@ export const GamesHubProfessional: React.FC = () => {
   });
 
   const comprarJuego = async (juego: Juego) => {
-    if (!user) {
-      alert('Por favor inicia sesión para comprar juegos');
-      return;
-    }
-
     if (tokensUsuario < juego.precioTokens) {
       alert(`No tienes suficientes tokens. Necesitas ${juego.precioTokens} tokens`);
       return;
     }
 
     try {
-      // Restar tokens
-      const { error: errorTokens } = await supabase
-        .from('user_tokens')
-        .update({ balance: tokensUsuario - juego.precioTokens })
-        .eq('user_id', user.id);
-
-      if (errorTokens) throw errorTokens;
-
-      // Agregar juego a propiedad del usuario
-      const { error: errorJuego } = await supabase
-        .from('user_games')
-        .insert({
-          user_id: user.id,
-          game_id: juego.id,
-          purchased_at: new Date().toISOString()
-        });
-
-      if (errorJuego) throw errorJuego;
-
       setTokensUsuario(tokensUsuario - juego.precioTokens);
       setJuegos(juegos.map((j: Juego) => 
         j.id === juego.id ? { ...j, esPropiedad: true } : j

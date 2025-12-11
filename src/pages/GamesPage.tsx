@@ -1,193 +1,269 @@
-import React, { useState, useEffect } from 'react';
-import Card from '../components/Card';
-import { PuzzleIcon, TrophyIcon } from '../components/icons/InterfaceIcons';
-import { useCredits } from '../context/CreditContext';
-import { useTokens } from '../context/TokenContext';
-import TicTacToe from '../components/games/TicTacToe';
-import { Page, PublicRoute } from '../types';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Gamepad2, Play, ShoppingCart, Menu, X, User } from 'lucide-react';
 
-const triviaQuestions = [
-    { question: '¿Qué es un "habeas corpus"?', options: ['Un recurso para proteger la libertad personal', 'Un tipo de contrato', 'Un impuesto judicial'], answer: 0 },
-    { question: 'En derecho penal, ¿qué significa "in fraganti"?', options: ['Después del hecho', 'En el momento de cometer el delito', 'Con premeditación'], answer: 1 },
-    { question: '¿Cuál es la norma suprema en el ordenamiento jurídico ecuatoriano?', options: ['El Código Civil', 'La Constitución', 'Los tratados internacionales'], answer: 1 },
-];
+type Vista = 'hub' | 'juego' | 'tienda' | 'personaje';
 
-const TriviaGame = ({ canPlay, onGameEnd, onNavigate }) => {
-    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-    const [showResult, setShowResult] = useState(false);
-    const { addCredits } = useCredits();
-    const { useToken, addTokens } = useTokens();
-
-    const currentQuestion = triviaQuestions[currentQuestionIndex];
-    const isCorrect = selectedAnswer === currentQuestion.answer;
-
-    const handleAnswer = (index: number) => {
-        if (showResult || !canPlay) return;
-        if (!useToken(1)) {
-            alert("¡No tienes suficientes fichas para jugar!");
-            return;
-        }
-
-        setSelectedAnswer(index);
-        setShowResult(true);
-        if (index === currentQuestion.answer) {
-            addCredits(10);
-            addTokens(2);
-            onGameEnd(true);
-        } else {
-            onGameEnd(false);
-        }
-    };
-
-    const handleNext = () => {
-        setShowResult(false);
-        setSelectedAnswer(null);
-        setCurrentQuestionIndex((i) => (i + 1) % triviaQuestions.length);
-    };
-    
-    const getButtonClass = (index: number) => {
-        if (!showResult) return "bg-[var(--background)] hover:bg-opacity-80";
-        if (index === currentQuestion.answer) return "bg-green-500/80 text-white";
-        if (index === selectedAnswer && !isCorrect) return "bg-red-500/80 text-white";
-        return "bg-[var(--background)] opacity-60";
-    };
-
-    return (
-        <Card>
-            <div className="text-center relative">
-                <h2 className="text-2xl font-bold mb-2">Trivia Legal</h2>
-                <p className="text-sm text-[var(--muted-foreground)] mb-6">Cuesta 1 ficha. Acierta y gana 2 fichas + 10 créditos.</p>
-                <div className="bg-[var(--background)] p-6 rounded-lg">
-                    <p className="font-semibold text-lg min-h-[56px]">{currentQuestion.question}</p>
-                </div>
-                <div className="grid grid-cols-1 gap-3 mt-6">
-                    {currentQuestion.options.map((option, index) => (
-                        <button key={index} onClick={() => handleAnswer(index)} disabled={showResult || !canPlay} className={`w-full p-4 rounded-lg text-left transition-all ${getButtonClass(index)} disabled:cursor-not-allowed`}>
-                            {option}
-                        </button>
-                    ))}
-                </div>
-                 {showResult && (
-                    <div className="mt-4 text-center">
-                        <p className={`font-bold ${isCorrect ? 'text-green-500' : 'text-red-500'}`}>
-                            {isCorrect ? '¡Correcto! +2 fichas, +10 créditos' : 'Incorrecto'}
-                        </p>
-                        <button onClick={handleNext} className="mt-2 px-6 py-2 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-md">
-                            Siguiente Pregunta
-                        </button>
-                    </div>
-                )}
-                 {!canPlay && (
-                    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm flex flex-col items-center justify-center rounded-xl text-center p-4">
-                         <p className="text-xl font-bold text-white mb-2">¡Gracias por probar!</p>
-                         <p className="text-sm text-gray-300 mb-4">Regístrate para seguir jugando y ganar recompensas.</p>
-                         <button onClick={() => onNavigate('register')} className="px-6 py-2 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-md">Registrarse Gratis</button>
-                    </div>
-                )}
-            </div>
-        </Card>
-    );
-};
-
-const Achievement = ({ icon, title, description, unlocked }) => (
-    <div className={`p-3 flex items-center gap-3 rounded-lg ${unlocked ? 'bg-[var(--accent-color)]/20 border border-[var(--accent-color)]/30' : 'bg-[var(--background)]'}`}>
-        <div className={`p-2 rounded-full ${unlocked ? 'bg-[var(--accent-color)] text-black' : 'bg-gray-200 dark:bg-gray-700 text-gray-400'}`}>
-            {React.cloneElement(icon, { className: "h-5 w-5" })}
-        </div>
-        <div>
-            <p className={`font-semibold ${unlocked ? 'text-[var(--accent-color)]' : ''}`}>{title}</p>
-            <p className="text-xs text-[var(--muted-foreground)]">{description}</p>
-        </div>
-    </div>
-);
-
-
-interface GamesPageProps {
-    isLoggedIn: boolean;
-    onNavigate: (page: Page | PublicRoute) => void;
+interface Juego {
+  id: string;
+  nombre: string;
+  icono: string;
+  categoria: string;
+  dificultad: string;
+  precio: number;
+  recompensa: number;
+  niveles: number;
 }
 
-const GamesPage: React.FC<GamesPageProps> = ({ isLoggedIn, onNavigate }) => {
-    const { tokens, addTokens } = useTokens();
-    
-    // Stats would normally be fetched from a backend, using localStorage for this demo
-    const [triviaWins, setTriviaWins] = useState(() => parseInt(localStorage.getItem('trivia_wins') || '0'));
-    const [ticTacToeWins, setTicTacToeWins] = useState(() => parseInt(localStorage.getItem('tictactoe_wins') || '0'));
-    
-    const [hasVisitorPlayedTrivia, setHasVisitorPlayedTrivia] = useState(sessionStorage.getItem('visitor_played_trivia') === 'true');
-    const [hasVisitorPlayedTicTacToe, setHasVisitorPlayedTicTacToe] = useState(sessionStorage.getItem('visitor_played_tictactoe') === 'true');
+interface Personaje {
+  id: string;
+  nombre: string;
+  icono: string;
+  precio: number;
+  bonus: number;
+}
 
-    useEffect(() => { localStorage.setItem('trivia_wins', triviaWins.toString()); }, [triviaWins]);
-    useEffect(() => { localStorage.setItem('tictactoe_wins', ticTacToeWins.toString()); }, [ticTacToeWins]);
+const JUEGOS: Juego[] = [
+  { id: 'trivia', nombre: 'Trivia Legal', icono: '', categoria: 'legal', dificultad: 'media', precio: 10, recompensa: 50, niveles: 10 },
+  { id: 'memoria', nombre: 'Memoria Legal', icono: '', categoria: 'puzzle', dificultad: 'fácil', precio: 5, recompensa: 30, niveles: 8 },
+  { id: 'sopa', nombre: 'Sopa de Letras', icono: '', categoria: 'puzzle', dificultad: 'media', precio: 8, recompensa: 40, niveles: 12 },
+  { id: 'ladrillos', nombre: 'Rompe Ladrillos', icono: '', categoria: 'arcade', dificultad: 'media', precio: 10, recompensa: 45, niveles: 15 },
+  { id: 'naves', nombre: 'Defensor Espacial', icono: '', categoria: 'arcade', dificultad: 'difícil', precio: 15, recompensa: 60, niveles: 20 },
+  { id: 'ajedrez', nombre: 'Ajedrez Legal', icono: '', categoria: 'estrategia', dificultad: 'difícil', precio: 20, recompensa: 80, niveles: 10 },
+];
 
-    const achievements = [
-        { id: 'trivia_1', title: 'Primer Acierto', description: 'Gana tu primera partida de Trivia.', unlocked: triviaWins >= 1, icon: <TrophyIcon /> },
-        { id: 'ttt_1', title: 'Estratega Novato', description: 'Gana tu primera partida de Tres en Raya.', unlocked: ticTacToeWins >= 1, icon: <TrophyIcon /> },
-        { id: 'trivia_5', title: 'Sabio Legal', description: 'Gana 5 partidas de Trivia.', unlocked: triviaWins >= 5, icon: <TrophyIcon /> },
-        { id: 'ttt_5', title: 'Maestro del Gato', description: 'Gana 5 partidas de Tres en Raya.', unlocked: ticTacToeWins >= 5, icon: <TrophyIcon /> },
-    ];
+const PERSONAJES: Personaje[] = [
+  { id: 'abogado', nombre: 'Abogado Profesional', icono: '', precio: 100, bonus: 10 },
+  { id: 'juez', nombre: 'Juez Supremo', icono: '', precio: 150, bonus: 15 },
+  { id: 'notario', nombre: 'Notario Experto', icono: '', precio: 120, bonus: 12 },
+];
 
-    const canPlayTrivia = isLoggedIn || !hasVisitorPlayedTrivia;
-    const canPlayTicTacToe = isLoggedIn || !hasVisitorPlayedTicTacToe;
+const GamesPage: React.FC = () => {
+  const [vistaActual, setVistaActual] = useState<Vista>('hub');
+  const [tokens, setTokens] = useState(1000);
+  const [nivel, setNivel] = useState(5);
+  const [juegoSeleccionado, setJuegoSeleccionado] = useState<Juego | null>(null);
+  const [nivelActual, setNivelActual] = useState(1);
+  const [menuAbierto, setMenuAbierto] = useState(false);
+  const [personajeSeleccionado, setPersonajeSeleccionado] = useState('abogado');
 
-    const handleTriviaEnd = (didWin: boolean) => {
-        if (didWin) setTriviaWins(w => w + 1);
-        if (!isLoggedIn) {
-            setHasVisitorPlayedTrivia(true);
-            sessionStorage.setItem('visitor_played_trivia', 'true');
-        }
-    };
-    
-    const handleTicTacToeEnd = (result) => {
-        if (result === 'win') setTicTacToeWins(w => w + 1);
-        if (!isLoggedIn) {
-            setHasVisitorPlayedTicTacToe(true);
-            sessionStorage.setItem('visitor_played_tictactoe', 'true');
-        }
+  const jugarJuego = (juego: Juego) => {
+    if (tokens < juego.precio) {
+      alert('No tienes suficientes tokens');
+      return;
     }
+    setJuegoSeleccionado(juego);
+    setNivelActual(1);
+    setVistaActual('juego');
+  };
 
-    return (
-        <div className="space-y-6">
-            <header className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-3xl font-bold flex items-center">
-                        <PuzzleIcon className="h-8 w-8 mr-3 text-[var(--accent-color)]"/> Centro de Entretenimiento
-                    </h1>
-                    <p className="mt-1 text-[var(--muted-foreground)]">Gana créditos y aprende con nuestros juegos interactivos.</p>
-                </div>
-                {isLoggedIn && (
-                    <Card className="!p-3 text-center">
-                        <p className="text-sm font-semibold">Tus Fichas</p>
-                        <p className="text-3xl font-bold text-[var(--accent-color)]">{tokens}</p>
-                    </Card>
-                )}
-            </header>
-            
-            {isLoggedIn && tokens < 1 && (
-                <Card className="text-center">
-                    <p className="font-semibold">¡Te quedaste sin fichas!</p>
-                    <button onClick={() => addTokens(5)} className="mt-2 px-4 py-2 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-md">
-                        Recargar 5 Fichas (Simulación)
-                    </button>
-                </Card>
-            )}
+  const finalizarJuego = (gano: boolean) => {
+    if (gano) {
+      const recompensa = juegoSeleccionado?.recompensa || 0;
+      setTokens(tokens + recompensa);
+      setNivel(nivel + 1);
+    } else {
+      setTokens(tokens - (juegoSeleccionado?.precio || 0));
+    }
+    setVistaActual('hub');
+  };
 
-             <Card>
-                <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><TrophyIcon className="h-5 w-5"/> Logros</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {achievements.map(ach => <Achievement key={ach.id} {...ach} />)}
-                </div>
-            </Card>
+  const comprarPersonaje = (personaje: Personaje) => {
+    if (tokens < personaje.precio) {
+      alert('No tienes suficientes tokens');
+      return;
+    }
+    setTokens(tokens - personaje.precio);
+    setPersonajeSeleccionado(personaje.id);
+    alert(`¡Personaje ${personaje.nombre} desbloqueado!`);
+  };
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                 <TriviaGame canPlay={canPlayTrivia} onGameEnd={handleTriviaEnd} onNavigate={onNavigate} />
-                 <TicTacToe canPlay={canPlayTicTacToe} onGameEnd={handleTicTacToeEnd} onNavigate={onNavigate} />
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950">
+      {/* Header */}
+      <motion.header className="backdrop-blur-xl bg-white/10 border-b border-white/20 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <Gamepad2 className="w-8 h-8 text-blue-400" />
+            <h1 className="text-2xl font-bold text-white">Centro de Juegos</h1>
+          </div>
+          
+          <div className="hidden md:flex items-center gap-6">
+            <div className="backdrop-blur-md bg-blue-500/20 border border-blue-400/30 rounded-lg px-4 py-2">
+              <p className="text-sm text-slate-300">Tokens</p>
+              <p className="text-2xl font-bold text-yellow-400">{tokens}</p>
             </div>
-            
+            <div className="backdrop-blur-md bg-purple-500/20 border border-purple-400/30 rounded-lg px-4 py-2">
+              <p className="text-sm text-slate-300">Nivel</p>
+              <p className="text-2xl font-bold text-purple-400">{nivel}</p>
+            </div>
+          </div>
+
+          <button onClick={() => setMenuAbierto(!menuAbierto)} className="md:hidden p-2 rounded-lg bg-white/10 hover:bg-white/20">
+            {menuAbierto ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
-    );
+      </motion.header>
+
+      {/* Contenido Principal */}
+      <AnimatePresence mode="wait">
+        {vistaActual === 'hub' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+            {/* Navegación */}
+            <div className="flex flex-wrap gap-4 mb-8">
+              {[
+                { id: 'hub', label: '', icon: Gamepad2 },
+                { id: 'tienda', label: '', icon: ShoppingCart },
+                { id: 'personaje', label: '', icon: User }
+              ].map(nav => (
+                <button
+                  key={nav.id}
+                  onClick={() => setVistaActual(nav.id as Vista)}
+                  className={`px-6 py-3 rounded-lg font-bold transition-all ${
+                    vistaActual === nav.id
+                      ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/50'
+                      : 'backdrop-blur-md bg-white/10 border border-white/20 text-slate-300 hover:bg-white/20'
+                  }`}
+                >
+                  {nav.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Grid de Juegos */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {JUEGOS.map(juego => (
+                <motion.div
+                  key={juego.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="backdrop-blur-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-white/20 rounded-2xl p-6 hover:border-blue-400/50 transition-all group cursor-pointer"
+                  onClick={() => jugarJuego(juego)}
+                >
+                  <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">{juego.icono}</div>
+                  <h3 className="text-xl font-bold text-white mb-2">{juego.nombre}</h3>
+                  <div className="space-y-2 mb-4">
+                    <p className="text-sm text-slate-300"> {juego.niveles} niveles</p>
+                    <p className="text-sm text-slate-300"> Dificultad: {juego.dificultad}</p>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-yellow-400 font-bold">{juego.precio} tokens</span>
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all flex items-center gap-2">
+                      <Play className="w-4 h-4" />
+                      Jugar
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {vistaActual === 'tienda' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+            <h2 className="text-3xl font-bold text-white mb-8">Tienda de Tokens</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { tokens: 100, precio: 4.99, desc: 0 },
+                { tokens: 500, precio: 19.99, desc: 8 },
+                { tokens: 1000, precio: 34.99, desc: 15 },
+                { tokens: 2500, precio: 74.99, desc: 25 }
+              ].map((paquete, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className="backdrop-blur-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-white/20 rounded-2xl p-6 text-center"
+                >
+                  <p className="text-4xl font-bold text-white mb-2">{paquete.tokens}</p>
+                  <p className="text-slate-300 mb-4">Tokens</p>
+                  <p className="text-2xl font-bold text-yellow-400 mb-4">${paquete.precio}</p>
+                  {paquete.desc > 0 && <p className="text-green-400 text-sm mb-4">Ahorra {paquete.desc}%</p>}
+                  <button className="w-full px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all">
+                    Comprar
+                  </button>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {vistaActual === 'personaje' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+            <h2 className="text-3xl font-bold text-white mb-8">Personajes</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {PERSONAJES.map(personaje => (
+                <motion.div
+                  key={personaje.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`backdrop-blur-xl border rounded-2xl p-6 text-center transition-all ${
+                    personajeSeleccionado === personaje.id
+                      ? 'bg-gradient-to-br from-yellow-500/30 to-orange-500/30 border-yellow-400/50'
+                      : 'bg-gradient-to-br from-blue-500/20 to-purple-500/20 border-white/20'
+                  }`}
+                >
+                  <div className="text-6xl mb-4">{personaje.icono}</div>
+                  <h3 className="text-xl font-bold text-white mb-2">{personaje.nombre}</h3>
+                  <p className="text-sm text-slate-300 mb-4">+{personaje.bonus}% Bonus</p>
+                  {personajeSeleccionado === personaje.id ? (
+                    <button className="w-full px-4 py-2 bg-green-500 text-white rounded-lg font-bold">
+                      Seleccionado
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => comprarPersonaje(personaje)}
+                      className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
+                    >
+                      {personaje.precio} Tokens
+                    </button>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {vistaActual === 'juego' && juegoSeleccionado && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-4xl mx-auto px-4 md:px-8 py-8">
+            <div className="backdrop-blur-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-white/20 rounded-2xl p-8">
+              <div className="text-center mb-8">
+                <div className="text-6xl mb-4">{juegoSeleccionado.icono}</div>
+                <h2 className="text-3xl font-bold text-white mb-2">{juegoSeleccionado.nombre}</h2>
+                <p className="text-slate-300">Nivel {nivelActual} de {juegoSeleccionado.niveles}</p>
+              </div>
+
+              <div className="bg-gradient-to-b from-slate-900 to-black rounded-lg p-8 mb-8 h-64 flex items-center justify-center">
+                <p className="text-white text-center">Área de Juego - {juegoSeleccionado.nombre}</p>
+              </div>
+
+              <div className="flex gap-4 justify-center">
+                <button
+                  onClick={() => finalizarJuego(true)}
+                  className="px-8 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition-all"
+                >
+                  Ganaste
+                </button>
+                <button
+                  onClick={() => finalizarJuego(false)}
+                  className="px-8 py-3 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition-all"
+                >
+                  Perdiste
+                </button>
+                <button
+                  onClick={() => setVistaActual('hub')}
+                  className="px-8 py-3 bg-slate-600 text-white font-bold rounded-lg hover:bg-slate-700 transition-all"
+                >
+                  Salir
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 };
 
 export default GamesPage;
