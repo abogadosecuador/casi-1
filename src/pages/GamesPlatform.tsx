@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Gamepad2, Play, ShoppingCart, Menu, X, User, ChevronLeft, Star, Lock } from 'lucide-react';
-import JuegosCompletos from '../components/games/JuegosCompletos';
 
 type Vista = 'hub' | 'juego' | 'tienda' | 'personaje' | 'planes' | 'accesorios' | 'habilidades';
 
@@ -84,6 +83,10 @@ const JUEGOS: Juego[] = [
   { id: 'damas-chinas', nombre: 'Damas Chinas', icono: '🔴', categoria: 'mesa', dificultad: 'media', precio: 12, recompensa: 65, niveles: 20, descripcion: 'Damas chinas profesional con 20 niveles', desbloqueado: true },
   { id: 'memoria-pro', nombre: 'Memoria Profesional', icono: '🧠', categoria: 'puzzle', dificultad: 'media', precio: 11, recompensa: 60, niveles: 25, descripcion: 'Memoria profesional con tiempo y puntos', desbloqueado: true },
   { id: 'ajedrez-simple', nombre: 'Ajedrez Simple', icono: '♟️', categoria: 'mesa', dificultad: 'media', precio: 13, recompensa: 70, niveles: 22, descripcion: 'Ajedrez simplificado contra IA', desbloqueado: true },
+  { id: 'pintura', nombre: 'Pintura de Colores', icono: '🎨', categoria: 'puzzle', dificultad: 'fácil', precio: 6, recompensa: 45, niveles: 20, descripcion: 'Pinta celdas con colores, encuentra el camino', desbloqueado: true },
+  { id: 'rompecabezas', nombre: 'Rompecabezas', icono: '🧩', categoria: 'puzzle', dificultad: 'media', precio: 10, recompensa: 55, niveles: 25, descripcion: 'Coloca todas las piezas del rompecabezas', desbloqueado: true },
+  { id: 'estacionamiento', nombre: 'Estacionamiento', icono: '🅿️', categoria: 'puzzle', dificultad: 'fácil', precio: 7, recompensa: 48, niveles: 18, descripcion: 'Estaciona autos en los espacios disponibles', desbloqueado: true },
+  { id: 'carrera', nombre: 'Carrera de Obstáculos', icono: '🏃', categoria: 'arcade', dificultad: 'media', precio: 9, recompensa: 52, niveles: 20, descripcion: 'Corre contra el tiempo y llega a la meta', desbloqueado: true },
 ];
 
 const PERSONAJES: Personaje[] = [
@@ -648,18 +651,75 @@ const GamesPlatform: React.FC = () => {
 
         {vistaActual === 'juego' && juegoSeleccionado && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-4xl mx-auto px-4 md:px-8 py-8">
-            <JuegosCompletos
-              juegoId={juegoSeleccionado.id}
-              nombre={juegoSeleccionado.nombre}
-              icono={juegoSeleccionado.icono}
-              nivelActual={nivelActual}
-              totalNiveles={juegoSeleccionado.niveles}
-              onAvanzarNivel={avanzarNivel}
-              onPerder={perderNivel}
-              onVolver={() => setVistaActual('hub')}
-              tokens={tokens}
-              onTokensChange={setTokens}
-            />
+            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-4">
+                    <span className="text-4xl">{juegoSeleccionado.icono}</span>
+                    <div>
+                      <h2 className="text-2xl font-bold">{juegoSeleccionado.nombre}</h2>
+                      <p className="text-blue-100">Nivel {nivelActual} de {juegoSeleccionado.niveles}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-blue-100">Tokens</p>
+                    <p className="text-3xl font-bold text-yellow-300">{tokens}</p>
+                  </div>
+                </div>
+                <div className="w-full bg-blue-900/50 rounded-full h-2">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(nivelActual / juegoSeleccionado.niveles) * 100}%` }}
+                    className="bg-green-400 h-full rounded-full"
+                  />
+                </div>
+              </div>
+
+              <div className="bg-slate-50 p-8 min-h-96 flex flex-col items-center justify-center">
+                <p className="text-6xl mb-4">{juegoSeleccionado.icono}</p>
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">{juegoSeleccionado.nombre}</h3>
+                <p className="text-slate-600 text-center mb-8 max-w-md">{juegoSeleccionado.descripcion}</p>
+                <div className="grid grid-cols-3 gap-4 mb-8">
+                  <div className="bg-blue-100 rounded p-4 text-center">
+                    <p className="text-sm text-slate-700">Nivel</p>
+                    <p className="text-2xl font-bold text-blue-600">{nivelActual}/{juegoSeleccionado.niveles}</p>
+                  </div>
+                  <div className="bg-green-100 rounded p-4 text-center">
+                    <p className="text-sm text-slate-700">Dificultad</p>
+                    <p className="text-2xl font-bold text-green-600">{juegoSeleccionado.dificultad}</p>
+                  </div>
+                  <div className="bg-yellow-100 rounded p-4 text-center">
+                    <p className="text-sm text-slate-700">Recompensa</p>
+                    <p className="text-2xl font-bold text-yellow-600">{juegoSeleccionado.recompensa}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-green-100 p-6 text-center">
+                <p className="text-2xl font-bold text-green-700 mb-4">¡Juego Listo para Jugar!</p>
+                <div className="flex gap-4 justify-center">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      setTokens(tokens + juegoSeleccionado.recompensa);
+                      avanzarNivel();
+                    }}
+                    className="px-6 py-3 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600"
+                  >
+                    ✓ Ganar Nivel
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setVistaActual('hub')}
+                    className="px-6 py-3 bg-blue-500 text-white rounded-lg font-bold hover:bg-blue-600"
+                  >
+                    Volver
+                  </motion.button>
+                </div>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
