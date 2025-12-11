@@ -1,8 +1,14 @@
+import GamesPage from '../pages/GamesPage';
 import GamesIntegrationPage from '../pages/GamesIntegrationPage';
 import GamesHubProfessional from '../components/GamesHubProfessional';
 import GameStoreIntegrado from '../components/GameStoreIntegrado';
 
 export const gamesRoutes = [
+  {
+    path: '/games',
+    element: <GamesPage />,
+    label: '🎮 Games'
+  },
   {
     path: '/juegos',
     element: <GamesIntegrationPage />,

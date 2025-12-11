@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Home, Gamepad2, Settings, Users, FileText, MessageSquare } from 'lucide-react';
+import { Menu, X, Home, Gamepad2, Settings, Users, FileText, MessageSquare, Briefcase } from 'lucide-react';
 import AbogadosOSApp from '../modules/abogados-os';
 
 interface MenuItem {
@@ -23,11 +23,18 @@ const AbogadosOSPage: React.FC = () => {
       description: 'Volver a la página principal'
     },
     {
+      id: 'servicios',
+      label: 'Servicios Legales',
+      icon: <Briefcase className="w-5 h-5" />,
+      href: '/servicios',
+      description: 'Acceder a servicios legales profesionales'
+    },
+    {
       id: 'juegos',
       label: 'Centro de Juegos',
       icon: <Gamepad2 className="w-5 h-5" />,
-      href: '/juegos',
-      description: 'Acceder a la plataforma de juegos profesional'
+      href: '/games',
+      description: 'Plataforma de juegos profesionales con tokens'
     },
     {
       id: 'documentos',
@@ -61,25 +68,31 @@ const AbogadosOSPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950">
-      {/* Header Profesional */}
-      <motion.header className="backdrop-blur-xl bg-white/10 border-b border-white/20 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">⚖️</span>
+      {/* Header Profesional Mac-like */}
+      <motion.header className="backdrop-blur-xl bg-white/5 border-b border-white/10 sticky top-0 z-50 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-5 flex justify-between items-center">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-4"
+          >
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-cyan-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <span className="text-white font-bold text-xl">⚖️</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Abogados OS</h1>
-              <p className="text-xs text-slate-400">Sistema Operativo Legal Profesional</p>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">Abogados OS</h1>
+              <p className="text-xs text-slate-400 font-medium">v1.0 • Sistema Legal Profesional</p>
             </div>
-          </div>
+          </motion.div>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setMostrarMenu(!mostrarMenu)}
             className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all"
           >
             {mostrarMenu ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          </motion.button>
         </div>
 
         {/* Menú Desplegable */}
@@ -116,83 +129,127 @@ const AbogadosOSPage: React.FC = () => {
       </motion.header>
 
       {/* Contenido Principal */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-        {/* Información del Sistema */}
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-12">
+        {/* Información del Sistema - Mejorada */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
         >
-          <div className="backdrop-blur-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-white/20 rounded-2xl p-6">
-            <p className="text-slate-300 text-sm mb-2">Sistema Operativo</p>
-            <p className="text-white text-2xl font-bold">Abogados OS v1.0</p>
-            <p className="text-slate-400 text-xs mt-2">Plataforma profesional legal</p>
-          </div>
+          <motion.div 
+            whileHover={{ y: -5 }}
+            className="backdrop-blur-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-400/30 rounded-2xl p-8 shadow-xl hover:shadow-blue-500/20"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-blue-300 text-sm font-semibold">SISTEMA</p>
+              <span className="text-2xl">⚙️</span>
+            </div>
+            <p className="text-white text-3xl font-bold mb-2">Abogados OS</p>
+            <p className="text-slate-400 text-sm">v1.0 • Plataforma Legal Profesional</p>
+            <div className="mt-4 pt-4 border-t border-white/10">
+              <p className="text-xs text-slate-500">Última actualización: Hoy</p>
+            </div>
+          </motion.div>
 
-          <div className="backdrop-blur-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-white/20 rounded-2xl p-6">
-            <p className="text-slate-300 text-sm mb-2">Estado</p>
-            <p className="text-green-400 text-2xl font-bold">✓ Activo</p>
-            <p className="text-slate-400 text-xs mt-2">Sistema funcionando correctamente</p>
-          </div>
+          <motion.div 
+            whileHover={{ y: -5 }}
+            className="backdrop-blur-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-400/30 rounded-2xl p-8 shadow-xl hover:shadow-green-500/20"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-green-300 text-sm font-semibold">ESTADO</p>
+              <span className="text-2xl">✓</span>
+            </div>
+            <p className="text-green-400 text-3xl font-bold mb-2">Activo</p>
+            <p className="text-slate-400 text-sm">Sistema funcionando correctamente</p>
+            <div className="mt-4 pt-4 border-t border-white/10">
+              <p className="text-xs text-green-500">• Todos los módulos operativos</p>
+            </div>
+          </motion.div>
 
-          <div className="backdrop-blur-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-white/20 rounded-2xl p-6">
-            <p className="text-slate-300 text-sm mb-2">Módulos</p>
-            <p className="text-white text-2xl font-bold">6+</p>
-            <p className="text-slate-400 text-xs mt-2">Módulos integrados activos</p>
-          </div>
+          <motion.div 
+            whileHover={{ y: -5 }}
+            className="backdrop-blur-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-400/30 rounded-2xl p-8 shadow-xl hover:shadow-purple-500/20"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-purple-300 text-sm font-semibold">MÓDULOS</p>
+              <span className="text-2xl">📦</span>
+            </div>
+            <p className="text-white text-3xl font-bold mb-2">6+</p>
+            <p className="text-slate-400 text-sm">Módulos integrados activos</p>
+            <div className="mt-4 pt-4 border-t border-white/10">
+              <p className="text-xs text-slate-500">Juegos • Documentos • Chat • Usuarios</p>
+            </div>
+          </motion.div>
         </motion.div>
 
-        {/* Módulos Disponibles */}
+        {/* Módulos Disponibles - Mejorado */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-8"
+          className="mb-12"
         >
-          <h2 className="text-2xl font-bold text-white mb-6">Módulos del Sistema</h2>
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-white mb-2">Módulos del Sistema</h2>
+            <p className="text-slate-400 text-sm">Accede a todas las funcionalidades profesionales</p>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
+              {
+                nombre: 'Servicios Legales',
+                icono: '⚖️',
+                descripcion: 'Consultas legales profesionales y asesoría jurídica',
+                estado: 'Activo',
+                link: '/servicios',
+                color: 'from-indigo-500/20 to-blue-500/20 border-indigo-400/30'
+              },
               {
                 nombre: 'Centro de Juegos',
                 icono: '🎮',
                 descripcion: 'Plataforma de juegos profesionales con sistema de tokens',
                 estado: 'Activo',
-                link: '/juegos'
+                link: '/games',
+                color: 'from-blue-500/20 to-cyan-500/20 border-blue-400/30'
               },
               {
                 nombre: 'Gestión de Documentos',
                 icono: '📋',
                 descripcion: 'Almacenamiento y gestión de documentos legales',
                 estado: 'Activo',
-                link: '/documentos'
+                link: '/documentos',
+                color: 'from-purple-500/20 to-pink-500/20 border-purple-400/30'
               },
               {
                 nombre: 'Chat Legal',
                 icono: '💬',
                 descripcion: 'Asesoría legal en tiempo real con IA',
                 estado: 'Activo',
-                link: '/chat'
+                link: '/chat',
+                color: 'from-green-500/20 to-emerald-500/20 border-green-400/30'
               },
               {
                 nombre: 'Gestión de Usuarios',
                 icono: '👥',
                 descripcion: 'Administración de usuarios y permisos',
                 estado: 'Activo',
-                link: '/usuarios'
+                link: '/usuarios',
+                color: 'from-orange-500/20 to-red-500/20 border-orange-400/30'
               },
               {
                 nombre: 'Análisis y Reportes',
                 icono: '📊',
                 descripcion: 'Estadísticas y reportes del sistema',
                 estado: 'Activo',
-                link: '/reportes'
+                link: '/reportes',
+                color: 'from-yellow-500/20 to-orange-500/20 border-yellow-400/30'
               },
               {
                 nombre: 'Configuración',
                 icono: '⚙️',
                 descripcion: 'Ajustes y configuración del sistema',
                 estado: 'Activo',
-                link: '/configuracion'
+                link: '/configuracion',
+                color: 'from-slate-500/20 to-gray-500/20 border-slate-400/30'
               }
             ].map((modulo, i) => (
               <motion.a
@@ -201,14 +258,18 @@ const AbogadosOSPage: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="backdrop-blur-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-white/20 rounded-2xl p-6 hover:border-blue-400/50 transition-all group cursor-pointer"
+                whileHover={{ y: -5 }}
+                className={`backdrop-blur-xl bg-gradient-to-br ${modulo.color} border rounded-2xl p-6 hover:shadow-lg transition-all group cursor-pointer`}
               >
-                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">{modulo.icono}</div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="text-4xl group-hover:scale-110 transition-transform">{modulo.icono}</div>
+                  <span className="text-green-400 text-xs font-bold px-2 py-1 bg-green-500/20 rounded-full">ACTIVO</span>
+                </div>
                 <h3 className="text-lg font-bold text-white mb-2">{modulo.nombre}</h3>
                 <p className="text-slate-300 text-sm mb-4">{modulo.descripcion}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-green-400 text-xs font-semibold">● {modulo.estado}</span>
-                  <span className="text-blue-400 text-xs">→</span>
+                <div className="flex items-center gap-2 text-blue-400 text-sm font-semibold group-hover:gap-3 transition-all">
+                  <span>Acceder</span>
+                  <span>→</span>
                 </div>
               </motion.a>
             ))}

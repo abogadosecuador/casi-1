@@ -48,7 +48,7 @@ import EbooksPage from './pages/EbooksPage';
 import IntegratedProjectsPage from './pages/IntegratedProjectsPage';
 import ProjectsHubPage from './pages/ProjectsHubPage';
 import AbogadosOSPage from './pages/AbogadosOSPage';
-import WilexGameStationPage from './pages/WilexGameStationPage';
+import GamesPlatform from './pages/GamesPlatform';
 import CryptoBankingPage from './pages/CryptoBankingPage';
 import TradingDashboard from './pages/TradingDashboard';
 import NotFoundPage from './components/Common/NotFoundPage';
@@ -119,7 +119,7 @@ function App() {
         <Route path="/proyectos-integrados" element={<IntegratedProjectsPage />} />
         <Route path="/trading" element={<TradingDashboard />} />
         <Route path="/abogados-os" element={<AbogadosOSPage />} />
-        <Route path="/games" element={<WilexGameStationPage />} />
+        <Route path="/games" element={<GamesPlatform />} />
         <Route path="/crypto-banking" element={<CryptoBankingPage />} />
 
         {/* Rutas de Dashboard - TERCERO */}
