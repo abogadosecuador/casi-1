@@ -78,6 +78,12 @@ const JUEGOS: Juego[] = [
   { id: 'breakout', nombre: 'Breakout', icono: '🧱', categoria: 'arcade', dificultad: 'media', precio: 12, recompensa: 65, niveles: 25, descripcion: 'Breakout clásico rompe bloques con física realista', desbloqueado: true },
   { id: 'ladrillos', nombre: 'Brick Breaker Pro', icono: '🎯', categoria: 'arcade', dificultad: 'media', precio: 14, recompensa: 80, niveles: 30, descripcion: 'Rompe ladrillos con rebote realista, 30 niveles progresivos', desbloqueado: true },
   { id: 'pong', nombre: 'Pong Profesional', icono: '🏓', categoria: 'arcade', dificultad: 'media', precio: 13, recompensa: 75, niveles: 25, descripcion: 'Pong clásico contra IA inteligente con 25 niveles', desbloqueado: true },
+  { id: '2048', nombre: '2048 Legal', icono: '🔢', categoria: 'puzzle', dificultad: 'media', precio: 10, recompensa: 55, niveles: 20, descripcion: '2048 clásico con 20 niveles progresivos', desbloqueado: true },
+  { id: 'clicker', nombre: 'Clicker Legal', icono: '👆', categoria: 'arcade', dificultad: 'fácil', precio: 5, recompensa: 40, niveles: 15, descripcion: 'Clicker profesional con multiplicadores y bonos', desbloqueado: true },
+  { id: 'memoria-avanzada', nombre: 'Memoria Avanzada', icono: '🧩', categoria: 'puzzle', dificultad: 'media', precio: 11, recompensa: 50, niveles: 25, descripcion: 'Memoria avanzada con más parejas por nivel', desbloqueado: true },
+  { id: 'damas-chinas', nombre: 'Damas Chinas', icono: '🔴', categoria: 'mesa', dificultad: 'media', precio: 12, recompensa: 65, niveles: 20, descripcion: 'Damas chinas profesional con 20 niveles', desbloqueado: true },
+  { id: 'memoria-pro', nombre: 'Memoria Profesional', icono: '🧠', categoria: 'puzzle', dificultad: 'media', precio: 11, recompensa: 60, niveles: 25, descripcion: 'Memoria profesional con tiempo y puntos', desbloqueado: true },
+  { id: 'ajedrez-simple', nombre: 'Ajedrez Simple', icono: '♟️', categoria: 'mesa', dificultad: 'media', precio: 13, recompensa: 70, niveles: 22, descripcion: 'Ajedrez simplificado contra IA', desbloqueado: true },
 ];
 
 const PERSONAJES: Personaje[] = [
