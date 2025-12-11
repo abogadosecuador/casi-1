@@ -73,7 +73,6 @@ export function ModuleProvider({ children }) {
   const preloadCriticalModules = async () => {
     // Precarga deshabilitada para evitar errores de módulos inexistentes
     // Los módulos se cargarán cuando sean necesarios
-    console.log('[ModuleContext] Precarga de módulos deshabilitada - carga bajo demanda activada');
     setIsLoading(false);
     return;
     

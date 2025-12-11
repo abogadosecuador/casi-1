@@ -40,6 +40,12 @@ const ProcessSearch = lazy(() => import('./components/ProcessSearch'));
 const Testimonials = lazy(() => import('./components/Testimonials'));
 const Newsletter = lazy(() => import('./components/Newsletter/Newsletter'));
 
+// Módulos integrados
+const AbogadosOSModule = lazy(() => import('./modules/abogados-os/App'));
+const GamesModule = lazy(() => import('./modules/games/App'));
+const CryptoBankingModule = lazy(() => import('./modules/crypto-banking/App'));
+const ProyectosHub = lazy(() => import('./pages/ProyectosHub'));
+
 // Política de privacidad y términos
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const PoliticasCondiciones = lazy(() => import('./pages/PoliticasCondiciones'));
@@ -92,9 +98,8 @@ const DigitalConsultationPage = lazy(() => import('./pages/ConsultationTypes/Dig
 const QuickConsultationPage = lazy(() => import('./pages/ConsultationTypes/QuickConsultationPage'));
 
 // Componentes de autenticación
-const Login = lazy(() => import('./components/Auth/Login'));
-const Register = lazy(() => import('./components/Auth/Register'));
-const RegisterPage = lazy(() => import('./pages/RegisterPage.jsx'));
+const LoginPage = lazy(() => import('./pages/LoginPage.tsx'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage.tsx'));
 const ForgotPassword = lazy(() => import('./components/Auth/ForgotPassword'));
 const ResetPassword = lazy(() => import('./components/Auth/ResetPassword'));
 
@@ -229,12 +234,15 @@ function AppContent() {
   // Obtener el contexto de módulos
   const { preloadCriticalModules, isLoading: modulesLoading } = useModules();
   
-  // Cargar módulos críticos al iniciar
+  // Cargar módulos críticos al iniciar (solo una vez y sin logs repetidos)
   useEffect(() => {
-    console.log('[AppContent] Precargando módulos críticos...');
-    preloadCriticalModules().catch(error => {
-      console.warn('[AppContent] Error al precargar módulos:', error);
-    });
+    const hasLoaded = sessionStorage.getItem('modules_preloaded');
+    if (!hasLoaded) {
+      preloadCriticalModules().catch(error => {
+        console.warn('[AppContent] Error al precargar módulos:', error);
+      });
+      sessionStorage.setItem('modules_preloaded', 'true');
+    }
   }, []);
   
   // Mostrar un spinner mientras se determina si el usuario está autenticado o los módulos están cargando
@@ -325,7 +333,7 @@ function AppContent() {
             isAuthenticated ? <Navigate to="/dashboard" /> : <RegisterPage />
           } />
           <Route path="/login" element={
-            isAuthenticated ? <Navigate to="/dashboard" /> : <Login />
+            isAuthenticated ? <Navigate to="/dashboard" /> : <LoginPage />
           } />
           <Route path="/recuperar-password" element={
             isAuthenticated ? <Navigate to="/dashboard" /> : <ForgotPassword />
@@ -412,6 +420,18 @@ function AppContent() {
               <AdminDashboardComplete />
             </RequireAuth>
           } />
+          
+          {/* Hub de Proyectos */}
+          <Route path="/proyectos" element={<Suspense fallback={<LoadingIndicator />}><ProyectosHub /></Suspense>} />
+          
+          {/* Módulos integrados */}
+          <Route path="/abogados-os/*" element={<Suspense fallback={<LoadingIndicator />}><AbogadosOSModule /></Suspense>} />
+          <Route path="/juegos/*" element={<Suspense fallback={<LoadingIndicator />}><GamesModule /></Suspense>} />
+          <Route path="/games/*" element={<Suspense fallback={<LoadingIndicator />}><GamesModule /></Suspense>} />
+          <Route path="/cripto/*" element={<Suspense fallback={<LoadingIndicator />}><CryptoBankingModule /></Suspense>} />
+          <Route path="/crypto/*" element={<Suspense fallback={<LoadingIndicator />}><CryptoBankingModule /></Suspense>} />
+          <Route path="/crypto-banking/*" element={<Suspense fallback={<LoadingIndicator />}><CryptoBankingModule /></Suspense>} />
+          <Route path="/nexufi/*" element={<Suspense fallback={<LoadingIndicator />}><CryptoBankingModule /></Suspense>} />
           
           {/* Ruta de fallback */}
           <Route path="*" element={

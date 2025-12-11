@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User } from '@supabase/supabase-js';
 import { supabase } from '../config/supabase';
-import { AuthContextType, LoginData } from '../types';
+import { AuthContextType, LoginData, User } from '../types';
 import { toast } from 'react-toastify';
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -17,15 +16,35 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email || '',
+          name: session.user.user_metadata?.name || '',
+          role: 'client'
+        });
+        setIsAuthenticated(true);
+      }
       setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email || '',
+          name: session.user.user_metadata?.name || '',
+          role: 'client'
+        });
+        setIsAuthenticated(true);
+      } else {
+        setUser(null);
+        setIsAuthenticated(false);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -54,9 +73,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
       if (error) throw error;
       if (data.user) setUser(data.user);
+      return { success: true };
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Error de registro');
-      throw error;
+      const errorMessage = error instanceof Error ? error.message : 'Error de registro';
+      toast.error(errorMessage);
+      return { success: false, error: errorMessage };
     }
   };
 
@@ -64,14 +85,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       await supabase.auth.signOut();
       setUser(null);
+      setIsAuthenticated(false);
     } catch (error) {
       console.error('Error during logout:', error);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading, isAuthenticated: !!user }}>
-      {!loading && children}
+    <AuthContext.Provider value={{ user, login, register, logout, loading, isAuthenticated }}>
+      {children}
     </AuthContext.Provider>
   );
 };

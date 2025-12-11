@@ -26,7 +26,7 @@ function initializeApp() {
     root.render(
       <React.StrictMode>
         <HelmetProvider>
-          <BrowserRouter>
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <App />
             <Toaster 
               position="top-right"

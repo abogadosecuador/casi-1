@@ -20,8 +20,8 @@ export default defineConfig({
   server: {
     port: 5173,
     host: 'localhost',
-    open: true,
-    strictPort: true,
+    open: false,
+    strictPort: false,
     proxy: {
       '/api': {
         target: 'http://localhost:3001',
@@ -37,6 +37,7 @@ export default defineConfig({
         '**/.git/**',
       ],
     },
+    middlewareMode: false,
   },
   build: {
     outDir: 'dist',
@@ -65,4 +66,4 @@ export default defineConfig({
       'react-hot-toast'
     ],
   },
-})
+})

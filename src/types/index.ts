@@ -14,8 +14,10 @@ export interface LoginData {
 export interface AuthContextType {
   user: User | null;
   login: (credentials: LoginData) => Promise<{ success: boolean; error?: any }>;
+  register: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   loading: boolean;
+  isAuthenticated: boolean;
 }
 
 // Catalog and Product types

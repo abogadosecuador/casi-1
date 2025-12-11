@@ -7,9 +7,6 @@ import {
   Wallet, 
   ArrowRight,
   Zap,
-  TrendingUp,
-  Users,
-  Lock,
   CheckCircle,
   Sparkles
 } from 'lucide-react';
@@ -28,7 +25,6 @@ interface Project {
 }
 
 const ProjectsHubPage: React.FC = () => {
-  const navigate = useNavigate();
   const [hoveredProject, setHoveredProject] = useState<string | null>(null);
 
   const projects: Project[] = [
@@ -113,12 +109,12 @@ const ProjectsHubPage: React.FC = () => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, ease: 'easeOut' },
+      transition: { duration: 0.6 },
     },
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 text-white overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div

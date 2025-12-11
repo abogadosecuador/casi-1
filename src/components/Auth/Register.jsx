@@ -151,18 +151,15 @@ const Register = () => {
   };
   
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary-900 via-primary-800 to-blue-900">
-      <div className="max-w-md w-full space-y-6 bg-white rounded-3xl shadow-2xl border border-blue-50/80 p-8 sm:p-10">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full bg-white border border-slate-200 rounded-2xl shadow-lg p-8">
         <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-gradient-to-r from-blue-600 to-indigo-500 rounded-full flex items-center justify-center mb-4">
-            <FaUser className="h-8 w-8 text-white" />
-          </div>
-          <h2 className="text-4xl font-bold text-gray-900 mb-2">
-            Crear cuenta
+          <h2 className="text-3xl font-bold text-slate-800 mb-2">
+            Crear una Cuenta
           </h2>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-slate-600">
             ¿Ya tienes una cuenta?{' '}
-            <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+            <Link to="/login" className="font-semibold text-slate-800 hover:text-slate-900 transition-colors">
               Inicia sesión
             </Link>
           </p>
@@ -212,7 +209,7 @@ const Register = () => {
                 type="text"
                 autoComplete="name"
                 required
-                className="appearance-none rounded-lg relative block w-full pl-12 pr-4 py-3.5 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all sm:text-sm"
+                className="appearance-none rounded-lg relative block w-full pl-12 pr-4 py-3.5 border border-slate-300 placeholder-slate-400 text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all sm:text-sm"
                 placeholder="Nombre completo"
                 value={formData.fullName}
                 onChange={handleChange}
@@ -230,7 +227,7 @@ const Register = () => {
                 name="phone"
                 type="tel"
                 autoComplete="tel"
-                className="appearance-none rounded-lg relative block w-full pl-12 pr-4 py-3.5 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all sm:text-sm"
+                className="appearance-none rounded-lg relative block w-full pl-12 pr-4 py-3.5 border border-slate-300 placeholder-slate-400 text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all sm:text-sm"
                 placeholder="Teléfono (opcional)"
                 value={formData.phone}
                 onChange={handleChange}
@@ -247,7 +244,7 @@ const Register = () => {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-lg relative block w-full pl-12 pr-4 py-3.5 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all sm:text-sm"
+                className="appearance-none rounded-lg relative block w-full pl-12 pr-4 py-3.5 border border-slate-300 placeholder-slate-400 text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all sm:text-sm"
                 placeholder="Correo electrónico"
                 value={formData.email}
                 onChange={handleChange}
@@ -264,7 +261,7 @@ const Register = () => {
                 type={showPassword ? "text" : "password"}
                 autoComplete="new-password"
                 required
-                className="appearance-none rounded-lg relative block w-full pl-12 pr-12 py-3.5 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all sm:text-sm"
+                className="appearance-none rounded-lg relative block w-full pl-12 pr-12 py-3.5 border border-slate-300 placeholder-slate-400 text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all sm:text-sm"
                 placeholder="Contraseña"
                 value={formData.password}
                 onChange={handleChange}
@@ -294,7 +291,7 @@ const Register = () => {
                 type={showConfirmPassword ? "text" : "password"}
                 autoComplete="new-password"
                 required
-                className="appearance-none rounded-lg relative block w-full pl-12 pr-12 py-3.5 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all sm:text-sm"
+                className="appearance-none rounded-lg relative block w-full pl-12 pr-12 py-3.5 border border-slate-300 placeholder-slate-400 text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all sm:text-sm"
                 placeholder="Confirmar contraseña"
                 value={formData.confirmPassword}
                 onChange={handleChange}
@@ -324,7 +321,7 @@ const Register = () => {
                 id="referralCode"
                 name="referralCode"
                 type="text"
-                className="appearance-none rounded-lg relative block w-full pl-12 pr-4 py-3.5 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all sm:text-sm"
+                className="appearance-none rounded-lg relative block w-full pl-12 pr-4 py-3.5 border border-slate-300 placeholder-slate-400 text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all sm:text-sm"
                 placeholder="Código de referido (opcional)"
                 value={formData.referralCode}
                 onChange={handleChange}
@@ -336,11 +333,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`group relative w-full flex justify-center py-4 px-4 border border-transparent text-base font-semibold rounded-lg text-white ${
-                loading 
-                  ? 'bg-gradient-to-r from-blue-300 to-indigo-400 cursor-not-allowed' 
-                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transform hover:scale-[1.02]'
-              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-lg`}
+              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-all duration-200`}
             >
               {loading ? (
                 <>
@@ -365,11 +358,11 @@ const Register = () => {
         <div className="text-sm text-center">
           <p className="mt-2 text-gray-600">
             Al registrarte, aceptas nuestros{' '}
-            <Link to="/terminos-condiciones" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link to="/terminos-condiciones" className="font-medium text-slate-600 hover:text-slate-800">
               Términos y Condiciones
             </Link>{' '}
             y{' '}
-            <Link to="/politica-privacidad" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link to="/politica-privacidad" className="font-medium text-slate-600 hover:text-slate-800">
               Política de Privacidad
             </Link>
             .

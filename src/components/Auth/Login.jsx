@@ -118,7 +118,7 @@ const Login = () => {
           {/* Header */}
           <div className="text-center">
             <Link to="/" className="inline-flex items-center space-x-2 mb-6">
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-14 h-14 bg-gradient-to-br from-slate-600 to-slate-700 rounded-xl flex items-center justify-center shadow-lg">
                 <span className="text-white font-bold text-2xl">WI</span>
               </div>
             </Link>
@@ -127,7 +127,7 @@ const Login = () => {
             </h2>
             <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
               ¿No tienes una cuenta?{' '}
-              <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
+              <Link to="/register" className="font-medium text-slate-600 hover:text-slate-800 transition-colors">
                 Regístrate aquí
               </Link>
             </p>
@@ -219,7 +219,7 @@ const Login = () => {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-slate-600 focus:ring-slate-500 border-gray-300 rounded"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm"
                        style={{ color: 'var(--text-secondary)' }}>
@@ -227,7 +227,7 @@ const Login = () => {
                 </label>
               </div>
 
-              <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-500 transition-colors">
+              <Link to="/forgot-password" className="text-sm text-slate-600 hover:text-slate-800 transition-colors">
                 ¿Olvidaste tu contraseña?
               </Link>
             </div>
@@ -236,7 +236,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <div className="flex items-center">

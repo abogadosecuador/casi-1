@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaGavel, FaGamepad, FaWallet, FaBriefcase } from 'react-icons/fa';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -79,6 +79,29 @@ const Footer = () => {
             </ul>
           </div>
           
+          {/* Proyectos Integrados */}
+          <div>
+            <h3 className="text-xl font-bold mb-4 text-white border-b border-primary-500 pb-2">Proyectos Integrados</h3>
+            <ul className="space-y-2">
+              <li className="flex items-center">
+                <FaGavel className="text-indigo-500 mr-2 flex-shrink-0" />
+                <Link to="/abogados-os" className="hover:text-primary-500 transition-colors">Abogados OS</Link>
+              </li>
+              <li className="flex items-center">
+                <FaGamepad className="text-cyan-500 mr-2 flex-shrink-0" />
+                <Link to="/games" className="hover:text-primary-500 transition-colors">Game Station</Link>
+              </li>
+              <li className="flex items-center">
+                <FaWallet className="text-emerald-500 mr-2 flex-shrink-0" />
+                <Link to="/crypto-banking" className="hover:text-primary-500 transition-colors">Crypto Banking</Link>
+              </li>
+              <li className="flex items-center">
+                <FaBriefcase className="text-purple-500 mr-2 flex-shrink-0" />
+                <Link to="/proyectos" className="hover:text-primary-500 transition-colors">Hub de Proyectos</Link>
+              </li>
+            </ul>
+          </div>
+          
           {/* Suscripción */}
           <div>
             <h3 className="text-xl font-bold mb-4 text-white border-b border-primary-500 pb-2">Suscríbete</h3>
@@ -119,7 +142,8 @@ const Footer = () => {
             <Link to="/privacidad" className="text-secondary-400 hover:text-primary-500 transition-colors text-sm">Política de Privacidad</Link>
             <Link to="/terminos" className="text-secondary-400 hover:text-primary-500 transition-colors text-sm">Términos y Condiciones</Link>
             <Link to="/afiliados/registro" className="text-secondary-400 hover:text-primary-500 transition-colors text-sm">Programa de Afiliados</Link>
-            <Link to="/afiliados/registro" className="text-secondary-400 hover:text-primary-500 transition-colors text-sm">Referidos</Link>
+            <Link to="/referidos" className="text-secondary-400 hover:text-primary-500 transition-colors text-sm">Referidos</Link>
+            <Link to="/proyectos" className="text-secondary-400 hover:text-primary-500 transition-colors text-sm">Proyectos</Link>
           </div>
           <p className="text-secondary-400 text-sm text-center">
             {currentYear} Abg. Wilson Alexander Ipiales Guerron. Todos los derechos reservados.

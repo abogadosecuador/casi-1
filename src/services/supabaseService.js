@@ -77,8 +77,8 @@ const getSupabaseOptions = () => {
     }
   };
 
-  // En Cloudflare Workers o cuando necesitamos un proxy CORS
-  if (shouldUseProxyWorker()) {
+  // En desarrollo local, usar configuración directa sin proxy CORS
+  if (false && shouldUseProxyWorker()) {
     try {
       // Implementar una versión personalizada de fetch con manejo CORS
       options.global.fetch = (...args) => {
@@ -567,21 +567,30 @@ export const authService = {
         throw new Error('No se pudo obtener el usuario');
       }
       
-      // Obtener perfil del usuario desde la tabla profiles
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', data.user.id)
-        .single();
+      // Intentar obtener perfil del usuario desde la tabla profiles
+      let profile = null;
+      try {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+        
+        if (!profileError && profileData) {
+          profile = profileData;
+        }
+      } catch (profileErr) {
+        console.warn('No se pudo obtener perfil del usuario, usando datos básicos:', profileErr.message);
+      }
       
-      // Combinar datos de auth con perfil
+      // Combinar datos de auth con perfil (o usar datos básicos)
       const userWithProfile = {
         ...data.user,
-        full_name: profile?.full_name || data.user.email,
+        full_name: profile?.full_name || data.user.user_metadata?.full_name || data.user.email,
         role: profile?.role || 'client',
         roles: [profile?.role || 'client'], // Array de roles para compatibilidad
-        phone: profile?.phone,
-        address: profile?.address,
+        phone: profile?.phone || data.user.user_metadata?.phone,
+        address: profile?.address || data.user.user_metadata?.address,
         city: profile?.city,
         country: profile?.country,
         avatar_url: profile?.avatar_url,

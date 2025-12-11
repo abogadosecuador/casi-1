@@ -2,7 +2,7 @@ import { Fragment, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Disclosure, Menu, Transition, Popover } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon, ChevronDownIcon, UserIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
-import { FaUsers, FaHandshake, FaComments, FaGavel, FaBook, FaShieldAlt, FaFileContract, FaFileAlt, FaUserTie, FaWhatsapp, FaPhone, FaEnvelope, FaUserPlus, FaSignInAlt, FaLock, FaShoppingCart, FaBriefcase, FaGlobe, FaCrown, FaGraduationCap } from 'react-icons/fa';
+import { FaUsers, FaHandshake, FaComments, FaGavel, FaBook, FaShieldAlt, FaFileContract, FaFileAlt, FaUserTie, FaWhatsapp, FaPhone, FaEnvelope, FaUserPlus, FaSignInAlt, FaLock, FaShoppingCart, FaBriefcase, FaGlobe, FaCrown, FaGraduationCap, FaGamepad, FaWallet } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import ThemeSwitcher from '../ThemeSwitcher';
@@ -15,6 +15,7 @@ const mainNavigation = [
   { name: 'Suscripciones', href: '/suscripciones', current: false, icon: <FaCrown className="text-blue-600" /> },
   { name: 'Blog', href: '#', current: false, hasSubmenu: true, icon: <FaBook className="text-blue-600" /> },
   { name: 'Comunidad', href: '#', current: false, hasSubmenu: true, icon: <FaUsers className="text-blue-600" /> },
+  { name: 'Proyectos', href: '#', current: false, hasSubmenu: true, icon: <FaBriefcase className="text-purple-600" /> },
   { name: 'Contacto', href: '/contacto', current: false, icon: <FaEnvelope className="text-blue-600" /> },
 ];
 
@@ -50,6 +51,14 @@ const comunidadSubmenu = [
   { name: 'Sistema de Referidos', href: '/referidos', current: false, icon: <FaUsers className="text-indigo-500" /> },
 ];
 
+// Nuevo submenú para Proyectos Integrados
+const proyectosSubmenu = [
+  { name: 'Abogados OS', href: '/abogados-os', current: false, icon: <FaGavel className="text-indigo-500" /> },
+  { name: 'Game Station', href: '/games', current: false, icon: <FaGamepad className="text-cyan-500" /> },
+  { name: 'Crypto Banking', href: '/crypto-banking', current: false, icon: <FaWallet className="text-emerald-500" /> },
+  { name: 'Hub de Proyectos', href: '/proyectos', current: false, icon: <FaBriefcase className="text-purple-500" /> },
+];
+
 // Nuevo submenú para Políticas y Seguridad
 const policySubmenu = [
   { name: 'Política de Privacidad', href: '/politicas-privacidad', current: false, icon: <FaShieldAlt className="text-gray-500" /> },
@@ -78,14 +87,16 @@ function Navbar() {
              (item.href !== '#' && item.href !== '/' && location.pathname.includes(item.href))
   }));
 
-  // Añadir entrada para Políticas y Seguridad
-  const allNavigation = [...updatedNavigation, { 
-    name: 'Políticas', 
-    href: '#', 
-    current: location.pathname === '/privacidad' || location.pathname === '/terminos' || location.pathname === '/seguridad', 
-    hasSubmenu: true, 
-    icon: <FaShieldAlt className="text-blue-600" /> 
-  }];
+  // Añadir entradas para Políticas y Seguridad
+  const allNavigation = [...updatedNavigation, 
+    { 
+      name: 'Políticas', 
+      href: '#', 
+      current: location.pathname === '/privacidad' || location.pathname === '/terminos' || location.pathname === '/seguridad', 
+      hasSubmenu: true, 
+      icon: <FaShieldAlt className="text-blue-600" /> 
+    }
+  ];
 
   return (
     <Disclosure as="nav" className="bg-white shadow-lg sticky top-0 z-50">
@@ -161,6 +172,7 @@ function Navbar() {
                                       item.name === 'Consultas' ? consultasSubmenu : 
                                       item.name === 'Blog' ? blogSubmenu :
                                       item.name === 'Comunidad' ? comunidadSubmenu :
+                                      item.name === 'Proyectos' ? proyectosSubmenu :
                                       item.name === 'Políticas' ? policySubmenu : []).map((subItem) => (
                                       <Link
                                         key={subItem.name}
@@ -329,6 +341,7 @@ function Navbar() {
                             item.name === 'Consultas' ? consultasSubmenu : 
                             item.name === 'Blog' ? blogSubmenu :
                             item.name === 'Comunidad' ? comunidadSubmenu :
+                            item.name === 'Proyectos' ? proyectosSubmenu :
                             item.name === 'Políticas' ? policySubmenu : []).map((subItem) => (
                             <Link
                               key={subItem.name}
